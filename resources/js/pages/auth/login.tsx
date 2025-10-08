@@ -32,7 +32,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
-                            <div className="grid gap-2">
+                            <div className="grid gap-2 text-black">
                                 <Label htmlFor="email">Email address</Label>
                                 <Input
                                     id="email"
@@ -48,12 +48,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <div className="flex items-center">
+                                <div className="flex items-center text-black">
                                     <Label htmlFor="password">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-gray-600 hover:text-red-400 text-xs"
                                             tabIndex={5}
                                         >
                                             Forgot password?
@@ -72,18 +72,18 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center text-black space-x-3">
                                 <Checkbox
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label className="text-xs" htmlFor="remember">Remember me</Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-2 w-full border border-black text-black font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
@@ -91,13 +91,13 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 {processing && (
                                     <LoaderCircle className="h-4 w-4 animate-spin" />
                                 )}
-                                Log in
+                                LOG IN
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
+                        <div className="text-center text-gray-600 text-xs text-muted-foreground">
                             Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
+                            <TextLink className="text-gray-500 hover:text-red-400 ml-1.5" href={register()} tabIndex={5}>
                                 Sign up
                             </TextLink>
                         </div>
