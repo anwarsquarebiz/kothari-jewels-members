@@ -96,26 +96,26 @@ const useScrollGallery = (
     const scrollDistance = (images.length - 1) * window.innerHeight * 0.5;
 
     // Create ScrollTrigger that pins the entire wrapper
+    // Start pinning when breadcrumb goes just under navbar (navbarHeight + 45px for breadcrumb padding + 20px for breadcrumb height)
     const st = ScrollTrigger.create({
       trigger: wrapper,
-      start: `top ${navbarHeight}px`,
+      start: `top ${navbarHeight + 65}px`, // 45px breadcrumb padding + 20px breadcrumb height
       end: `+=${(images.length - 1) * window.innerHeight}`,
       pin: true,
       scrub: 0.5,
       onUpdate: (self) => {
-  if (!imageContainerRef.current) return;
+        if (!imageContainerRef.current) return;
 
-  const index = Math.min(Math.floor(self.progress * images.length), images.length - 1);
-  setCurrentIndex(index);
+        const index = Math.min(Math.floor(self.progress * images.length), images.length - 1);
+        setCurrentIndex(index);
 
-  // Snap container translation
-  gsap.to(imageContainerRef.current, {
-    y: `-${index * window.innerHeight}px`,
-    duration: 0.3,
-    ease: "power2.out"
-  });
-}
-
+        // Snap container translation
+        gsap.to(imageContainerRef.current, {
+          y: `-${index * window.innerHeight}px`,
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      }
     });
 
     scrollTriggerRef.current = st;
@@ -141,6 +141,22 @@ const useScrollGallery = (
   };
 
   return { currentIndex, scrollToImage };
+};
+
+// Helper function to properly format image sources
+const getImageSrc = (src: string) => {
+  // If it's already a full URL, return as is
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return src;
+  }
+
+  // If it starts with a slash already, return as is
+  if (src.startsWith('/')) {
+    return src;
+  }
+
+  // For relative paths, ensure they start from the root
+  return `/${src}`;
 };
 
 export default function ProductShow({ product, category, relatedProducts }: Props) {
@@ -391,7 +407,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                       className={`absolute inset-0 ${index === selectedImageIndex ? '' : 'hidden'}`}
                     >
                       <img
-                        src={image.src}
+                        src={getImageSrc(image.src)} // Use the function here
                         alt={`${product.title} - Image ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -455,7 +471,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                             className="w-full h-screen" // full viewport height for each
                           >
                             <img
-                              src={image.src}
+                              src={getImageSrc(image.src)} // Use the function here
                               alt={`${product.title} - ${index}`}
                               className="w-full h-full object-cover"
                             />
@@ -486,7 +502,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6 px-4 sm:px-6 lg:px-0 lg:py-10 xl:py-14">
+            <div className="space-y-6 px-4 sm:px-6 lg:px-0 flex flex-col justify-center">
               <div>
                 <div className="w-full mb-4">
                   <h1 className="text-2xl font-bold text-center lg:text-start text-gray-900 mb-2">
@@ -563,7 +579,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                     {detail.image && (
                       <div className="aspect-[16/7] bg-gray-100 overflow-hidden mb-4">
                         <img
-                          src={detail.image}
+                          src={getImageSrc(detail.image)}
                           alt={detail.title}
                           className="w-full h-full object-cover"
                         />

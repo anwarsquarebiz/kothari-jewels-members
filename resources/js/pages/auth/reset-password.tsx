@@ -28,7 +28,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             >
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 text-black">
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
@@ -79,7 +79,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
                         <Button
                             type="submit"
-                            className="mt-4 w-full"
+                            className="mt-2 w-full border border-black text-black font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                             disabled={processing}
                             data-test="reset-password-button"
                         >

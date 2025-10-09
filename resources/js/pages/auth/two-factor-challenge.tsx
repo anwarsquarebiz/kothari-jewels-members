@@ -60,7 +60,7 @@ export default function TwoFactorChallenge() {
                     resetOnSuccess={!showRecoveryInput}
                 >
                     {({ errors, processing, clearErrors }) => (
-                        <>
+                        <div className="text-black">
                             {showRecoveryInput ? (
                                 <>
                                     <Input
@@ -122,7 +122,7 @@ export default function TwoFactorChallenge() {
                                     {authConfigContent.toggleText}
                                 </button>
                             </div>
-                        </>
+                        </div>
                     )}
                 </Form>
             </div>

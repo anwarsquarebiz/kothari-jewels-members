@@ -29,7 +29,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                 <Form {...PasswordResetLinkController.store.form()}>
                     {({ processing, errors }) => (
                         <>
-                            <div className="grid gap-2">
+                            <div className="grid gap-2 text-black">
                                 <Label htmlFor="email">Email address</Label>
                                 <Input
                                     id="email"
@@ -45,9 +45,10 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                             <div className="my-6 flex items-center justify-start">
                                 <Button
-                                    className="w-full"
+                                    className="mt-2 w-full border border-black text-black font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                                     disabled={processing}
                                     data-test="email-password-reset-link-button"
+                                    
                                 >
                                     {processing && (
                                         <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -59,9 +60,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     )}
                 </Form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
+                <div className="space-x-1 text-center text-xs text-muted-foreground">
                     <span>Or, return to</span>
-                    <TextLink href={login()}>log in</TextLink>
+                    <TextLink className="text-gray-600 hover:text-red-400" href={login()}>log in</TextLink>
                 </div>
             </div>
         </AuthLayout>
