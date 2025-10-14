@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Menu, X, Search, MapPin, ShoppingBag, User, ConciergeBell } from 'lucide-react';
 import { Link, usePage } from '@inertiajs/react'
 
@@ -38,7 +38,10 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+
+        if (!navRef.current) return
+
     const updateHeight = () => {
       if (navRef.current && setNavHeight) {
         const height = navRef.current.offsetHeight;
@@ -56,13 +59,13 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
     return () => {
       window.removeEventListener('resize', updateHeight);
     };
-  }, [setNavHeight]);
+    }, [setNavHeight, navRef.current]);
 
     return (
         <>
             {/* Desktop Navbar */}
-            <nav ref={navRef} className=" border-b border-gray-200 w-full z-50 bg-white p-4 fixed top-0 left-0">
-                <div className="container mx-auto">
+            <nav ref={navRef} className=" border-b font-jost bg-white border-gray-200 w-full z-50  p-4 fixed top-0 left-0">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
                     <div className="flex items-center justify-between h-fit">
                         {/* Left Navigation - Hidden on mobile/tablet */}
                         <div className="hidden lg:flex items-center space-x-8">
@@ -70,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
                                 <a
                                     key={item.label}
                                     href={item.href}
-                                    className="text-xs font-medium tracking-wide text-gray-800 hover:text-gray-600 transition-colors"
+                                    className="text-sm lg:text-xs xl:text-sm font-normal text-center tracking-wide text-gray-800 hover:text-gray-600 transition-colors"
                                 >
                                     {item.label}
                                 </a>
@@ -98,7 +101,7 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
                         <div className="hidden lg:flex items-center space-x-4">
                             <a
                                 href="#house"
-                                className="text-xs font-medium tracking-wide text-gray-800 hover:text-gray-600 transition-colors hidden lg:block"
+                                className="text-sm lg:text-xs xl:text-sm text-center font-normal tracking-wide text-gray-800 hover:text-gray-600 transition-colors hidden lg:block"
                             >
                                 THE HOUSE OF KOTHARIS
                             </a>

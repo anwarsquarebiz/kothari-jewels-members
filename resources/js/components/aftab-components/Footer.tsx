@@ -49,13 +49,13 @@ const Footer: React.FC = () => {
     ];
 
     return (
-        <footer className="bg-[#1a1a1a] text-white">
+        <footer className="bg-[#1a1a1a] text-white font-jost">
             <div className="container mx-auto px-4 lg:px-6 py-12 lg:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                     
                     <div>
                         <h3 className="text-base font-semibold mb-6 tracking-wide">CONTACT US</h3>
-                        <div className="space-y-4 text-sm">
+                        <div className="space-y-4 text-sm font-lato">
                             <div className="flex items-start gap-3">
                                 <MapPin size={18} className="flex-shrink-0 mt-1" />
                                 <p className="leading-relaxed">
@@ -123,7 +123,7 @@ const Footer: React.FC = () => {
                     {footerSections.map((section) => (
                         <div key={section.title}>
                             <h3 className="text-base font-semibold mb-6 tracking-wide">{section.title}</h3>
-                            <ul className="space-y-3 text-sm">
+                            <ul className="space-y-3 font-lato text-sm">
                                 {section.links.map((link) => (
                                     <li key={link.label}>
                                         <a
@@ -144,7 +144,7 @@ const Footer: React.FC = () => {
             <div className="border-t border-gray-700">
                 <div className="container mx-auto px-4 lg:px-6 py-6">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-gray-400">
+                        <p className="text-xs text-gray-400">
                             Copyright © 2023. All Right Reserved
                         </p>
 
