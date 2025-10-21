@@ -45,7 +45,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                             <div className="my-6 flex items-center justify-start">
                                 <Button
-                                    className="mt-2 w-full border border-black text-black font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                                    className="mt-2 w-full border border-black text-black font-semibold py-4 px-6 hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                                     disabled={processing}
                                     data-test="email-password-reset-link-button"
                                     

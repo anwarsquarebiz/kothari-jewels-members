@@ -114,7 +114,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                 }`}
             >
               <img
-                src={getImageSrc(image.src)}
+                src={image.src}
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
@@ -265,7 +265,7 @@ const FilterModal = ({
                 type="text"
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-3 py-2 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-black"
                 style={{ color: '#000000' }}
                 placeholder="Search products..."
               />
@@ -279,7 +279,7 @@ const FilterModal = ({
               <select
                 value={filters.category}
                 onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-3 py-2 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-black"
                 style={{ color: '#000000' }}
               >
                 <option value="">All Categories</option>
@@ -302,7 +302,7 @@ const FilterModal = ({
                   value={filters.min_price}
                   onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
                   placeholder="Min"
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="px-3 py-2 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-black"
                   style={{ color: '#000000' }}
                 />
                 <input
@@ -310,7 +310,7 @@ const FilterModal = ({
                   value={filters.max_price}
                   onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
                   placeholder="Max"
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="px-3 py-2 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-black"
                   style={{ color: '#000000' }}
                 />
               </div>
@@ -320,7 +320,7 @@ const FilterModal = ({
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:ml-3 sm:w-auto sm:text-sm"
+              className="w-full inline-flex justify-center  border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:ml-3 sm:w-auto sm:text-sm"
               onClick={() => {
                 applyFilters();
                 onClose();
@@ -330,7 +330,7 @@ const FilterModal = ({
             </button>
             <button
               type="button"
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              className="mt-3 w-full inline-flex justify-center  border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               onClick={() => {
                 setFilters({
                   search: '',
@@ -418,7 +418,7 @@ const SortModal = ({
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:ml-3 sm:w-auto sm:text-sm"
+              className="w-full inline-flex justify-center  border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:ml-3 sm:w-auto sm:text-sm"
               onClick={() => {
                 applySort();
                 onClose();
@@ -535,7 +535,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
       <Head title="Products" />
 
       <div className="min-h-screen bg-white">
-        <div style={{ paddingTop: `${navHeight}px` }} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div style={{ paddingTop: `${navHeight}px` }} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
               <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">
@@ -552,7 +552,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
           <div className="lg:hidden flex justify-between items-center mb-6">
             <button
               onClick={() => setIsFilterModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300  text-sm font-medium text-gray-700 bg-white"
             >
               <Filter size={16} />
               Filters
@@ -564,7 +564,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
             </button>
             <button
               onClick={() => setIsSortModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300  text-sm font-medium text-gray-700 bg-white"
             >
               <ArrowUpDown size={16} />
               Sort
@@ -662,13 +662,13 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                       <div className="space-y-3 pt-4">
                         <button
                           onClick={handleSearch}
-                          className="w-full bg-black text-white py-2 px-4 rounded-sm hover:bg-gray-800 transition-colors"
+                          className="w-full bg-black text-white py-2 px-4 hover:bg-black hover:text-white transition-colors cursor-pointer"
                         >
                           Apply Filters
                         </button>
                         <button
                           onClick={clearFilters}
-                          className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-sm hover:bg-gray-50 transition-colors"
+                          className="w-full border border-gray-300 text-gray-700 py-2 px-4 hover:bg-black hover:text-white transition-colors cursor-pointer"
                         >
                           Clear All
                         </button>

@@ -367,9 +367,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
         {/* Breadcrumb - Not fixed, with proper spacing */}
         <div
           className="relative z-10 bg-white border-b border-gray-100"
-          style={{ paddingTop: `${navHeight + 45}px` }}
+          style={{ paddingTop: `${navHeight}px` }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
               <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">
                 Home
@@ -384,7 +384,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
           </div>
         </div>
 
-        <div className="w-full mx-auto lg:max-w-7xl py-8 lg:px-8">
+        <div className="w-full mx-auto lg:container py-8 lg:px-8">
           {/* Wrapper for scroll-triggered pinning */}
           <div
             ref={wrapperRef}
@@ -548,7 +548,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
               <div className="space-y-2.5">
                 <button
                   onClick={() => setShowContactModal(true)}
-                  className="w-full border border-black text-black font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                  className="w-full border border-black text-black font-semibold py-4 px-6 hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                 >
                   ENQUIRE NOW
                 </button>

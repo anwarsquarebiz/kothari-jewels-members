@@ -208,7 +208,7 @@ export default function Show({ category }: Props) {
                 {category.products && category.products.length > 0 && (
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <h2 className="text-lg font-semibold mb-4">Products in this Category</h2>
-                        <div className="rounded-md border">
+                        <div className=" border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>

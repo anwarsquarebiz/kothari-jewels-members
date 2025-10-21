@@ -70,7 +70,7 @@ const theme = {
         underline: 'underline',
     },
     quote: 'border-l-4 border-gray-300 pl-4 italic text-gray-600',
-    code: 'bg-gray-100 px-1 py-0.5 rounded text-sm font-mono',
+    code: 'bg-gray-100 px-1 py-0.5 text-sm font-mono',
     codeHighlight: {
         atrule: 'text-purple-600',
         attr: 'text-blue-600',
@@ -132,7 +132,7 @@ export function RichTextEditor({
     };
 
     return (
-        <div className={cn('border border-input rounded-md', className)}>
+        <div className={cn('border border-input ', className)}>
             <LexicalComposer initialConfig={initialConfig}>
                 <div className="relative">
                     <RichTextPlugin

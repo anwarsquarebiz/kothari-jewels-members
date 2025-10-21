@@ -265,7 +265,7 @@ export default function Edit({ product, categories, users }: Props) {
                             {/* Categories */}
                             <div className="md:col-span-2">
                                 <Label>Categories</Label>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 p-4 border rounded-md">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 p-4 border ">
                                     {categories.map((category) => (
                                         <div key={category.id} className="flex items-center space-x-2">
                                             <input
@@ -289,7 +289,7 @@ export default function Edit({ product, categories, users }: Props) {
                             {/* User Access */}
                             <div className="md:col-span-2">
                                 <Label>User Access</Label>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 p-4 border rounded-md max-h-48 overflow-y-auto">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 p-4 border  max-h-48 overflow-y-auto">
                                     {users.map((user) => (
                                         <div key={user.id} className="flex items-center space-x-2">
                                             <input

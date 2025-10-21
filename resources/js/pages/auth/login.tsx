@@ -83,7 +83,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full border border-black text-black font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                                className="mt-2 w-full border border-black text-white font-semibold py-4 px-6 hover:bg-blue hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"

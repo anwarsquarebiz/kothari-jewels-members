@@ -163,7 +163,7 @@ export default function Index({ products, categories, filters }: Props) {
                 </div>
 
                 {/* Table */}
-                <div className="rounded-md border">
+                <div className=" border">
                     <Table>
                         <TableHeader>
                             <TableRow>

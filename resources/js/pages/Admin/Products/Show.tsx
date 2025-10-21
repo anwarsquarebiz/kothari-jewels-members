@@ -285,7 +285,7 @@ export default function Show({ product }: Props) {
                                                         {user.roles.map((role, index) => (
                                                             <span
                                                                 key={index}
-                                                                className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
+                                                                className="inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800"
                                                             >
                                                                 {role.name}
                                                             </span>

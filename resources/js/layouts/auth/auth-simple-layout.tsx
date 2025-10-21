@@ -23,7 +23,7 @@ export default function AuthSimpleLayout({
                             href={home()}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <div className="mb-1 flex items-center justify-center rounded-md">
+                            <div className="mb-1 flex items-center justify-center ">
                                 {/* <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" /> */}
                                 <img src="/media/logo.webp" className="w-[150px] h-auto"/>
                             </div>
