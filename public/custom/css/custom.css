@@ -408,3 +408,7 @@
     }
 
     /* Main Menu END */
+
+    .no-scroll-bar::-webkit-scrollbar{
+        display: none;
+    }
