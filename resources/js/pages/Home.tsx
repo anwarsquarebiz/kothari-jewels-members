@@ -1,103 +1,269 @@
-import { Head, Link } from '@inertiajs/react'
-import Navbar from '@/components/aftab-components/Navbar'
-import Footer from '@/components/aftab-components/Footer'
-import { Button } from '@/components/ui/button'
-import { ArrowRight, Sparkles, Award, Shield } from 'lucide-react'
+import { Head, Link } from "@inertiajs/react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { LandingNav } from "@/components/aftab-components/LandingNav";
 
 interface Props {
-    title: string
-    description: string
+  title: string;
+  description: string;
 }
+
+const slides = [
+  {
+    id: 1,
+    url: "/media/landing-page/expanded_1.jpg",
+    title: "Emerald Garden Necklace",
+    material: "18K Yellow Gold & Emeralds",
+    description:
+      "A stunning statement necklace featuring vibrant emeralds set in lustrous yellow gold, inspired by nature's timeless beauty.",
+    price: "$18,500",
+  },
+  {
+    id: 2,
+    url: "/media/landing-page/expanded_2.jpg",
+    title: "Floral Diamond Bracelet",
+    material: "Platinum & White Diamonds",
+    description:
+      "Exquisite floral motifs adorned with brilliant diamonds, delicately crafted to grace your wrist with unparalleled elegance.",
+    price: "$24,750",
+  },
+  {
+    id: 3,
+    url: "/media/landing-page/expanded_3.jpg",
+    title: "Crystal Hoop Earrings",
+    material: "White Gold & Premium Crystals",
+    description:
+      "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
+    price: "$6,900",
+  },
+];
 
 export default function Home({ title, description }: Props) {
-    return (
-        <>
-            <Head title="Home" />
-            <Navbar />
-            
-            <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-                {/* Hero Section */}
-                <section className="container mx-auto px-4 py-16 md:py-24">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                            {title}
-                        </h1>
-                        <p className="text-xl text-gray-600 mb-8">
-                            {description}
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/products">
-                                <Button size="lg" className="gap-2">
-                                    Browse Collection
-                                    <ArrowRight className="w-4 h-4" />
-                                </Button>
-                            </Link>
-                            <Link href="/about">
-                                <Button size="lg" variant="outline">
-                                    Learn More
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                </section>
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [previousIndex, setPreviousIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-                {/* Features Section */}
-                <section className="container mx-auto px-4 py-16">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
-                                <Sparkles className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-semibold mb-2">Exquisite Craftsmanship</h3>
-                            <p className="text-gray-600">
-                                Each piece is meticulously crafted by master artisans with decades of experience
-                            </p>
-                        </div>
-                        
-                        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
-                                <Award className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-semibold mb-2">Premium Quality</h3>
-                            <p className="text-gray-600">
-                                We use only the finest materials and gemstones in all our jewelry collections
-                            </p>
-                        </div>
-                        
-                        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
-                                <Shield className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-semibold mb-2">Trusted Legacy</h3>
-                            <p className="text-gray-600">
-                                A heritage of trust and excellence passed down through generations
-                            </p>
-                        </div>
-                    </div>
-                </section>
+  const slideRef = useRef<HTMLDivElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
+  const materialRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const priceRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-                {/* CTA Section */}
-                <section className="container mx-auto px-4 py-16">
-                    <div className="bg-primary text-white rounded-2xl p-12 text-center">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Ready to Find Your Perfect Piece?
-                        </h2>
-                        <p className="text-lg mb-8 opacity-90">
-                            Explore our exclusive collection of handcrafted jewelry
-                        </p>
-                        <Link href="/products">
-                            <Button size="lg" variant="secondary" className="gap-2">
-                                View Products
-                                <ArrowRight className="w-4 h-4" />
-                            </Button>
-                        </Link>
-                    </div>
-                </section>
-            </div>
+  const nextSlide = () => {
+    if (isAnimating) return;
+    setPreviousIndex(currentIndex);
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % slides.length);
+    setIsAnimating(true);
+  };
 
-            <Footer />
-        </>
+  const prevSlide = () => {
+    if (isAnimating) return;
+    setPreviousIndex(currentIndex);
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    setIsAnimating(true);
+  };
+
+  const goToSlide = (index: number) => {
+    if (isAnimating || index === currentIndex) return;
+    setPreviousIndex(currentIndex);
+    setDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+    setIsAnimating(true);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") prevSlide();
+      if (e.key === "ArrowRight") nextSlide();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentIndex, isAnimating]);
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+
+    const tl = gsap.timeline({
+      onComplete: () => setIsAnimating(false),
+    });
+
+    // Create temporary div for previous slide
+    const prevSlideElement = document.createElement("div");
+    prevSlideElement.className = "absolute inset-0";
+    prevSlideElement.innerHTML = `
+      <img src="${slides[previousIndex].url}" alt="${slides[previousIndex].title}" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/50" />
+    `;
+    containerRef.current.appendChild(prevSlideElement);
+
+    // Animate previous slide out
+    tl.to(
+      prevSlideElement,
+      {
+        x: direction > 0 ? "-100%" : "100%",
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.inOut",
+      },
+      0
+    );
+
+    // Animate current slide in
+    tl.fromTo(
+      slideRef.current,
+      {
+        x: direction > 0 ? "100%" : "-100%",
+        opacity: 0,
+      },
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.inOut",
+      },
+      0
+    );
+
+    // Animate info panel with stagger
+    tl.fromTo(
+      materialRef.current,
+      { opacity: 0, x: -20 },
+      { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" },
+      0.3
     )
+      .fromTo(
+        titleRef.current,
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" },
+        "-=0.3"
+      )
+      .fromTo(
+        descRef.current,
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" },
+        "-=0.3"
+      );
+
+<<<<<<< HEAD
+
+=======
+    // Clean up the temporary element after animation
+    tl.call(() => {
+      if (
+        containerRef.current &&
+        containerRef.current.contains(prevSlideElement)
+      ) {
+        containerRef.current.removeChild(prevSlideElement);
+      }
+    });
+  }, [currentIndex, direction, previousIndex]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full overflow-hidden h-screen relative"
+    >
+      <Head title="Home" />
+      <LandingNav currentPage={"/"} isLightPage={false} />
+
+      <div ref={slideRef} className="absolute inset-0">
+        <img
+          src={slides[currentIndex].url}
+          alt={slides[currentIndex].title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/50" />
+      </div>
+
+      {/* Navigation Arrows */}
+      <button
+        onClick={prevSlide}
+        disabled={isAnimating}
+        className={`absolute left-5 md:left-7 lg:left-8 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white transition-all duration-300 ${
+          isAnimating ? "opacity-50 cursor-not-allowed" : "hover:bg-white/20"
+        }`}
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className=" w-5 h-5 lg:w-6 lg:h-6" />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        disabled={isAnimating}
+        className={`absolute right-5 md:right-7 lg:right-8 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white transition-all duration-300 ${
+          isAnimating ? "opacity-50 cursor-not-allowed" : "hover:bg-white/20"
+        }`}
+        aria-label="Next slide"
+      >
+        <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
+      </button>
+
+      {/* Dots Navigation */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-3">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            disabled={isAnimating}
+            className={`transition-all duration-300 rounded-full ${
+              index === currentIndex
+                ? "w-10 h-2 bg-white"
+                : "w-2 h-2 bg-white/40 hover:bg-white/60"
+            } ${isAnimating ? "cursor-not-allowed" : ""}`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Jewelry Information */}
+      <div
+        ref={infoRef}
+        className="absolute bottom-0 left-0 right-0 z-10 p-5 md:p-7 lg:p-12 text-white"
+      >
+        <div className="max-w-2xl">
+          <div
+            ref={materialRef}
+            className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
+          >
+            <p className="text-xs md:text-sm tracking-wider uppercase opacity-90">
+              {slides[currentIndex].material}
+            </p>
+          </div>
+
+          <h1 ref={titleRef} className="mb-3">
+            {slides[currentIndex].title}
+          </h1>
+
+          <p ref={descRef} className="mb-5 opacity-90 leading-relaxed max-w-xl">
+            {slides[currentIndex].description}
+          </p>
+
+          {/* <div ref={priceRef} className="flex items-center gap-6">
+                        <p className="text-2xl tracking-wide">
+                            {slides[currentIndex].price}
+                        </p>
+                        <button className="px-6 py-2.5 rounded-full bg-white text-black hover:bg-white/90 transition-all duration-300 tracking-wide">
+                            View Details
+                        </button>
+                    </div> */}
+        </div>
+      </div>
+
+      <div className="w-10 aspect-square flex item-center justify-center cursor-pointer fixed bottom-4 right-4 z-[50]">
+        <img
+          src="/media/landing-page/music.gif"
+          className="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  );
 }
-
-
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e

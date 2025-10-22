@@ -1,73 +1,73 @@
-import Navbar from '@/components/aftab-components/Navbar'
-import Footer from '@/components/aftab-components/Footer'
+import Navbar from "@/components/aftab-components/Navbar";
+import Footer from "@/components/aftab-components/Footer";
 
-import { Head, Link } from '@inertiajs/react'
-import { useRef, useState, useEffect } from 'react'
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Navigation } from "swiper/modules"
-import "swiper/css"
-import "swiper/css/navigation"
-import { ChevronRight, ChevronLeft, X } from "lucide-react"
+import { Head, Link } from "@inertiajs/react";
+import { useRef, useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import { ChevronRight, ChevronLeft, X } from "lucide-react";
 
 // Import GSAP for scroll animations
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Register GSAP plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 interface Product {
-  id: number
-  title: string
-  slug: string
-  short_description: string
-  long_description: string
-  sku: string
-  price: string
-  currency: string
-  formatted_price: string
-  images: ProductImage[]
-  categories: Category[]
-  details: ProductDetail[]
-  active_details: ProductDetail[]
+  id: number;
+  title: string;
+  slug: string;
+  short_description: string;
+  long_description: string;
+  sku: string;
+  price: string;
+  currency: string;
+  formatted_price: string;
+  images: ProductImage[];
+  categories: Category[];
+  details: ProductDetail[];
+  active_details: ProductDetail[];
 }
 
 interface ProductImage {
-  id: number
-  src: string
-  is_primary: boolean
-  position: number
+  id: number;
+  src: string;
+  is_primary: boolean;
+  position: number;
 }
 
 interface ProductDetail {
-  id: number
-  title: string
-  subtitle: string
-  image: string
-  position: number
-  is_active: boolean
+  id: number;
+  title: string;
+  subtitle: string;
+  image: string;
+  position: number;
+  is_active: boolean;
 }
 
 interface Category {
-  id: number
-  name: string
-  slug: string
+  id: number;
+  name: string;
+  slug: string;
 }
 
 interface RelatedProduct {
-  id: number
-  title: string
-  slug: string
-  primary_image_url: string
-  categories: Category[]
+  id: number;
+  title: string;
+  slug: string;
+  primary_image_url: string;
+  categories: Category[];
 }
 
 interface Props {
-  product: Product
-  category: Category
-  relatedProducts: RelatedProduct[]
+  product: Product;
+  category: Category;
+  relatedProducts: RelatedProduct[];
 }
 
 // Custom hook for scroll-triggered image gallery
@@ -90,8 +90,17 @@ const useScrollGallery = (
     const wrapper = wrapperRef.current;
     const imageContainer = imageContainerRef.current;
 
+<<<<<<< HEAD
     // Set initial state
     gsap.set(imageContainer, { y: 0 });
+=======
+    // Set initial state - first image visible, others below
+    gsap.set(imageElements[0], { y: 0, opacity: 1 });
+    gsap.set(imageElements.slice(1), { y: "100%", opacity: 1 });
+
+    // Calculate total scroll distance needed - reduced for better control
+    const scrollDistance = (images.length - 1) * window.innerHeight * 0.5;
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
 
     // Create ScrollTrigger that pins the entire wrapper
     const st = ScrollTrigger.create({
@@ -101,6 +110,7 @@ const useScrollGallery = (
       pin: true,
       scrub: 0.5,
       onUpdate: (self) => {
+<<<<<<< HEAD
         const index = Math.min(Math.floor(self.progress * images.length), images.length - 1);
         setCurrentIndex(index);
 
@@ -110,8 +120,23 @@ const useScrollGallery = (
           y: translateY,
           // duration: 0.2,
           ease: "power2.out"
+=======
+        if (!imageContainerRef.current) return;
+
+        const index = Math.min(
+          Math.floor(self.progress * images.length),
+          images.length - 1
+        );
+        setCurrentIndex(index);
+
+        // Snap container translation
+        gsap.to(imageContainerRef.current, {
+          y: `-${index * window.innerHeight}px`,
+          duration: 0.3,
+          ease: "power2.out",
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
         });
-      }
+      },
     });
 
     scrollTriggerRef.current = st;
@@ -156,12 +181,12 @@ const useScrollGallery = (
 // Helper function to properly format image sources
 const getImageSrc = (src: string) => {
   // If it's already a full URL, return as is
-  if (src.startsWith('http://') || src.startsWith('https://')) {
+  if (src.startsWith("http://") || src.startsWith("https://")) {
     return src;
   }
 
   // If it starts with a slash already, return as is
-  if (src.startsWith('/')) {
+  if (src.startsWith("/")) {
     return src;
   }
 
@@ -169,24 +194,28 @@ const getImageSrc = (src: string) => {
   return `/${src}`;
 };
 
-export default function ProductShow({ product, category, relatedProducts }: Props) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [showContactModal, setShowContactModal] = useState(false)
-  const [navHeight, setNavHeight] = useState(0)
-  const [isLargeScreen, setIsLargeScreen] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
+export default function ProductShow({
+  product,
+  category,
+  relatedProducts,
+}: Props) {
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [navHeight, setNavHeight] = useState(0);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const prevRef = useRef<HTMLButtonElement>(null)
-  const nextRef = useRef<HTMLButtonElement>(null)
-  const mobileImageRef = useRef<HTMLDivElement>(null)
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const mobileImageRef = useRef<HTMLDivElement>(null);
   const mobileImagesRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  const prevRefMore = useRef<HTMLButtonElement>(null)
-  const nextRefMore = useRef<HTMLButtonElement>(null)
+  const prevRefMore = useRef<HTMLButtonElement>(null);
+  const nextRefMore = useRef<HTMLButtonElement>(null);
 
   // 🧭 Refs for second swiper
-  const prevRefExplore = useRef<HTMLButtonElement>(null)
-  const nextRefExplore = useRef<HTMLButtonElement>(null)
+  const prevRefExplore = useRef<HTMLButtonElement>(null);
+  const nextRefExplore = useRef<HTMLButtonElement>(null);
 
   // Refs for scroll gallery
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -195,17 +224,17 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    date: '',
-    time: '',
-    appointmentType: 'in-person',
-    message: '',
+    name: "",
+    email: "",
+    phone: "",
+    date: "",
+    time: "",
+    appointmentType: "in-person",
+    message: "",
   });
 
-
-  const primaryImage = product.images.find(img => img.is_primary) || product.images[0]
+  const primaryImage =
+    product.images.find((img) => img.is_primary) || product.images[0];
 
   // Check screen size
   useEffect(() => {
@@ -214,9 +243,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   // Use scroll gallery hook for large screens
@@ -236,7 +265,10 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
   }, [currentIndex, isLargeScreen]);
 
   // Mobile carousel navigation with slide animation
-  const animateToImage = (newIndex: number, direction: 'next' | 'prev' | 'direct') => {
+  const animateToImage = (
+    newIndex: number,
+    direction: "next" | "prev" | "direct"
+  ) => {
     if (isAnimating || newIndex === selectedImageIndex) return;
     setIsAnimating(true);
 
@@ -248,10 +280,11 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
     }
 
     // Make next image visible immediately
-    gsap.set(nextImage, { display: 'block' });
+    gsap.set(nextImage, { display: "block" });
 
-    if (direction === 'next') gsap.set(nextImage, { x: '100%', opacity: 1 });
-    else if (direction === 'prev') gsap.set(nextImage, { x: '-100%', opacity: 1 });
+    if (direction === "next") gsap.set(nextImage, { x: "100%", opacity: 1 });
+    else if (direction === "prev")
+      gsap.set(nextImage, { x: "-100%", opacity: 1 });
     else gsap.set(nextImage, { x: 0, opacity: 0 });
 
     // Animate both images simultaneously
@@ -263,36 +296,52 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
         // Hide all other images except the current one
         mobileImagesRef.current.forEach((img, idx) => {
           if (!img) return;
-          if (idx !== newIndex) gsap.set(img, { x: 0, opacity: 0, display: 'none' });
+          if (idx !== newIndex)
+            gsap.set(img, { x: 0, opacity: 0, display: "none" });
         });
       },
     });
 
-    if (direction === 'next') {
-      tl.to(currentImage, { x: '-100%', duration: 0.5, ease: 'power2.inOut' }, 0)
-        .to(nextImage, { x: '0%', duration: 0.5, ease: 'power2.inOut' }, 0);
-    } else if (direction === 'prev') {
-      tl.to(currentImage, { x: '100%', duration: 0.5, ease: 'power2.inOut' }, 0)
-        .to(nextImage, { x: '0%', duration: 0.5, ease: 'power2.inOut' }, 0);
+    if (direction === "next") {
+      tl.to(
+        currentImage,
+        { x: "-100%", duration: 0.5, ease: "power2.inOut" },
+        0
+      ).to(nextImage, { x: "0%", duration: 0.5, ease: "power2.inOut" }, 0);
+    } else if (direction === "prev") {
+      tl.to(
+        currentImage,
+        { x: "100%", duration: 0.5, ease: "power2.inOut" },
+        0
+      ).to(nextImage, { x: "0%", duration: 0.5, ease: "power2.inOut" }, 0);
     } else {
-      tl.to(currentImage, { opacity: 0, duration: 0.3, ease: 'power2.inOut' }, 0)
-        .to(nextImage, { opacity: 1, duration: 0.3, ease: 'power2.inOut' }, 0);
+      tl.to(
+        currentImage,
+        { opacity: 0, duration: 0.3, ease: "power2.inOut" },
+        0
+      ).to(nextImage, { opacity: 1, duration: 0.3, ease: "power2.inOut" }, 0);
     }
   };
 
-
   const handlePrevImage = () => {
-    const newIndex = selectedImageIndex === 0 ? product.images.length - 1 : selectedImageIndex - 1;
-    animateToImage(newIndex, 'prev');
+    const newIndex =
+      selectedImageIndex === 0
+        ? product.images.length - 1
+        : selectedImageIndex - 1;
+    animateToImage(newIndex, "prev");
   };
 
   const handleNextImage = () => {
-    const newIndex = selectedImageIndex === product.images.length - 1 ? 0 : selectedImageIndex + 1;
-    animateToImage(newIndex, 'next');
+    const newIndex =
+      selectedImageIndex === product.images.length - 1
+        ? 0
+        : selectedImageIndex + 1;
+    animateToImage(newIndex, "next");
   };
 
   // Handle bullet click for both mobile and desktop
   const handleBulletClick = (index: number) => {
+<<<<<<< HEAD
     if (isLargeScreen) {
       // Use the new changeToImage function for desktop
       changeToImage(index);
@@ -300,6 +349,18 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
       // Keep the existing logic for mobile
       setSelectedImageIndex(index);
     }
+=======
+    if (!imageContainerRef.current) return;
+    const container = imageContainerRef.current;
+
+    gsap.to(container, {
+      y: `-${index * window.innerHeight}px`,
+      duration: 0.5,
+      ease: "power2.inOut",
+    });
+
+    setSelectedImageIndex(index);
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -307,9 +368,6 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
     // Handle form submission
     setShowContactModal(false);
   };
-
-
-
 
   // Touch handlers for mobile swipe
   const touchStartX = useRef(0);
@@ -332,7 +390,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
     }
   };
 
-  const items = Array(3).fill(null)
+  const items = Array(3).fill(null);
 
   const explore = [
     {
@@ -347,7 +405,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
       name: "Kothari's Boutique Showroom Altamount Road",
       src: "/media/model-square/2.jpg",
     },
-  ]
+  ];
 
   const more_section = [
     {
@@ -362,7 +420,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
       name: "Kothari's Boutique Showroom Altamount Road",
       src: "/media/product/more-products/5.jpg",
     },
-  ]
+  ];
 
   return (
     <>
@@ -389,11 +447,17 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
           <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-4">
 >>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
-              <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">
+              <Link
+                href="/"
+                className="text-gray-900 hover:text-red-400 transition-colors"
+              >
                 Home
               </Link>
               <span className="text-lg">›</span>
-              <Link href="/products" className="text-gray-900 hover:text-red-400 transition-colors">
+              <Link
+                href="/products"
+                className="text-gray-900 hover:text-red-400 transition-colors"
+              >
                 Products
               </Link>
               <span className="text-lg">›</span>
@@ -422,6 +486,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                 >
+<<<<<<< HEAD
                   {product.images.map((image, index) => {
 
                     return (
@@ -438,6 +503,23 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                       </div>
                     )
                   })}
+=======
+                  {product.images.map((image, index) => (
+                    <div
+                      key={image.id}
+                      ref={(el) => (mobileImagesRef.current[index] = el)}
+                      className={`absolute inset-0 ${
+                        index === selectedImageIndex ? "" : "hidden"
+                      }`}
+                    >
+                      <img
+                        src={getImageSrc(image.src)} // Use the function here
+                        alt={`${product.title} - Image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
 
                   {/* Navigation Arrows */}
                   {product.images.length > 1 && (
@@ -466,10 +548,11 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         <button
                           key={index}
                           onClick={() => handleBulletClick(index)}
-                          className={`w-2 h-2 rounded-full transition-all ${selectedImageIndex === index
-                            ? 'bg-white w-6'
-                            : 'bg-white/50'
-                            }`}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            selectedImageIndex === index
+                              ? "bg-white w-6"
+                              : "bg-white/50"
+                          }`}
                           aria-label={`Go to image ${index + 1}`}
                         />
                       ))}
@@ -510,7 +593,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                               className="w-full h-full object-cover"
                             />
                           </div>
-                        )
+                        );
                       })}
                     </div>
                   </div>
@@ -522,10 +605,11 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         <button
                           key={index}
                           onClick={() => handleBulletClick(index)}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${selectedImageIndex === index
-                            ? 'bg-gray-800 h-8'
-                            : 'bg-gray-300'
-                            }`}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            selectedImageIndex === index
+                              ? "bg-gray-800 h-8"
+                              : "bg-gray-300"
+                          }`}
                           aria-label={`Go to image ${index + 1}`}
                         />
                       ))}
@@ -566,6 +650,7 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
               </div>
 
               {/* Price */}
+<<<<<<< HEAD
               {
                 product?.price && (
                   <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
@@ -577,9 +662,30 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                     </button>
+=======
+              {product?.price && (
+                <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
+                  <div className="text-sm font-semibold text-gray-900">
+                    {product?.currency} - {product?.price}
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                   </div>
-                )
-              }
+                  <button className="text-gray-400 hover:text-red-500 transition-colors">
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              )}
 
               {/* Contact Button */}
               <div className="space-y-2.5">
@@ -630,9 +736,13 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                       {detail.title}
                     </h3>
                     {detail.subtitle && (
+<<<<<<< HEAD
                       <p className="text-gray-900 font-lato text-xs">
                         {detail.subtitle}
                       </p>
+=======
+                      <p className="text-gray-900 text-xs">{detail.subtitle}</p>
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                     )}
                   </div>
                 ))}
@@ -640,10 +750,28 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
 
               {/* Product Information */}
               <div className="mt-12 bg-gray-50 rounded-lg pl-8">
+<<<<<<< HEAD
                 <ul className="space-y-1.5 text-xs text-black font-lato">
                   <li className="list-disc"> All gemstones are sourced and selected by a member of the family.</li>
                   <li className="list-disc"> Diamonds used are typically F-H color, VVS - VS quality unless otherwise specified.</li>
                   <li className="list-disc"> Color Stones' origin and quality as stated</li>
+=======
+                <ul className="space-y-1.5 text-xs text-black">
+                  <li className="list-disc">
+                    {" "}
+                    All gemstones are sourced and selected by a member of the
+                    family.
+                  </li>
+                  <li className="list-disc">
+                    {" "}
+                    Diamonds used are typically F-H color, VVS - VS quality
+                    unless otherwise specified.
+                  </li>
+                  <li className="list-disc">
+                    {" "}
+                    Color Stones' origin and quality as stated
+                  </li>
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                 </ul>
               </div>
             </div>
@@ -651,9 +779,16 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
 
           <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
             <div className="text-center w-full lg:w-1/4 mb-8 px-4 sm:px-6 lg:px-0">
+<<<<<<< HEAD
               <h2 className="text-[22px] font-bold text-black mb-4">More For You</h2>
+=======
+              <h2 className="text-2xl font-bold text-black mb-4">
+                More For You
+              </h2>
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
               <p className="text-black text-sm max-w-2xl mx-auto leading-relaxed">
-                Drawing inspiration from the dance of precious stones, here are more pieces we think you'd enjoy
+                Drawing inspiration from the dance of precious stones, here are
+                more pieces we think you'd enjoy
               </p>
             </div>
 
@@ -670,11 +805,11 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                 }}
                 onInit={(swiper) => {
                   // @ts-ignore
-                  swiper.params.navigation.prevEl = prevRefMore.current
+                  swiper.params.navigation.prevEl = prevRefMore.current;
                   // @ts-ignore
-                  swiper.params.navigation.nextEl = nextRefMore.current
-                  swiper.navigation.init()
-                  swiper.navigation.update()
+                  swiper.params.navigation.nextEl = nextRefMore.current;
+                  swiper.navigation.init();
+                  swiper.navigation.update();
                 }}
                 className="pb-6"
               >
@@ -684,7 +819,13 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                       <div className="w-full aspect-square border border-gray-300">
                         <img src={item.src} alt={"explore img"} />
                       </div>
+<<<<<<< HEAD
                       <div className="text-center py-3 text-sm font-medium text-gray-600 leading-relaxed">{item.name}</div>
+=======
+                      <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">
+                        {item.name}
+                      </div>
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                     </div>
                   </SwiperSlide>
                 ))}
@@ -711,7 +852,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                   <div className="w-full aspect-square border border-gray-300">
                     <img src={item.src} alt={"explore img"} />
                   </div>
-                  <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">{item.name}</div>
+                  <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">
+                    {item.name}
+                  </div>
                 </div>
               ))}
             </div>
@@ -719,9 +862,20 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
 
           <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
             <div className="text-center w-full lg:w-1/4 mb-8 px-4 sm:px-6 lg:px-0">
+<<<<<<< HEAD
               <h2 className="text-[22px] font-jost font-semibold text-black mb-4">Explore Kothari's</h2>
               <p className="text-black font-lato text-sm max-w-2xl mx-auto leading-relaxed">
                 Discover our exquisite collection of fine jewellery, crafted with the utmost care and precision. From timeless classics to contemporary designs, each piece reflects the artistry and heritage of Kothari Fine Jewels.
+=======
+              <h2 className="text-2xl font-bold text-black mb-4">
+                Explore Kothari's
+              </h2>
+              <p className="text-black text-sm max-w-2xl mx-auto leading-relaxed">
+                Discover our exquisite collection of fine jewellery, crafted
+                with the utmost care and precision. From timeless classics to
+                contemporary designs, each piece reflects the artistry and
+                heritage of Kothari Fine Jewels.
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
               </p>
             </div>
 
@@ -738,11 +892,11 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                 }}
                 onInit={(swiper) => {
                   // @ts-ignore
-                  swiper.params.navigation.prevEl = prevRefExplore.current
+                  swiper.params.navigation.prevEl = prevRefExplore.current;
                   // @ts-ignore
-                  swiper.params.navigation.nextEl = nextRefExplore.current
-                  swiper.navigation.init()
-                  swiper.navigation.update()
+                  swiper.params.navigation.nextEl = nextRefExplore.current;
+                  swiper.navigation.init();
+                  swiper.navigation.update();
                 }}
                 className="pb-6"
               >
@@ -752,7 +906,13 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                       <div className="w-full aspect-square ">
                         <img src={item.src} alt={"explore img"} />
                       </div>
+<<<<<<< HEAD
                       <div className="text-center py-3 text-sm font-medium text-gray-600 leading-relaxed font-jost">{item.name}</div>
+=======
+                      <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">
+                        {item.name}
+                      </div>
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                     </div>
                   </SwiperSlide>
                 ))}
@@ -778,7 +938,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                   <div className="w-full aspect-square ">
                     <img src={item.src} alt={"explore img"} />
                   </div>
-                  <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">{item.name}</div>
+                  <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">
+                    {item.name}
+                  </div>
                 </div>
               ))}
             </div>
@@ -818,7 +980,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         type="text"
                         required
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors"
                         placeholder="Enter your name"
                       />
@@ -831,7 +995,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         type="email"
                         required
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors"
                         placeholder="Enter your email"
                       />
@@ -848,7 +1014,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         type="tel"
                         required
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors"
                         placeholder="Enter your phone number"
                       />
@@ -876,7 +1044,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         type="date"
                         required
                         value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, date: e.target.value })
+                        }
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors"
                       />
                     </div>
@@ -888,7 +1058,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                         type="time"
                         required
                         value={formData.time}
-                        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, time: e.target.value })
+                        }
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors"
                       />
                     </div>
@@ -901,7 +1073,12 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                     </label>
                     <select
                       value={formData.appointmentType}
-                      onChange={(e) => setFormData({ ...formData, appointmentType: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          appointmentType: e.target.value,
+                        })
+                      }
                       className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors bg-white"
                     >
                       <option value="in-person">In person</option>
@@ -917,7 +1094,9 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
                     <textarea
                       rows={4}
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
                       className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-none focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors resize-none"
                       placeholder="Write your message here..."
                     />
@@ -944,11 +1123,10 @@ export default function ProductShow({ product, category, relatedProducts }: Prop
               </div>
             </div>
           </div>
-
         )}
       </div>
 
       <Footer />
     </>
-  )
+  );
 }

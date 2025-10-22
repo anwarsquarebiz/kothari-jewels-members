@@ -1,130 +1,224 @@
-import { Head, Link } from '@inertiajs/react'
-import Navbar from '@/components/aftab-components/Navbar'
-import Footer from '@/components/aftab-components/Footer'
-import { Button } from '@/components/ui/button'
-import { Users, Heart, Target, Gem } from 'lucide-react'
+import { Head } from "@inertiajs/react";
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { LandingNav } from "@/components/aftab-components/LandingNav";
 
 interface Props {
-    title: string
-    description: string
+  title: string;
+  description: string;
 }
 
 export default function About({ title, description }: Props) {
-    return (
-        <>
-            <Head title="About Us" />
-            <Navbar />
-            
-            <div className="min-h-screen bg-white">
-                {/* Hero Section */}
-                <section className="bg-gradient-to-b from-gray-50 to-white py-16 md:py-24">
-                    <div className="container mx-auto px-4">
-                        <div className="max-w-3xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                                {title}
-                            </h1>
-                            <p className="text-xl text-gray-600">
-                                {description}
-                            </p>
-                        </div>
-                    </div>
-                </section>
+  const imageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const decorativeRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLHeadingElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const paragraphsRef = useRef<HTMLDivElement>(null);
 
-                {/* Story Section */}
-                <section className="container mx-auto px-4 py-16">
-                    <div className="max-w-4xl mx-auto">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-                        <div className="prose prose-lg max-w-none text-gray-600">
-                            <p className="mb-4">
-                                For generations, Kothari Jewels has been synonymous with excellence, tradition, 
-                                and the finest craftsmanship in jewelry making. Our journey began decades ago with 
-                                a simple vision: to create timeless pieces that capture the essence of beauty and elegance.
-                            </p>
-                            <p className="mb-4">
-                                Today, we continue this legacy by combining traditional artisanal techniques with 
-                                contemporary designs, ensuring that each piece tells its own unique story. Our master 
-                                craftsmen pour their heart and soul into every creation, making each piece a work of art.
-                            </p>
-                            <p>
-                                We take pride in our commitment to quality, authenticity, and customer satisfaction. 
-                                Every piece that leaves our workshop carries with it the Kothari promise of excellence.
-                            </p>
-                        </div>
-                    </div>
-                </section>
+  // Scroll from anywhere
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
 
-                {/* Values Section */}
-                <section className="bg-gray-50 py-16">
-                    <div className="container mx-auto px-4">
-                        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Values</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-                            <div className="text-center">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
-                                    <Gem className="w-8 h-8" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Quality</h3>
-                                <p className="text-gray-600">
-                                    We never compromise on the quality of materials and craftsmanship
-                                </p>
-                            </div>
-                            
-                            <div className="text-center">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
-                                    <Heart className="w-8 h-8" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Passion</h3>
-                                <p className="text-gray-600">
-                                    Every piece is created with love and dedication to our art
-                                </p>
-                            </div>
-                            
-                            <div className="text-center">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
-                                    <Target className="w-8 h-8" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Excellence</h3>
-                                <p className="text-gray-600">
-                                    We strive for perfection in every detail of our work
-                                </p>
-                            </div>
-                            
-                            <div className="text-center">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
-                                    <Users className="w-8 h-8" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Trust</h3>
-                                <p className="text-gray-600">
-                                    Building lasting relationships with our valued customers
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+    const handleWheel = (e: WheelEvent) => {
+      content.scrollTop += e.deltaY;
+    };
 
-                {/* CTA Section */}
-                <section className="container mx-auto px-4 py-16">
-                    <div className="max-w-3xl mx-auto text-center">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                            Experience the Kothari Difference
-                        </h2>
-                        <p className="text-lg text-gray-600 mb-8">
-                            Explore our collection and discover the perfect piece that speaks to you
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/products">
-                                <Button size="lg">Browse Collection</Button>
-                            </Link>
-                            <Link href="/contact">
-                                <Button size="lg" variant="outline">Contact Us</Button>
-                            </Link>
-                        </div>
-                    </div>
-                </section>
+    const handleTouch = (() => {
+      let startY = 0;
+      return {
+        start: (e: TouchEvent) => (startY = e.touches[0].clientY),
+        move: (e: TouchEvent) => {
+          const delta = startY - e.touches[0].clientY;
+          content.scrollTop += delta;
+          startY = e.touches[0].clientY;
+        },
+      };
+    })();
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouch.start, { passive: true });
+    window.addEventListener("touchmove", handleTouch.move, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouch.start);
+      window.removeEventListener("touchmove", handleTouch.move);
+    };
+  }, []);
+
+  useGSAP(() => {
+    const tl = gsap.timeline();
+
+    tl.fromTo(
+      imageRef.current,
+      { opacity: 0, x: -50 },
+      { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }
+    );
+
+    tl.fromTo(
+      lineRef.current,
+      { scaleY: 0 },
+      { scaleY: 1, duration: 1, ease: "power2.inOut" },
+      "-=0.3"
+    );
+
+    tl.fromTo(
+      contentRef.current,
+      { opacity: 0, x: 50 },
+      { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" },
+      "-=0.6"
+    );
+
+    tl.fromTo(
+      subtitleRef.current,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+      "-=0.4"
+    ).fromTo(
+      titleRef.current,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+      "-=0.4"
+    );
+
+    if (paragraphsRef.current) {
+      const paragraphs = paragraphsRef.current.querySelectorAll("p");
+      tl.fromTo(
+        paragraphs,
+        { opacity: 0, y: 15 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power2.out",
+        },
+        "-=0.3"
+      );
+    }
+
+    tl.fromTo(
+      decorativeRef.current,
+      { scaleX: 0 },
+      { scaleX: 1, duration: 1, ease: "power2.inOut" },
+      "-=0.5"
+    );
+  }, []);
+
+  return (
+    <div className="w-full overflow-hidden bg-neutral-50">
+      <Head title="About Us" />
+      <LandingNav currentPage={"/about"} isLightPage={true} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2">
+        {/* Image Section */}
+        <div
+          ref={imageRef}
+          className="
+            relative h-[50vh] lg:h-screen
+            opacity-0
+            lg:sticky lg:top-0
+          "
+        >
+          <img
+            src="/media/landing-page/about-ill.png"
+            alt="Kothari Jewelry Heritage"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Content Section */}
+        <div
+          ref={contentRef}
+          className="relative flex flex-col justify-start px-8 md:px-16 lg:px-24 py-24 overflow-y-auto opacity-0"
+          style={{ maxHeight: "100vh" }} // Ensure content scrollable independently
+        >
+          <div className="max-w-xl mx-auto lg:mx-0">
+            <div>
+              <div className="mb-10">
+                <h2
+                  ref={subtitleRef}
+                  className="text-neutral-500 tracking-[0.3em] uppercase text-sm mb-6"
+                >
+                  Our Heritage
+                </h2>
+                <h1
+                  ref={titleRef}
+                  className="text-neutral-900 font-medium primary-font mb-8 text-7xl md:text-8xl tracking-tight"
+                >
+                  Kothari
+                </h1>
+              </div>
+
+              <div
+                ref={paragraphsRef}
+                className="space-y-6 text-neutral-700 leading-relaxed"
+              >
+                <p>
+                  Founded in the 1940s, Kothari has expanded its horizons
+                  continually for four generations - and is currently
+                  flourishing under brothers Avinash, Amrish, and the latest
+                  addition to the legacy, Karan.
+                </p>
+
+                <p>
+                  Kothari sources some of the finest rare gemstones from across
+                  the world. Persistent attention to minute detail in executing
+                  Original designs has enabled the firm to enjoy the patronage
+                  of clients both in India and internationally, encompassing the
+                  corporate elite, the discerning collector, and even the
+                  leading auction houses globally.
+                </p>
+
+                <p>
+                  While endeavouring to keep pace with the dynamic styles of the
+                  twenty-first century, Kothari retains the essence of elegance
+                  and opulence embedded in Indian culture. Drawing inspiration
+                  from the archives of both Indian and European royalty, they
+                  have a selected range of unique pieces. These vary from Mughal
+                  to Art Deco styles, and from traditional Indian to
+                  contemporary designs – all set in an array of precious
+                  gemstones.
+                </p>
+
+                <p>
+                  Though India's love affair with jewellery is an unbroken
+                  tradition spanning almost five thousand years, in the last few
+                  decades well-travelled families have begun to yearn for a
+                  contemporary touch while wishing to retain their roots and
+                  influences. Keeping this in mind, and synonymous with an
+                  intimate understanding of jewellery and careful craftsmanship,
+                  Kothari ensures that every piece is thoughtfully and
+                  artistically designed.
+                </p>
+
+                <p>
+                  The firm understands that the acquisition of jewellery is a
+                  special and significant decision, not only for weddings. Every
+                  Kothari creation is a truly timeless and personal piece of
+                  art, that is ultimately also valued internationally as a sound
+                  investment.
+                </p>
+              </div>
+
+              <div
+                ref={decorativeRef}
+                className="mt-12 h-px w-32 bg-gradient-to-r from-neutral-400 to-transparent origin-left"
+                style={{ scaleX: 0 }}
+              />
             </div>
-
-            <Footer />
-        </>
-    )
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
