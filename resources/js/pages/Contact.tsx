@@ -220,9 +220,6 @@ export default function Contact({ title, description }: Props) {
               />
             </div>
 
-<<<<<<< HEAD
-
-=======
             <div className="form-field space-y-1 opacity-0">
               <label
                 htmlFor="product"
@@ -355,4 +352,3 @@ export default function Contact({ title, description }: Props) {
     </div>
   );
 }
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e

@@ -152,9 +152,7 @@ export default function Home({ title, description }: Props) {
         "-=0.3"
       );
 
-<<<<<<< HEAD
 
-=======
     // Clean up the temporary element after animation
     tl.call(() => {
       if (
@@ -266,4 +264,3 @@ export default function Home({ title, description }: Props) {
     </div>
   );
 }
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e

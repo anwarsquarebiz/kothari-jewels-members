@@ -534,13 +534,8 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
       <Navbar setNavHeight={setNavHeight} />
       <Head title="Products" />
 
-<<<<<<< HEAD
-      <div className="min-h-screen bg-white">
-        <div style={{ paddingTop: `${navHeight}px` }} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-=======
       <div className="min-h-screen bg-white font-jost">
         <div style={{ paddingTop: `${navHeight}px` }} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-8">
->>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm font-jost text-gray-600">
               <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">
@@ -667,21 +662,13 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                       <div className="space-y-3 pt-4">
                         <button
                           onClick={handleSearch}
-<<<<<<< HEAD
-                          className="w-full bg-black text-white py-2 px-4 hover:bg-black hover:text-white transition-colors cursor-pointer"
-=======
                           className="w-full bg-black font-normal text-sm cursor-pointer font-jost text-white py-2 px-4 rounded-sm hover:bg-gray-800 transition-colors"
->>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
                         >
                           Apply Filters
                         </button>
                         <button
                           onClick={clearFilters}
-<<<<<<< HEAD
-                          className="w-full border border-gray-300 text-gray-700 py-2 px-4 hover:bg-black hover:text-white transition-colors cursor-pointer"
-=======
                           className="w-full border font-normal border-gray-300 text-sm cursor-pointer font-jost text-gray-700 py-2 px-4 rounded-sm hover:bg-gray-50 transition-colors"
->>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
                         >
                           Clear All
                         </button>

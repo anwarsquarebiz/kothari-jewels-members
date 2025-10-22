@@ -90,17 +90,11 @@ const useScrollGallery = (
     const wrapper = wrapperRef.current;
     const imageContainer = imageContainerRef.current;
 
-<<<<<<< HEAD
-    // Set initial state
+    // Set initial state for the container
     gsap.set(imageContainer, { y: 0 });
-=======
-    // Set initial state - first image visible, others below
-    gsap.set(imageElements[0], { y: 0, opacity: 1 });
-    gsap.set(imageElements.slice(1), { y: "100%", opacity: 1 });
 
     // Calculate total scroll distance needed - reduced for better control
     const scrollDistance = (images.length - 1) * window.innerHeight * 0.5;
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
 
     // Create ScrollTrigger that pins the entire wrapper
     const st = ScrollTrigger.create({
@@ -110,17 +104,6 @@ const useScrollGallery = (
       pin: true,
       scrub: 0.5,
       onUpdate: (self) => {
-<<<<<<< HEAD
-        const index = Math.min(Math.floor(self.progress * images.length), images.length - 1);
-        setCurrentIndex(index);
-
-        // Translate the entire container based on the current index
-        const translateY = -index * window.innerHeight;
-        gsap.to(imageContainer, {
-          y: translateY,
-          // duration: 0.2,
-          ease: "power2.out"
-=======
         if (!imageContainerRef.current) return;
 
         const index = Math.min(
@@ -134,7 +117,6 @@ const useScrollGallery = (
           y: `-${index * window.innerHeight}px`,
           duration: 0.3,
           ease: "power2.out",
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
         });
       },
     });
@@ -341,15 +323,6 @@ export default function ProductShow({
 
   // Handle bullet click for both mobile and desktop
   const handleBulletClick = (index: number) => {
-<<<<<<< HEAD
-    if (isLargeScreen) {
-      // Use the new changeToImage function for desktop
-      changeToImage(index);
-    } else {
-      // Keep the existing logic for mobile
-      setSelectedImageIndex(index);
-    }
-=======
     if (!imageContainerRef.current) return;
     const container = imageContainerRef.current;
 
@@ -360,7 +333,6 @@ export default function ProductShow({
     });
 
     setSelectedImageIndex(index);
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -435,17 +407,10 @@ export default function ProductShow({
       <div className="min-h-screen bg-white"> 
         {/* Breadcrumb - Not fixed, with proper spacing */}
         <div
-<<<<<<< HEAD
-          className="relative z-10 bg-white border-b border-gray-100"
-          style={{ paddingTop: `${navHeight}px` }}
-        >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-=======
           className="relative z-10 bg-white border-b font-jost border-gray-100"
 
         >
           <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-4">
->>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
               <Link
                 href="/"
@@ -466,18 +431,11 @@ export default function ProductShow({
           </div>
         </div>
 
-<<<<<<< HEAD
-        <div className="w-full mx-auto lg:container py-8 lg:px-8">
-=======
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 pb-16">
->>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
-          {/* Wrapper for scroll-triggered pinning */}
-          <div
-            ref={wrapperRef}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8"
-          >
-            {/* Product Images - Chanel Style */}
-            <div className="space-y-4 relative">
+          {/* Grid container */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8">
+            {/* Product Images - Chanel Style (Wrapper for scroll-triggered pinning) */}
+            <div ref={wrapperRef} className="space-y-4 relative">
               {/* Mobile/Tablet: Swipeable Carousel */}
               <div className="lg:hidden">
                 <div
@@ -486,24 +444,6 @@ export default function ProductShow({
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                 >
-<<<<<<< HEAD
-                  {product.images.map((image, index) => {
-
-                    return (
-                      <div
-                        key={image.id}
-                        ref={(el) => (mobileImagesRef.current[index] = el)}
-                        className={`absolute inset-0 ${index === selectedImageIndex ? '' : 'hidden'}`}
-                      >
-                        <img
-                          src={getImageSrc(image.src)} // Use the function here
-                          alt={`${product.title} - Image ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )
-                  })}
-=======
                   {product.images.map((image, index) => (
                     <div
                       key={image.id}
@@ -519,7 +459,6 @@ export default function ProductShow({
                       />
                     </div>
                   ))}
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
 
                   {/* Navigation Arrows */}
                   {product.images.length > 1 && (
@@ -650,24 +589,10 @@ export default function ProductShow({
               </div>
 
               {/* Price */}
-<<<<<<< HEAD
-              {
-                product?.price && (
-                  <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
-                    <div className="text-sm font-jost font-semibold text-gray-900">
-                      {product?.currency} - {product?.price}
-                    </div>
-                    <button className="text-gray-400 hover:text-red-500 transition-colors">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                    </button>
-=======
               {product?.price && (
                 <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
                   <div className="text-sm font-semibold text-gray-900">
                     {product?.currency} - {product?.price}
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                   </div>
                   <button className="text-gray-400 hover:text-red-500 transition-colors">
                     <svg
@@ -691,11 +616,7 @@ export default function ProductShow({
               <div className="space-y-2.5">
                 <button
                   onClick={() => setShowContactModal(true)}
-<<<<<<< HEAD
-                  className="w-full border border-black text-black font-semibold py-4 px-6 hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
-=======
                   className="w-full border border-black text-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
->>>>>>> e512170f0b24a2dcc2480ac6ea73eb02bf8455c5
                 >
                   ENQUIRE NOW
                 </button>
@@ -736,13 +657,7 @@ export default function ProductShow({
                       {detail.title}
                     </h3>
                     {detail.subtitle && (
-<<<<<<< HEAD
-                      <p className="text-gray-900 font-lato text-xs">
-                        {detail.subtitle}
-                      </p>
-=======
                       <p className="text-gray-900 text-xs">{detail.subtitle}</p>
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                     )}
                   </div>
                 ))}
@@ -750,12 +665,6 @@ export default function ProductShow({
 
               {/* Product Information */}
               <div className="mt-12 bg-gray-50 rounded-lg pl-8">
-<<<<<<< HEAD
-                <ul className="space-y-1.5 text-xs text-black font-lato">
-                  <li className="list-disc"> All gemstones are sourced and selected by a member of the family.</li>
-                  <li className="list-disc"> Diamonds used are typically F-H color, VVS - VS quality unless otherwise specified.</li>
-                  <li className="list-disc"> Color Stones' origin and quality as stated</li>
-=======
                 <ul className="space-y-1.5 text-xs text-black">
                   <li className="list-disc">
                     {" "}
@@ -771,7 +680,6 @@ export default function ProductShow({
                     {" "}
                     Color Stones' origin and quality as stated
                   </li>
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                 </ul>
               </div>
             </div>
@@ -779,13 +687,9 @@ export default function ProductShow({
 
           <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
             <div className="text-center w-full lg:w-1/4 mb-8 px-4 sm:px-6 lg:px-0">
-<<<<<<< HEAD
-              <h2 className="text-[22px] font-bold text-black mb-4">More For You</h2>
-=======
               <h2 className="text-2xl font-bold text-black mb-4">
                 More For You
               </h2>
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
               <p className="text-black text-sm max-w-2xl mx-auto leading-relaxed">
                 Drawing inspiration from the dance of precious stones, here are
                 more pieces we think you'd enjoy
@@ -819,13 +723,9 @@ export default function ProductShow({
                       <div className="w-full aspect-square border border-gray-300">
                         <img src={item.src} alt={"explore img"} />
                       </div>
-<<<<<<< HEAD
-                      <div className="text-center py-3 text-sm font-medium text-gray-600 leading-relaxed">{item.name}</div>
-=======
                       <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">
                         {item.name}
                       </div>
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                     </div>
                   </SwiperSlide>
                 ))}
@@ -862,11 +762,6 @@ export default function ProductShow({
 
           <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
             <div className="text-center w-full lg:w-1/4 mb-8 px-4 sm:px-6 lg:px-0">
-<<<<<<< HEAD
-              <h2 className="text-[22px] font-jost font-semibold text-black mb-4">Explore Kothari's</h2>
-              <p className="text-black font-lato text-sm max-w-2xl mx-auto leading-relaxed">
-                Discover our exquisite collection of fine jewellery, crafted with the utmost care and precision. From timeless classics to contemporary designs, each piece reflects the artistry and heritage of Kothari Fine Jewels.
-=======
               <h2 className="text-2xl font-bold text-black mb-4">
                 Explore Kothari's
               </h2>
@@ -875,7 +770,6 @@ export default function ProductShow({
                 with the utmost care and precision. From timeless classics to
                 contemporary designs, each piece reflects the artistry and
                 heritage of Kothari Fine Jewels.
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
               </p>
             </div>
 
@@ -906,13 +800,9 @@ export default function ProductShow({
                       <div className="w-full aspect-square ">
                         <img src={item.src} alt={"explore img"} />
                       </div>
-<<<<<<< HEAD
-                      <div className="text-center py-3 text-sm font-medium text-gray-600 leading-relaxed font-jost">{item.name}</div>
-=======
                       <div className="text-center py-3 text-xs font-medium text-gray-600 leading-relaxed">
                         {item.name}
                       </div>
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
                     </div>
                   </SwiperSlide>
                 ))}

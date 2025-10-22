@@ -217,8 +217,3 @@ export default function About({ title, description }: Props) {
     </div>
   );
 }
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 0db59c5efa48180fdc6bb9ec55f16ecee55f1f5e
