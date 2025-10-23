@@ -71,35 +71,35 @@ interface Props {
 }
 
 // Custom hook for scroll-triggered image gallery
+// First, update your useScrollGallery hook
+// Custom hook for scroll-triggered image gallery
+// Custom hook for scroll-triggered image gallery
 const useScrollGallery = (
   images: ProductImage[],
   navbarHeight: number,
   enabled: boolean,
   wrapperRef: React.RefObject<HTMLDivElement>,
-  imageRefs: React.MutableRefObject<(HTMLDivElement | null)[]>,
   imageContainerRef: React.RefObject<HTMLDivElement>
 ) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
-    if (!enabled || !wrapperRef.current || images.length <= 1) return;
+    if (!enabled || !wrapperRef.current || !imageContainerRef.current || images.length <= 1) return;
 
     const wrapper = wrapperRef.current;
-    const imageElements = imageRefs.current.filter(Boolean);
+    const imageContainer = imageContainerRef.current;
 
-    // Set initial state - first image visible, others below
-    gsap.set(imageElements[0], { y: 0, opacity: 1 });
-    gsap.set(imageElements.slice(1), { y: "100%", opacity: 1 });
+    // Set initial state for the container
+    gsap.set(imageContainer, { y: 0 });
 
     // Calculate total scroll distance needed - reduced for better control
     const scrollDistance = (images.length - 1) * window.innerHeight * 0.5;
 
     // Create ScrollTrigger that pins the entire wrapper
-    // Start pinning when breadcrumb goes just under navbar (navbarHeight + 45px for breadcrumb padding + 20px for breadcrumb height)
     const st = ScrollTrigger.create({
       trigger: wrapper,
-      start: `top ${navbarHeight + 65}px`, // 45px breadcrumb padding + 20px breadcrumb height
+      start: `top ${115}px`,
       end: `+=${(images.length - 1) * window.innerHeight}`,
       pin: true,
       scrub: 0.5,
@@ -129,21 +129,35 @@ const useScrollGallery = (
         scrollTriggerRef.current.kill();
       }
       // Reset animations on cleanup
-      gsap.set(imageElements, { clearProps: "all" });
+      gsap.set(imageContainer, { clearProps: "all" });
     };
-  }, [images, navbarHeight, enabled, wrapperRef, imageRefs]);
+  }, [images, navbarHeight, enabled, wrapperRef, imageContainerRef]);
 
   // Function to scroll to a specific image
   const scrollToImage = (index: number) => {
     if (!scrollTriggerRef.current || !enabled) return;
 
     // Calculate the scroll position for the target image
-    // Add a small offset to ensure we're not at the exact boundary
     const progress = Math.max(0.01, (index + 0.5) / images.length);
     scrollTriggerRef.current.scroll(progress);
   };
 
-  return { currentIndex, scrollToImage };
+  // Add this function to handle direct image changes
+  const changeToImage = (index: number) => {
+    if (!enabled || !imageContainerRef.current) return;
+
+    // Translate the entire container to the target image
+    const translateY = -index * window.innerHeight;
+    gsap.to(imageContainerRef.current, {
+      y: translateY,
+      duration: 0.5,
+      ease: "power2.out"
+    });
+
+    setCurrentIndex(index);
+  };
+
+  return { currentIndex, scrollToImage, changeToImage };
 };
 
 // Helper function to properly format image sources
@@ -217,12 +231,11 @@ export default function ProductShow({
   }, []);
 
   // Use scroll gallery hook for large screens
-  const { currentIndex, scrollToImage } = useScrollGallery(
+  const { currentIndex, scrollToImage, changeToImage } = useScrollGallery(
     product.images,
     navHeight,
     isLargeScreen,
     wrapperRef,
-    imageRefs,
     imageContainerRef
   );
 
@@ -386,13 +399,18 @@ export default function ProductShow({
       <Navbar setNavHeight={setNavHeight} />
       <Head title={product.title} />
 
-      <div className="min-h-screen bg-white">
+      <div style={{
+        minHeight: "114px",
+        height: navHeight,
+      }}></div>
+
+      <div className="min-h-screen bg-white"> 
         {/* Breadcrumb - Not fixed, with proper spacing */}
         <div
-          className="relative z-10 bg-white border-b border-gray-100"
-          style={{ paddingTop: `${navHeight}px` }}
+          className="relative z-10 bg-white border-b font-jost border-gray-100"
+
         >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
               <Link
                 href="/"
@@ -413,14 +431,11 @@ export default function ProductShow({
           </div>
         </div>
 
-        <div className="w-full mx-auto lg:container py-8 lg:px-8">
-          {/* Wrapper for scroll-triggered pinning */}
-          <div
-            ref={wrapperRef}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8"
-          >
-            {/* Product Images - Chanel Style */}
-            <div className="space-y-4 relative">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 pb-16">
+          {/* Grid container */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8">
+            {/* Product Images - Chanel Style (Wrapper for scroll-triggered pinning) */}
+            <div ref={wrapperRef} className="space-y-4 relative">
               {/* Mobile/Tablet: Swipeable Carousel */}
               <div className="lg:hidden">
                 <div
@@ -486,24 +501,33 @@ export default function ProductShow({
               </div>
 
               {/* Desktop: Scroll-triggered Gallery */}
+              {/* Desktop: Scroll-triggered Gallery */}
               <div className="hidden lg:block">
                 <div className="relative">
                   {/* Stacked Images Container */}
-                  <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                  <div style={{
+                    height: 'calc(100vh - 115px)',
+                  }} className="relative w-full bg-gray-100 overflow-hidden">
                     <div
                       ref={imageContainerRef}
                       className="relative w-full"
-                      style={{ height: `${product.images.length * 100}%` }}
+                      style={{
+                        height: `${product.images.length * 100}%`,
+                        transition: 'transform 0.5s ease-out'
+                      }}
                     >
                       {product.images.map((image, index) => {
                         return (
                           <div
                             key={index}
-                            ref={(el) => (imageRefs.current[index] = el)}
-                            className="w-full h-screen" // full viewport height for each
+                            className="absolute inset-0 w-full"
+                            style={{
+                              height: '100vh',
+                              top: `${index * 100}vh`
+                            }}
                           >
                             <img
-                              src={getImageSrc(image.src)} // Use the function here
+                              src={getImageSrc(image.src)}
                               alt={`${product.title} - ${index}`}
                               className="w-full h-full object-cover"
                             />
@@ -515,7 +539,7 @@ export default function ProductShow({
 
                   {/* Progress Indicator */}
                   {product.images.length > 1 && (
-                    <div className="flex flex-col justify-center space-y-2 absolute top-1/2 -translate-y-1/2 -left-8">
+                    <div className="flex flex-col justify-center space-y-2 absolute top-1/2 -translate-y-1/2 -left-5 xl:-left-8">
                       {product.images.map((_, index) => (
                         <button
                           key={index}
@@ -532,31 +556,34 @@ export default function ProductShow({
                   )}
                 </div>
               </div>
+
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6 px-4 sm:px-6 lg:px-0 flex flex-col justify-center">
+            <div style={{
+              // height: window.innerWidth > 1024 ? `${100 / (product.images?.length || 1)}%` : "fit-content",
+            }} className="space-y-6 h-full px-4 sm:px-6 lg:px-0 flex flex-col justify-center">
               <div>
                 <div className="w-full mb-4">
-                  <h1 className="text-2xl font-bold text-center lg:text-start text-gray-900 mb-2">
+                  <h1 className="text-[22px] font-jost uppercase font-semibold text-center lg:text-start text-gray-900 mb-2">
                     {product.title}
                   </h1>
                   <div className="w-full bg-black/80 h-1"></div>
                 </div>
 
                 {product.short_description && (
-                  <div className="text-gray-600 mb-4 text-sm text-center lg:text-start">
+                  <div className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start">
                     <p>{product.short_description}</p>
                   </div>
                 )}
 
                 {product.long_description && (
-                  <div className="text-gray-600 mb-4 text-sm text-center lg:text-start">
+                  <div className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start">
                     <p>{product.long_description}</p>
                   </div>
                 )}
 
-                <div className="text-sm text-gray-500 mb-4 text-sm text-center lg:text-start">
+                <div className="text-sm text-gray-500 font-lato mb-4 text-xs text-center lg:text-start">
                   SKU: {product.sku}
                 </div>
               </div>
@@ -589,12 +616,12 @@ export default function ProductShow({
               <div className="space-y-2.5">
                 <button
                   onClick={() => setShowContactModal(true)}
-                  className="w-full border border-black text-black font-semibold py-4 px-6 hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                  className="w-full border border-black text-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                 >
                   ENQUIRE NOW
                 </button>
 
-                <div className="text-xs text-gray-500 text-center lg:text-start">
+                <div className="text-xs text-gray-500 text-center font-lato lg:text-start">
                   *MRP (inclusive of all taxes)
                 </div>
               </div>
@@ -604,12 +631,12 @@ export default function ProductShow({
           {/* Product Details Section */}
           {product.active_details.length > 0 && (
             <div className="mt-16 px-4 sm:px-6 lg:px-0">
-              <h2 className="text-2xl font-bold text-center text-gray-900 uppercase mb-8">
+              <h2 className="text-[22px] font-jost font-semibold text-center text-gray-900 uppercase mb-8">
                 Details of the piece
               </h2>
 
               <div className="text-center mb-8">
-                <button className="text-black text-sm underline font-semibold">
+                <button className="text-black text-sm font-jost underline font-semibold">
                   OUR STONE GUIDE
                 </button>
               </div>
@@ -626,7 +653,7 @@ export default function ProductShow({
                         />
                       </div>
                     )}
-                    <h3 className="font-semibold text-black uppercase text-sm mb-2">
+                    <h3 className="font-semibold font-jost text-black uppercase text-sm mb-2">
                       {detail.title}
                     </h3>
                     {detail.subtitle && (

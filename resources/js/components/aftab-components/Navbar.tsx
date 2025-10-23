@@ -64,7 +64,7 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
     return () => {
       window.removeEventListener("resize", updateHeight);
     };
-  }, [setNavHeight]);
+  }, [setNavHeight, navRef.current]);
 
   return (
     <>

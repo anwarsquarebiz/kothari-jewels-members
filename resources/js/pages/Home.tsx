@@ -173,6 +173,7 @@ export default function Home({ title, description }: Props) {
         "-=0.3"
       );
 
+
     // Clean up the temporary element after animation
     tl.call(() => {
       if (

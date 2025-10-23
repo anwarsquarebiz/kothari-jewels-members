@@ -98,7 +98,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   return (
     <Link
       href={`/products/${product.categories[0]?.slug || 'uncategorized'}/${product.slug}`}
-      className={`group block bg-white flex flex-col transition-all duration-300 overflow-hidden relative ${isHovered ? 'border-1 border-gray-600' : 'border border-transparent'
+      className={`group block bg-white flex flex-col font-jost transition-all duration-300 overflow-hidden relative ${isHovered ? 'border-1 border-gray-600' : 'border border-transparent'
         }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -534,10 +534,10 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
       <Navbar setNavHeight={setNavHeight} />
       <Head title="Products" />
 
-      <div className="min-h-screen bg-white">
-        <div style={{ paddingTop: `${navHeight}px` }} className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-white font-jost">
+        <div style={{ paddingTop: `${navHeight}px` }} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
+            <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm font-jost text-gray-600">
               <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">
                 Home
               </Link>
@@ -577,8 +577,8 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
               <div className="sticky top-24">
                 {/* Filters Section */}
                 <div className=" p-2.5 border-b border-gray-300">
-                  <div onClick={() => setIsFilterSectionOpen(!isFilterSectionOpen)} className="flex justify-between  cursor-pointer items-center">
-                    <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                  <div onClick={() => setIsFilterSectionOpen(!isFilterSectionOpen)} className="flex justify-between mb-3 cursor-pointer items-center">
+                    <h2 className="text-base font-semibold text-gray-900 font-jost">Filters</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700"
                     >
@@ -628,7 +628,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                                   onChange={() => setSelectedCategory(category.slug)}
                                   className="h-4 w-4 text-black focus:ring-black border-gray-300"
                                 />
-                                <span className="ml-2 text-sm text-gray-700">{category.name}</span>
+                                <span className="ml-2 text-sm text-gray-700 font-lato">{category.name}</span>
                               </label>
                             </li>
                           ))}
@@ -662,13 +662,13 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                       <div className="space-y-3 pt-4">
                         <button
                           onClick={handleSearch}
-                          className="w-full bg-black text-white py-2 px-4 hover:bg-black hover:text-white transition-colors cursor-pointer"
+                          className="w-full bg-black font-normal text-sm cursor-pointer font-jost text-white py-2 px-4 rounded-sm hover:bg-gray-800 transition-colors"
                         >
                           Apply Filters
                         </button>
                         <button
                           onClick={clearFilters}
-                          className="w-full border border-gray-300 text-gray-700 py-2 px-4 hover:bg-black hover:text-white transition-colors cursor-pointer"
+                          className="w-full border font-normal border-gray-300 text-sm cursor-pointer font-jost text-gray-700 py-2 px-4 rounded-sm hover:bg-gray-50 transition-colors"
                         >
                           Clear All
                         </button>
@@ -680,7 +680,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                 {/* Sort Section */}
                 <div className="p-2.5">
                   <div onClick={() => setIsSortSectionOpen(!isSortSectionOpen)} className="flex justify-between items-center mb-6 cursor-pointer">
-                    <h2 className="text-lg font-semibold text-gray-900">Sort By</h2>
+                    <h2 className="text-base font-semibold text-gray-900 font-jost">Sort By</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700"
                     >
@@ -760,7 +760,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
             <div className="lg:w-3/4">
               {/* Results Count and Desktop Sort */}
               <div className="flex justify-end items-center mb-6">
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm font-jost">
                   Showing {products.data.length} of {products.meta?.total ?? products.data.length} products
                 </p>
               </div>

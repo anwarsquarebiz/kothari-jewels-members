@@ -86,7 +86,7 @@ export function LandingNav({
               : "bg-neutral-950/80 text-white"
           }`}
         >
-          <div className="flex flex-col px-4 sm:px-8 py-6 mt-12 space-y-4">
+          <div className="container mx-auto flex flex-col px-4 sm:px-8 py-6 mt-12 space-y-4">
             {navItems.map(({ label, page }) => (
               <Link
                 key={page}
