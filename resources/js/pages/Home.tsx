@@ -45,6 +45,7 @@ export default function Home({ title, description }: Props) {
   const [previousIndex, setPreviousIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const slideRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -53,6 +54,8 @@ export default function Home({ title, description }: Props) {
   const descRef = useRef<HTMLParagraphElement>(null);
   const priceRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const gifRef = useRef<HTMLImageElement>(null);
 
   const nextSlide = () => {
     if (isAnimating) return;
@@ -76,6 +79,24 @@ export default function Home({ title, description }: Props) {
     setDirection(index > currentIndex ? 1 : -1);
     setCurrentIndex(index);
     setIsAnimating(true);
+  };
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      if (gifRef.current) {
+        gifRef.current.style.animation = "none";
+      }
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+      if (gifRef.current) {
+        gifRef.current.style.animation = "spin 2s linear infinite";
+      }
+    }
   };
 
   useEffect(() => {
@@ -171,6 +192,23 @@ export default function Home({ title, description }: Props) {
       <Head title="Home" />
       <LandingNav currentPage={"/"} isLightPage={false} />
 
+      <style>{`
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+
+      <audio
+        ref={audioRef}
+        src="/media/music/music.mp3"
+        onEnded={() => setIsPlaying(false)}
+      />
+
       <div ref={slideRef} className="absolute inset-0">
         <img
           src={slides[currentIndex].url}
@@ -242,24 +280,23 @@ export default function Home({ title, description }: Props) {
           <p ref={descRef} className="mb-5 opacity-90 leading-relaxed max-w-xl">
             {slides[currentIndex].description}
           </p>
-
-          {/* <div ref={priceRef} className="flex items-center gap-6">
-                        <p className="text-2xl tracking-wide">
-                            {slides[currentIndex].price}
-                        </p>
-                        <button className="px-6 py-2.5 rounded-full bg-white text-black hover:bg-white/90 transition-all duration-300 tracking-wide">
-                            View Details
-                        </button>
-                    </div> */}
         </div>
       </div>
 
-      <div className="w-10 aspect-square flex item-center justify-center cursor-pointer fixed bottom-4 right-4 z-[50]">
+      {/* Music Toggle */}
+      <button
+        ref={gifRef}
+        onClick={toggleMusic}
+        className="w-13 bg-white/20 border border-white/30 p-1 rounded-full aspect-square flex items-center justify-center cursor-pointer fixed bottom-4 right-4 z-[50] hover:scale-110 transition-transform duration-200"
+        aria-label="Toggle music"
+      >
+        <div className="absolute h-3 w-3 rounded-full bg-black"></div>
         <img
           src="/media/landing-page/music.gif"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-full"
+          alt="Music toggle"
         />
-      </div>
+      </button>
     </div>
   );
 }

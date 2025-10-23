@@ -38,7 +38,13 @@ export function LandingNav({
           onClick={() => handleNavClick("/")}
           className={`tracking-widest hover:opacity-70 transition-opacity text-lg sm:text-base font-medium ${textColor}`}
         >
-          KOTHARI
+          <img
+            className={`w-[100px] h-auto transition-all duration-300 ${
+              (currentPage === "/" || currentPage === "/about") && "invert"
+            }`}
+            src="/media/logo.webp"
+            alt="Kothari Fine Jewels"
+          />
         </Link>
 
         {/* Desktop Navigation */}
