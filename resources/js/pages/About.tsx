@@ -125,7 +125,7 @@ export default function About({ title, description }: Props) {
           "
         >
           <img
-            src="/media/landing-page/about-ill.png"
+            src="/media/landing-page/about-page-ill.JPG"
             alt="Kothari Jewelry Heritage"
             className="w-full h-full object-cover"
           />
@@ -159,49 +159,36 @@ export default function About({ title, description }: Props) {
                 className="space-y-6 text-neutral-700 leading-relaxed"
               >
                 <p>
-                  Founded in the 1940s, Kothari has expanded its horizons
-                  continually for four generations - and is currently
-                  flourishing under brothers Avinash, Amrish, and the latest
-                  addition to the legacy, Karan.
+                  The Kothari story began in Bombay in the 1940s, when members
+                  of the family earned trust as diamantaires in what was then
+                  known as the "Divine trade". Then, the professional world of
+                  Jewellery was a discreet circle dealing in treasures once
+                  reserved for kings, queens, and worldly connoisseurs. Their
+                  reputation rested on judgement, integrity, and relationships
+                  rather than promotion - values that remain at the heart of the
+                  house today.
                 </p>
 
                 <p>
-                  Kothari sources some of the finest rare gemstones from across
-                  the world. Persistent attention to minute detail in executing
-                  Original designs has enabled the firm to enjoy the patronage
-                  of clients both in India and internationally, encompassing the
-                  corporate elite, the discerning collector, and even the
-                  leading auction houses globally.
+                  Over generations, the family evolved from traders to
+                  jewellers, seeking out exceptional precious stones: Golconda
+                  Diamonds, Burmese Rubies, Colombian and Zambian Emeralds,
+                  Basra Pearls, and upon instinct, any rare gem or object of
+                  beauty that lies beyond familiar frontiers. Once home, each
+                  gem is examined by a member of the family before being set,
+                  and each careful design mulled over extended periods to remain
+                  true to an imagination that will honor the eye-watering
+                  stones.
                 </p>
 
                 <p>
-                  While endeavouring to keep pace with the dynamic styles of the
-                  twenty-first century, Kothari retains the essence of elegance
-                  and opulence embedded in Indian culture. Drawing inspiration
-                  from the archives of both Indian and European royalty, they
-                  have a selected range of unique pieces. These vary from Mughal
-                  to Art Deco styles, and from traditional Indian to
-                  contemporary designs – all set in an array of precious
-                  gemstones.
-                </p>
-
-                <p>
-                  Though India's love affair with jewellery is an unbroken
-                  tradition spanning almost five thousand years, in the last few
-                  decades well-travelled families have begun to yearn for a
-                  contemporary touch while wishing to retain their roots and
-                  influences. Keeping this in mind, and synonymous with an
-                  intimate understanding of jewellery and careful craftsmanship,
-                  Kothari ensures that every piece is thoughtfully and
-                  artistically designed.
-                </p>
-
-                <p>
-                  The firm understands that the acquisition of jewellery is a
-                  special and significant decision, not only for weddings. Every
-                  Kothari creation is a truly timeless and personal piece of
-                  art, that is ultimately also valued internationally as a sound
-                  investment.
+                  Today Kothari Fine Jewels, headed by Avinash, Amrish, and
+                  fourth generation Karan, has become a renowned private Jewelry
+                  house. From its atelier on Altamount Road, Kothari Fine Jewels
+                  continue to serve clientele in India and abroad, offering not
+                  just bejeweled adornment but a form of cultural continuity -
+                  where rarity, design, and trust converge quietly and
+                  enduringly.
                 </p>
               </div>
 

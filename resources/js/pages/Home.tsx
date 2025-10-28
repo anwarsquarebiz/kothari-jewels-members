@@ -32,7 +32,25 @@ const slides = [
   {
     id: 3,
     url: "/media/landing-page/expanded_3.jpg",
-    title: "Crystal Hoop Earrings",
+    title: "Round Brilliant Diamond Hoops",
+    material: "White Gold & Premium Crystals",
+    description:
+      "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
+    price: "$6,900",
+  },
+  {
+    id: 4,
+    url: "/media/landing-page/expanded_4.jpg",
+    title: "Round Brilliant Diamond Hoops",
+    material: "White Gold & Premium Crystals",
+    description:
+      "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
+    price: "$6,900",
+  },
+  {
+    id: 5,
+    url: "/media/landing-page/expanded_3.jpg",
+    title: "Round Brilliant Diamond Hoops",
     material: "White Gold & Premium Crystals",
     description:
       "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
@@ -173,7 +191,6 @@ export default function Home({ title, description }: Props) {
         "-=0.3"
       );
 
-
     // Clean up the temporary element after animation
     tl.call(() => {
       if (
@@ -265,14 +282,14 @@ export default function Home({ title, description }: Props) {
         className="absolute bottom-0 left-0 right-0 z-10 p-5 md:p-7 lg:p-12 text-white"
       >
         <div className="max-w-2xl">
-          <div
+          {/* <div
             ref={materialRef}
             className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
           >
             <p className="text-xs md:text-sm tracking-wider uppercase opacity-90">
               {slides[currentIndex].material}
             </p>
-          </div>
+          </div> */}
 
           <h1 ref={titleRef} className="mb-3">
             {slides[currentIndex].title}
