@@ -6,6 +6,7 @@ use Inertia\Inertia;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/about', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
 Route::get('/contact', [App\Http\Controllers\ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->group(function () {
     Route::get('dashboard', function () {
