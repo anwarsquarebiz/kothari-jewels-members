@@ -281,7 +281,7 @@ export default function Home({ title, description }: Props) {
         ref={infoRef}
         className="absolute bottom-0 left-0 right-0 z-10 p-5 md:p-7 lg:p-12 text-white"
       >
-        <div className="max-w-2xl">
+        <div className="max-w-2xl mb-[100px] lg:mb-auto md:mb-auto">
           {/* <div
             ref={materialRef}
             className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
