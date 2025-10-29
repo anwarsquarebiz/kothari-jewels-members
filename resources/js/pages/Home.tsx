@@ -22,7 +22,7 @@ const slides = [
   },
   {
     id: 2,
-    url: "/media/landing-page/expanded_1.jpg",
+    url: "/media/landing-page/expanded_2.jpg",
     title: "Floral Diamond Bracelet",
     material: "Platinum & White Diamonds",
     description:
@@ -31,25 +31,25 @@ const slides = [
   },
   {
     id: 3,
-    url: "/media/landing-page/expanded_1.jpg",
-    title: "Round Brilliant Diamond Hoops",
+    url: "/media/landing-page/expanded_3.jpg",
+    title: "Emerald and Diamond Choker",
     material: "White Gold & Premium Crystals",
     description:
-      "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
+      "Emerald and Diamond Choker, paired with an impressive pair of Emerald and Baguette Cut Eartops",
     price: "$6,900",
   },
   {
     id: 4,
-    url: "/media/landing-page/expanded_1.jpg",
-    title: "Round Brilliant Diamond Hoops",
+    url: "/media/landing-page/expanded_4.jpg",
+    title: "Fancy Yellow & White Diamond Constellation Necklace",
     material: "White Gold & Premium Crystals",
     description:
-      "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
+      "Fancy Yellow and White Diamond Constellation Necklace, paired with the House' interpretation of Chandbali Earrings",
     price: "$6,900",
   },
   {
     id: 5,
-    url: "/media/landing-page/expanded_1.jpg",
+    url: "/media/landing-page/expanded_5.jpg",
     title: "Round Brilliant Diamond Hoops",
     material: "White Gold & Premium Crystals",
     description:

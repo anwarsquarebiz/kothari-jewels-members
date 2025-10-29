@@ -17,7 +17,9 @@ export function LandingNav({
 }: LandingNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Color for logo and mobile menu button
   const textColor = isLightPage ? "text-neutral-900" : "text-white";
+
   const navItems: { label: string; page: Page }[] = [
     { label: "Home", page: "/" },
     { label: "About", page: "/about" },
@@ -62,18 +64,20 @@ export function LandingNav({
         </Link>
 
         {/* Desktop Navigation */}
-        <div
-          className={`hidden lg:flex items-center gap-8 lg:gap-12 ${textColor}`}
-        >
+        <div className="hidden lg:flex items-center gap-8 lg:gap-12">
           {navItems.map(({ label, page }) => (
             <Link
               key={page}
               href={page}
               onClick={() => handleNavClick(page)}
-              className={`tracking-wide text-neutral-900 font-medium text-sm transition-opacity duration-200 ${
-                currentPage === "/"
-                  ? "text-white opacity-60 hover:opacity-100"
-                  : "opacity-60 hover:opacity-100"
+              className={`tracking-wide font-medium text-sm transition-all duration-200 ${
+                currentPage === page
+                  ? isLightPage
+                    ? "text-neutral-900 opacity-100"
+                    : "text-white opacity-100"
+                  : isLightPage
+                  ? "text-neutral-900 opacity-60 hover:opacity-100"
+                  : "text-white opacity-60 hover:opacity-100"
               }`}
             >
               {label}
@@ -82,7 +86,9 @@ export function LandingNav({
           {/* Login Icon - Desktop */}
           <Link
             href="/login"
-            className={`transition-opacity hover:opacity-70 text-neutral-900`}
+            className={`transition-opacity hover:opacity-70 ${
+              isLightPage ? "text-neutral-900" : "text-white"
+            }`}
             aria-label="Login"
           >
             <User size={18} />
@@ -114,7 +120,7 @@ export function LandingNav({
                 key={page}
                 href={page}
                 onClick={() => handleNavClick(page)}
-                className={`tracking-wide font-medium text-left py-2 text-sm transition-opacity duration-200 ${
+                className={`tracking-wide font-medium text-left py-2 text-sm transition-all duration-200 ${
                   currentPage === page
                     ? "opacity-100"
                     : "opacity-60 hover:opacity-100"
