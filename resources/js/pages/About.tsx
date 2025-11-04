@@ -1,5 +1,5 @@
 import { Head } from "@inertiajs/react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { LandingNav } from "@/components/aftab-components/LandingNav";
@@ -18,12 +18,34 @@ export default function About({ title, description }: Props) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const paragraphsRef = useRef<HTMLDivElement>(null);
 
-  // Scroll from anywhere
+  // Use state to track screen size for conditional logic and rendering
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  // 1. Check screen size on initial load and on resize
   useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024); // Tailwind's 'lg' breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    // Cleanup the event listener on component unmount
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  // 2. Custom scroll logic: ONLY apply on large screens
+  useEffect(() => {
+    // If it's not a large screen, do nothing.
+    if (!isLargeScreen) {
+      return;
+    }
+
     const content = contentRef.current;
     if (!content) return;
 
     const handleWheel = (e: WheelEvent) => {
+      e.preventDefault(); // Prevent the whole page from scrolling
       content.scrollTop += e.deltaY;
     };
 
@@ -32,6 +54,7 @@ export default function About({ title, description }: Props) {
       return {
         start: (e: TouchEvent) => (startY = e.touches[0].clientY),
         move: (e: TouchEvent) => {
+          e.preventDefault(); // Prevent the whole page from scrolling
           const delta = startY - e.touches[0].clientY;
           content.scrollTop += delta;
           startY = e.touches[0].clientY;
@@ -39,16 +62,18 @@ export default function About({ title, description }: Props) {
       };
     })();
 
+    // Add global event listeners to hijack scrolling
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchstart", handleTouch.start, { passive: true });
     window.addEventListener("touchmove", handleTouch.move, { passive: false });
 
+    // IMPORTANT: Cleanup function to remove listeners when the screen becomes small
     return () => {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouch.start);
       window.removeEventListener("touchmove", handleTouch.move);
     };
-  }, []);
+  }, [isLargeScreen]); // This effect re-runs whenever `isLargeScreen` changes
 
   useGSAP(() => {
     const tl = gsap.timeline();
@@ -110,7 +135,12 @@ export default function About({ title, description }: Props) {
   }, []);
 
   return (
-    <div className="w-full overflow-hidden bg-neutral-50">
+    // 3. Main container: allow normal scroll on mobile, hide on desktop
+    <div
+      className={`w-full bg-neutral-50 ${
+        isLargeScreen ? "overflow-hidden" : "overflow-y-auto"
+      }`}
+    >
       <Head title="About Us" />
       <LandingNav currentPage={"/about"} isLightPage={true} />
 
@@ -134,8 +164,9 @@ export default function About({ title, description }: Props) {
         {/* Content Section */}
         <div
           ref={contentRef}
-          className="relative flex flex-col justify-start px-8 md:px-16 lg:px-24 py-24 overflow-y-auto opacity-0"
-          style={{ maxHeight: "100vh" }} // Ensure content scrollable independently
+          className="relative flex flex-col justify-start px-8 md:px-16 lg:px-24 py-24 opacity-0 lg:overflow-y-auto"
+          // 4. Content container: Constrain height only on desktop
+          style={{ maxHeight: isLargeScreen ? "100vh" : "none" }}
         >
           <div className="max-w-xl mx-auto lg:mx-0">
             <div>
