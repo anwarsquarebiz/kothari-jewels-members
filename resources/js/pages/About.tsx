@@ -116,9 +116,11 @@ export default function About({ title, description }: Props) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Image Section */}
+        {/* Hide on mobile */}
         <div
           ref={imageRef}
           className="
+            hidden lg:block md:block
             relative h-[50vh] lg:h-screen
             opacity-0
             lg:sticky lg:top-0
@@ -134,7 +136,7 @@ export default function About({ title, description }: Props) {
         {/* Content Section */}
         <div
           ref={contentRef}
-          className="relative flex flex-col justify-start px-8 md:px-16 lg:px-24 py-24 overflow-y-auto opacity-0"
+          className="mt-6 relative flex flex-col justify-start px-8 md:px-16 lg:px-24 py-24 overflow-y-auto opacity-0"
           style={{ maxHeight: "100vh" }} // Ensure content scrollable independently
         >
           <div className="max-w-xl mx-auto lg:mx-0">

@@ -11,51 +11,51 @@ interface Props {
 }
 
 const slides = [
-  {
-    id: 1,
-    url: "/media/landing-page/expanded_1.jpg",
-    title: "Emerald Garden Necklace",
-    material: "18K Yellow Gold & Emeralds",
-    description:
-      "A stunning statement necklace featuring vibrant emeralds set in lustrous yellow gold, inspired by nature's timeless beauty.",
-    price: "$18,500",
-  },
+  // {
+  //   id: 1,
+  //   url: "/media/landing-page/expanded_1.jpg",
+  //   // title: "Emerald Garden Necklace",
+  //   // material: "18K Yellow Gold & Emeralds",
+  //   // description:
+  //     // "A stunning statement necklace featuring vibrant emeralds set in lustrous yellow gold, inspired by nature's timeless beauty.",
+  //   // price: "$18,500",
+  // },
   {
     id: 2,
     url: "/media/landing-page/expanded_2.jpg",
-    title: "Floral Diamond Bracelet",
-    material: "Platinum & White Diamonds",
-    description:
-      "Exquisite floral motifs adorned with brilliant diamonds, delicately crafted to grace your wrist with unparalleled elegance.",
-    price: "$24,750",
+    // title: "Floral Diamond Bracelet",
+    // material: "Platinum & White Diamonds",
+    // description:
+    //   "Exquisite floral motifs adorned with brilliant diamonds, delicately crafted to grace your wrist with unparalleled elegance.",
+    // price: "$24,750",
   },
   {
     id: 3,
     url: "/media/landing-page/expanded_3.jpg",
-    title: "Emerald and Diamond Choker",
-    material: "White Gold & Premium Crystals",
-    description:
-      "Emerald and Diamond Choker, paired with an impressive pair of Emerald and Baguette Cut Eartops",
-    price: "$6,900",
+    // title: "Emerald and Diamond Choker",
+    // material: "White Gold & Premium Crystals",
+    // description:
+    //   "Emerald and Diamond Choker, paired with an impressive pair of Emerald and Baguette Cut Eartops",
+    // price: "$6,900",
   },
   {
     id: 4,
     url: "/media/landing-page/expanded_4.jpg",
-    title: "Fancy Yellow & White Diamond Constellation Necklace",
-    material: "White Gold & Premium Crystals",
-    description:
-      "Fancy Yellow and White Diamond Constellation Necklace, paired with the House' interpretation of Chandbali Earrings",
-    price: "$6,900",
+    // title: "Fancy Yellow & White Diamond Constellation Necklace",
+    // material: "White Gold & Premium Crystals",
+    // description:
+    //   "Fancy Yellow and White Diamond Constellation Necklace, paired with the House' interpretation of Chandbali Earrings",
+    // price: "$6,900",
   },
-  {
-    id: 5,
-    url: "/media/landing-page/expanded_5.jpg",
-    title: "Round Brilliant Diamond Hoops",
-    material: "White Gold & Premium Crystals",
-    description:
-      "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
-    price: "$6,900",
-  },
+  // {
+  //   id: 5,
+  //   url: "/media/landing-page/expanded_5.jpg",
+  //   // title: "Round Brilliant Diamond Hoops",
+  //   // material: "White Gold & Premium Crystals",
+  //   // description:
+  //   //   "Sophisticated geometric hoops featuring premium crystals that capture and reflect light with mesmerizing brilliance.",
+  //   // price: "$6,900",
+  // },
 ];
 
 export default function Home({ title, description }: Props) {

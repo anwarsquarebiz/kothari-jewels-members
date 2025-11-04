@@ -48,12 +48,22 @@ export function LandingNav({
           className={`tracking-widest hover:opacity-70 transition-opacity text-lg sm:text-base font-medium ${textColor}`}
         >
           {/* invert the logo if the current page is the home or about page */}
-          {currentPage === "/" || currentPage === "/about" ? (
-            <img
-              className={`w-[120px] h-auto transition-all duration-300 invert`}
-              src="/media/logo.webp"
-              alt="Kothari Fine Jewels"
-            />
+          {currentPage === "/" || currentPage === "/about" ? (          
+            <>
+            {currentPage === "/about" && screen.width < 768 ? (
+              <img
+                className={`w-[120px] h-auto transition-all duration-300`}
+                src="/media/logo.webp"
+                alt="Kothari Fine Jewels"
+              />
+            ) : (
+              <img
+                className={`w-[120px] h-auto transition-all duration-300 invert`}
+                src="/media/logo.webp"
+                alt="Kothari Fine Jewels"
+              />
+            )}
+            </>
           ) : (
             <img
               className={`w-[120px] h-auto transition-all duration-300`}

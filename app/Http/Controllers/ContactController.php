@@ -41,7 +41,7 @@ class ContactController extends Controller
         ]);
 
         // Send email to the specified email address
-        $recipientEmail = 'info@kotharijewels.com'; // Change this to your desired email
+        $recipientEmail = 'anwar.squarebiz@gmail.com'; // Change this to your desired email
         Mail::to($recipientEmail)->send(new ContactFormMail($formData));
 
         return redirect()->back()->with('success', 'Thank you for your inquiry! We will get back to you shortly.');
