@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ChevronDown } from "lucide-react";
 import { LandingNav } from "@/components/aftab-components/LandingNav";
 import { Head, useForm } from "@inertiajs/react";
 
@@ -16,7 +15,6 @@ export default function Contact() {
     source: "",
   });
 
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const blob1Ref = useRef<HTMLDivElement>(null);
@@ -40,11 +38,6 @@ export default function Contact() {
         setTimeout(() => setShowSuccess(false), 5000);
       },
     });
-  };
-
-  const handleSelectOption = (value: string) => {
-    setData("source", value);
-    setIsSelectOpen(false);
   };
 
   useGSAP(() => {
@@ -166,13 +159,20 @@ export default function Contact() {
             {/* Left Image - Hidden on Mobile and Tablet */}
             <div
               ref={imageRef}
-              className="hidden lg:flex lg:col-span-5 items-center justify-center opacity-0"
+              className="lg:flex lg:col-span-5 items-center justify-center opacity-0"
             >
               <div className="w-full aspect-square bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-lg flex items-center justify-center overflow-hidden shadow-lg">
+                
                 <img
                   src="/media/landing-page/contact.JPG"
                   alt="Jewelry"
-                  className="w-full h-full object-cover"
+                  className="hidden lg:block w-full h-full object-cover"
+                />
+
+                <img
+                  src="/media/landing-page/about-ill.png"
+                  alt="Jewelry"
+                  className="block lg:hidden w-full h-full object-cover"
                 />
               </div>
             </div>
@@ -182,6 +182,7 @@ export default function Contact() {
               {/* Top Content - Info Section */}
               <div ref={topContentRef} className="relative opacity-0 mb-8">
                 <div className="relative">
+
                   {/* Decorative Line */}
                   <div
                     ref={lineRef}
@@ -191,12 +192,24 @@ export default function Contact() {
 
                   <div className="space-y-6">
                     <div className="space-y-3">
+
+                      <div className="space-y-1 mb-12">
+                        <h1 className="text-neutral-900 leading-tight text-3xl md:text-4xl text-center lg:text-left">
+                          Kothari Fine Jewels
+                        </h1>
+                        <p className="text-neutral-500 tracking-[0.3em] uppercase text-xs text-center lg:text-left">
+                        1A Raj Mahal, 33 Altamount Road, Mumbai - 400026
+                        </p>
+                      </div>
+
+
                       <h2
                         ref={subtitleRef}
                         className="text-neutral-500 tracking-[0.3em] uppercase text-xs"
                       >
                         Contact Us
                       </h2>
+
 
                       <h1
                         ref={titleRef}
@@ -386,14 +399,18 @@ export default function Contact() {
                       Preferred Times
                     </label>
                     <div className="relative group">
-                      <input
+                      <select
                         id="preferredTimes"
-                        type="text"
                         value={data.preferredTimes}
                         onChange={(e) => setData("preferredTimes", e.target.value)}
-                        className="w-full px-0 py-3 bg-transparent border-b-2 text-xs border-neutral-300 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 transition-all"
-                        placeholder="Morning / Afternoon"
-                      />
+                        className="w-full px-0 py-3 bg-transparent border-b-2 text-xs border-neutral-300 text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="" className="text-neutral-400">Select preferred time</option>
+                        <option value="10 AM TO 12 PM">10 AM TO 12 PM</option>
+                        <option value="12 PM TO 1:30 PM">12 PM TO 1:30 PM</option>
+                        <option value="2:30 PM TO 4 PM">2:30 PM TO 4 PM</option>
+                        <option value="4 PM TO 5:30 PM">4 PM TO 5:30 PM</option>
+                      </select>
                       <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-neutral-900 transition-all duration-300 group-focus-within:w-full" />
                     </div>
                     {errors.preferredTimes && (
@@ -402,55 +419,25 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="form-field relative z-20 space-y-3 opacity-0">
+                <div className="form-field space-y-3 opacity-0">
                   <label
                     htmlFor="source"
                     className="block text-xs text-neutral-500 uppercase tracking-widest"
                   >
                     How did you hear about us?
                   </label>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setIsSelectOpen(!isSelectOpen)}
-                      className="w-full px-0 py-3 bg-transparent border-b-2 text-xs border-neutral-300 text-neutral-900 text-left focus:outline-none focus:border-neutral-900 transition-all flex items-center justify-between group"
+                  <div className="relative group">
+                    <select
+                      id="source"
+                      value={data.source}
+                      onChange={(e) => setData("source", e.target.value)}
+                      className="w-full px-0 py-3 bg-transparent border-b-2 text-xs border-neutral-300 text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all appearance-none cursor-pointer"
                     >
-                      <span
-                        className={
-                          data.source
-                            ? "text-neutral-900"
-                            : "text-neutral-400"
-                        }
-                      >
-                        {data.source === "website" && "Website"}
-                        {data.source === "referral" && "Client Referral"}
-                        {!data.source && "Select an option"}
-                      </span>
-                      <ChevronDown
-                        className={`w-4 h-4 text-neutral-500 transition-transform ${
-                          isSelectOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {isSelectOpen && (
-                      <div className="absolute z-[9999] w-full mt-2 bg-white border border-neutral-200 shadow-2xl overflow-hidden">
-                        <button
-                          type="button"
-                          onClick={() => handleSelectOption("website")}
-                          className="w-full px-4 py-3 text-xs text-left text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all duration-200"
-                        >
-                          Website
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSelectOption("referral")}
-                          className="w-full px-4 py-3 text-xs text-left text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all duration-200 border-t border-neutral-100"
-                        >
-                          Client Referral
-                        </button>
-                      </div>
-                    )}
+                      <option value="" className="text-neutral-400">Select an option</option>
+                      <option value="website">Website</option>
+                      <option value="referral">Client Referral</option>
+                    </select>
+                    <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-neutral-900 transition-all duration-300 group-focus-within:w-full" />
                   </div>
                   {errors.source && (
                     <p className="text-red-500 text-xs mt-1">{errors.source}</p>
