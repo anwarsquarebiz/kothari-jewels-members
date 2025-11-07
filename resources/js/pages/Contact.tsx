@@ -248,7 +248,7 @@ export default function Contact() {
                             Contact Numbers
                           </p>
                           <p className="text-neutral-700 text-sm">
-                            +91 9820140053
+                            +91 9820140052
                           </p>
                           <p className="text-neutral-700 text-sm">
                             +91 9820515907
