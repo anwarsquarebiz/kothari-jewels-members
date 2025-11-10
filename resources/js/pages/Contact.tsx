@@ -164,7 +164,7 @@ export default function Contact() {
               <div className="w-full aspect-square bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-lg flex items-center justify-center overflow-hidden shadow-lg">
                 
                 <img
-                  src="/media/landing-page/contact.JPG"
+                  src="/media/landing-page/about-ill.png"
                   alt="Jewelry"
                   className="hidden lg:block w-full h-full object-cover"
                 />
@@ -203,30 +203,30 @@ export default function Contact() {
                       </div>
 
 
-                      <h2
+                      {/* <h2
                         ref={subtitleRef}
                         className="text-neutral-500 tracking-[0.3em] uppercase text-xs"
                       >
                         Contact Us
-                      </h2>
+                      </h2> */}
 
 
                       <h1
                         ref={titleRef}
                         className="text-neutral-900 leading-tight text-3xl md:text-4xl"
                       >
-                        Get In Touch
+                        Schedule your private visit
                       </h1>
                     </div>
 
+                    {/* 
                     <p
                       ref={descRef}
                       className="text-neutral-600 leading-relaxed text-sm max-w-md"
                     >
-                      We'd love to hear from you. Share your details and we'll
-                      get back to you shortly to discuss your bespoke jewelry
-                      requirements.
-                    </p>
+                      We'd love to hear from you. Share your details and we'll get back to you shortly to discuss your bespoke jewelry requirements.
+                    </p> 
+                    */}
 
                     {/* Additional Info */}
                     <div className="pt-6 space-y-3 border-t border-neutral-200">

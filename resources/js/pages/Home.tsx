@@ -24,7 +24,7 @@ const slides = [
         id: 2,
         url: '/media/landing-page/expanded_2.jpg',
         // title: "Floral Diamond Bracelet",
-        title: 'A jewellery Legacy Spanning Four Generation',
+        title: 'A Jewellery Legacy Spanning Four Generations',
         // material: "Platinum & White Diamonds",
         // description:
         //   "Exquisite floral motifs adorned with brilliant diamonds, delicately crafted to grace your wrist with unparalleled elegance.",
@@ -34,7 +34,8 @@ const slides = [
         id: 3,
         url: '/media/landing-page/expanded_3.jpg',
         // title: "Emerald and Diamond Choker",
-        title: 'A jewellery Legacy Spanning Four Generation',
+        title: 'A Jewellery Legacy Spanning Four Generations',
+        position: 'object-[40%_50%]',
         // material: "White Gold & Premium Crystals",
         // description:
         //   "Emerald and Diamond Choker, paired with an impressive pair of Emerald and Baguette Cut Eartops",
@@ -44,7 +45,8 @@ const slides = [
         id: 4,
         url: '/media/landing-page/expanded_4.jpg',
         // title: "Fancy Yellow & White Diamond Constellation Necklace",
-        title: 'A jewellery Legacy Spanning Four Generation',
+        title: 'A Jewellery Legacy Spanning Four Generations',
+        position: 'object-[60%_40%] scale-110',
         // material: "White Gold & Premium Crystals",
         // description:
         //   "Fancy Yellow and White Diamond Constellation Necklace, paired with the House' interpretation of Chandbali Earrings",
@@ -234,7 +236,7 @@ export default function Home({ title, description }: Props) {
                 <img
                     src={slides[currentIndex].url}
                     alt={slides[currentIndex].title}
-                    className="h-full w-full object-cover"
+                    className={`h-full w-full object-cover ${slides[currentIndex].position || ''}`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/50" />
             </div>
