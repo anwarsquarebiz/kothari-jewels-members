@@ -3,9 +3,18 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { LandingNav } from "@/components/aftab-components/LandingNav";
 import { Head, useForm } from "@inertiajs/react";
+import { MusicPlayer } from "./MusicPlayer";
 
 export default function Contact() {
-  const { data, setData, post, processing, errors, reset, wasSuccessful } = useForm({
+  const {
+    data,
+    setData,
+    post,
+    processing,
+    errors,
+    reset,
+    wasSuccessful,
+  } = useForm({
     name: "",
     email: "",
     mobile: "",
@@ -162,7 +171,6 @@ export default function Contact() {
               className="lg:flex lg:col-span-5 items-center justify-center opacity-0"
             >
               <div className="w-full aspect-square bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-lg flex items-center justify-center overflow-hidden shadow-lg">
-                
                 <img
                   src="/media/landing-page/about-ill.png"
                   alt="Jewelry"
@@ -182,7 +190,6 @@ export default function Contact() {
               {/* Top Content - Info Section */}
               <div ref={topContentRef} className="relative opacity-0 mb-8">
                 <div className="relative">
-
                   {/* Decorative Line */}
                   <div
                     ref={lineRef}
@@ -192,16 +199,14 @@ export default function Contact() {
 
                   <div className="space-y-6">
                     <div className="space-y-3">
-
                       <div className="space-y-1 mb-12">
                         <h1 className="text-neutral-900 leading-tight text-3xl md:text-4xl text-center lg:text-left">
                           Kothari Fine Jewels
                         </h1>
                         <p className="text-neutral-500 tracking-[0.3em] uppercase text-xs text-center lg:text-left">
-                        1A Raj Mahal, 33 Altamount Road, Mumbai - 400026
+                          1A Raj Mahal, 33 Altamount Road, Mumbai - 400026
                         </p>
                       </div>
-
 
                       {/* <h2
                         ref={subtitleRef}
@@ -209,7 +214,6 @@ export default function Contact() {
                       >
                         Contact Us
                       </h2> */}
-
 
                       <h1
                         ref={titleRef}
@@ -314,7 +318,9 @@ export default function Contact() {
                       <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-neutral-900 transition-all duration-300 group-focus-within:w-full" />
                     </div>
                     {errors.email && (
-                      <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.email}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -363,7 +369,9 @@ export default function Contact() {
                     <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-neutral-900 transition-all duration-300 group-focus-within:w-full" />
                   </div>
                   {errors.product && (
-                    <p className="text-red-500 text-xs mt-1">{errors.product}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.product}
+                    </p>
                   )}
                 </div>
 
@@ -387,7 +395,9 @@ export default function Contact() {
                       <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-neutral-900 transition-all duration-300 group-focus-within:w-full" />
                     </div>
                     {errors.visitWeek && (
-                      <p className="text-red-500 text-xs mt-1">{errors.visitWeek}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.visitWeek}
+                      </p>
                     )}
                   </div>
 
@@ -402,19 +412,27 @@ export default function Contact() {
                       <select
                         id="preferredTimes"
                         value={data.preferredTimes}
-                        onChange={(e) => setData("preferredTimes", e.target.value)}
+                        onChange={(e) =>
+                          setData("preferredTimes", e.target.value)
+                        }
                         className="w-full px-0 py-3 bg-transparent border-b-2 text-xs border-neutral-300 text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all appearance-none cursor-pointer"
                       >
-                        <option value="" className="text-neutral-400">Select preferred time</option>
+                        <option value="" className="text-neutral-400">
+                          Select preferred time
+                        </option>
                         <option value="10 AM TO 12 PM">10 AM TO 12 PM</option>
-                        <option value="12 PM TO 1:30 PM">12 PM TO 1:30 PM</option>
+                        <option value="12 PM TO 1:30 PM">
+                          12 PM TO 1:30 PM
+                        </option>
                         <option value="2:30 PM TO 4 PM">2:30 PM TO 4 PM</option>
                         <option value="4 PM TO 5:30 PM">4 PM TO 5:30 PM</option>
                       </select>
                       <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-neutral-900 transition-all duration-300 group-focus-within:w-full" />
                     </div>
                     {errors.preferredTimes && (
-                      <p className="text-red-500 text-xs mt-1">{errors.preferredTimes}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.preferredTimes}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -433,7 +451,9 @@ export default function Contact() {
                       onChange={(e) => setData("source", e.target.value)}
                       className="w-full px-0 py-3 bg-transparent border-b-2 text-xs border-neutral-300 text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all appearance-none cursor-pointer"
                     >
-                      <option value="" className="text-neutral-400">Select an option</option>
+                      <option value="" className="text-neutral-400">
+                        Select an option
+                      </option>
                       <option value="website">Website</option>
                       <option value="referral">Client Referral</option>
                     </select>
@@ -467,6 +487,8 @@ export default function Contact() {
           </div>
         </div>
       </div>
+      {/* Add the MusicPlayer component */}
+      <MusicPlayer bg={"black"} />
     </div>
   );
 }

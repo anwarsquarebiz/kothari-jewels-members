@@ -1,4 +1,6 @@
-import { useState } from "react";
+// resources/js/components/aftab-components/LandingNav.tsx
+
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, User } from "lucide-react";
 import { Link } from "@inertiajs/react";
 
@@ -8,17 +10,22 @@ interface LandingNavProps {
   currentPage: Page;
   setCurrentPage: (page: Page) => void;
   isLightPage: boolean;
+  // THE ONLY CHANGE: This optional ref allows the About page to pass its scroll container
+  scrollContainerRef?: React.RefObject<HTMLElement>;
 }
 
 export function LandingNav({
   currentPage,
   setCurrentPage,
   isLightPage,
+  scrollContainerRef, // Receive the ref
 }: LandingNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
-  // Color for logo and mobile menu button
-  const textColor = isLightPage ? "text-neutral-900" : "text-white";
+  const initialTextColor = isLightPage ? "text-neutral-900" : "text-white";
 
   const navItems: { label: string; page: Page }[] = [
     { label: "Home", page: "/" },
@@ -31,46 +38,65 @@ export function LandingNav({
     setIsOpen(false);
   };
 
+  // --- Check for mobile screen size ---
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  // --- THE CORE FIX: Scroll logic that can handle window OR a custom container ---
+  useEffect(() => {
+    // KEY CHANGE: If a scrollContainerRef is passed (like on About page), use it. Otherwise, use window.
+    const scrollElement = scrollContainerRef?.current || window;
+
+    const handleScroll = () => {
+      // Get scroll position from the correct element
+      const scrollPosition =
+        scrollElement === window ? window.scrollY : scrollElement.scrollTop;
+
+      if (scrollPosition > 10 && !isScrolled) {
+        setIsScrolled(true);
+      } else if (scrollPosition <= 10 && isScrolled) {
+        setIsScrolled(false);
+      }
+    };
+
+    // Add listener to the correct element
+    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Cleanup function
+    return () => {
+      scrollElement.removeEventListener("scroll", handleScroll);
+    };
+  }, [isScrolled, scrollContainerRef]); // Re-run if ref changes
+
   return (
     <nav
-      // style={{
-      //   backgroundColor: "#cda678",
-      //   backgroundImage:
-      //     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%2392663e' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E\")",
-      // }}
-      className="fixed w-screen top-0 left-0 right-0 z-[9999] px-4 sm:px-8 py-6"
+      ref={navRef}
+      // Conditionally apply background color on mobile scroll
+      className={`w-full z-50 fixed top-0 left-0 p-4 transition-colors duration-300 ${
+        isMobile && isScrolled ? "bg-white" : "bg-transparent"
+      }`}
     >
       <div className="flex items-center relative z-[9999] justify-between">
         {/* Logo */}
         <Link
           href="/"
           onClick={() => handleNavClick("/")}
-          className={`tracking-widest hover:opacity-70 transition-opacity text-lg sm:text-base font-medium ${textColor}`}
+          className="tracking-widest hover:opacity-70 transition-opacity text-lg sm:text-base font-medium"
         >
-          {/* invert the logo if the current page is the home or about page */}
-          {currentPage === "/" || currentPage === "/about" ? (          
-            <>
-            {currentPage === "/about" && screen.width < 768 ? (
-              <img
-                className={`w-[120px] h-auto transition-all duration-300`}
-                src="/media/logo.webp"
-                alt="Kothari Fine Jewels"
-              />
-            ) : (
-              <img
-                className={`w-[120px] h-auto transition-all duration-300 invert`}
-                src="/media/logo.webp"
-                alt="Kothari Fine Jewels"
-              />
-            )}
-            </>
-          ) : (
-            <img
-              className={`w-[120px] h-auto transition-all duration-300`}
-              src="/media/logo.webp"
-              alt="Kothari Fine Jewels"
-            />
-          )}
+          <img
+            // Logic for logo source and invert class
+            className={`w-[120px] h-auto transition-all duration-300 ${
+              !isLightPage ? "invert" : ""
+            }`}
+            src={"/media/logo.webp"}
+            alt="Kothari Fine Jewels"
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -108,7 +134,10 @@ export function LandingNav({
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`lg:hidden transition-opacity hover:opacity-70 ${textColor}`}
+          // Conditionally apply icon color on mobile scroll
+          className={`lg:hidden transition-opacity hover:opacity-70 ${
+            isMobile && isScrolled ? "text-neutral-900" : initialTextColor
+          }`}
           aria-label="Toggle menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -143,7 +172,9 @@ export function LandingNav({
             <Link
               href="/login"
               onClick={() => setIsOpen(false)}
-              className="tracking-wide font-medium text-left text-neutral-100 py-2 text-sm transition-opacity duration-200 opacity-60 hover:opacity-100 flex items-center gap-2"
+              className={`tracking-wide ${
+                isLightPage ? "text-neutral-900" : "text-neutral-100"
+              } font-medium text-left py-2 text-sm transition-opacity duration-200 flex items-center gap-2`}
             >
               <User size={18} />
               Login
