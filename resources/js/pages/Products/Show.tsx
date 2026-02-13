@@ -560,9 +560,7 @@ export default function ProductShow({
             </div>
 
             {/* Product Details */}
-            <div style={{
-              // height: window.innerWidth > 1024 ? `${100 / (product.images?.length || 1)}%` : "fit-content",
-            }} className="space-y-6 h-full px-4 sm:px-6 lg:px-0 flex flex-col justify-center">
+            <div className="space-y-6 h-fit px-4 sm:px-6 lg:px-0 flex flex-col justify-center lg:sticky lg:top-[115px]">
               <div>
                 <div className="w-full mb-4">
                   <h1 className="text-[22px] font-jost uppercase font-semibold text-center lg:text-start text-gray-900 mb-2">
