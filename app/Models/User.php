@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_active',
     ];
 
     /**
@@ -45,6 +46,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -78,6 +80,7 @@ class User extends Authenticatable
     public function hasAllRoles(array $roles): bool
     {
         $userRoles = $this->roles()->pluck('slug')->toArray();
+
         return count(array_intersect($roles, $userRoles)) === count($roles);
     }
 
@@ -97,8 +100,8 @@ class User extends Authenticatable
     public function assignRole(string $role): void
     {
         $roleModel = Role::findBySlug($role);
-        
-        if ($roleModel && !$this->hasRole($role)) {
+
+        if ($roleModel && ! $this->hasRole($role)) {
             $this->roles()->attach($roleModel->id);
         }
     }
@@ -109,7 +112,7 @@ class User extends Authenticatable
     public function removeRole(string $role): void
     {
         $roleModel = Role::findBySlug($role);
-        
+
         if ($roleModel) {
             $this->roles()->detach($roleModel->id);
         }
@@ -154,13 +157,13 @@ class User extends Authenticatable
     public function getAllPermissions(): array
     {
         $permissions = [];
-        
+
         foreach ($this->roles as $role) {
             if ($role->permissions) {
                 $permissions = array_merge($permissions, $role->permissions);
             }
         }
-        
+
         return array_unique($permissions);
     }
 
@@ -180,11 +183,11 @@ class User extends Authenticatable
         if (is_numeric($product)) {
             return $this->accessibleProducts()->where('product_id', $product)->exists();
         }
-        
+
         if ($product instanceof Product) {
             return $this->accessibleProducts()->where('product_id', $product->id)->exists();
         }
-        
+
         return false;
     }
 

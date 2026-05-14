@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/about', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
@@ -9,9 +8,11 @@ Route::get('/contact', [App\Http\Controllers\ContactController::class, 'index'])
 Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', App\Http\Controllers\Admin\AdminDashboardController::class)->name('dashboard');
+
+    Route::patch('users/{user}/password', [App\Http\Controllers\Admin\AdminUserController::class, 'updatePassword'])->name('users.password.update');
+    Route::patch('users/{user}/product-access', [App\Http\Controllers\Admin\AdminUserController::class, 'syncProductAccess'])->name('users.product-access.update');
+    Route::resource('users', App\Http\Controllers\Admin\AdminUserController::class)->except(['edit', 'destroy']);
 
     // Categories CRUD
     Route::resource('categories', App\Http\Controllers\Admin\AdminCategoryController::class);

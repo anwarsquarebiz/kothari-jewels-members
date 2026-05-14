@@ -52,6 +52,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! $user->is_active) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'This account has been deactivated. Contact support if you need access.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
 
         return $user;

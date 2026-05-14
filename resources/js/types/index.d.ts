@@ -36,11 +36,29 @@ export interface User {
     email: string;
     avatar?: string;
     email_verified_at: string | null;
+    is_active?: boolean;
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;
     roles?: Role[];
     [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface PaginatedLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+export interface PaginatedData<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    links: PaginatedLink[];
+    from: number | null;
+    to: number | null;
 }
 
 export interface Role {
