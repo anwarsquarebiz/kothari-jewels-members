@@ -43,6 +43,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    className="text-black"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -68,6 +69,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
+                                    className="text-black"
                                 />
                                 <InputError message={errors.password} />
                             </div>
