@@ -92,7 +92,7 @@ export default function Register() {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full border border-black text-white font-semibold py-4 px-6 hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                                className="bg-black text-white mt-2 w-full border border-black text-white font-semibold py-4 px-6 hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                                 tabIndex={5}
                                 data-test="register-user-button"
                             >
