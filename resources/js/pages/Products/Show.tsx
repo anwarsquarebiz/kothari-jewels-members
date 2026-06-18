@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { ChevronRight, ChevronLeft, X } from "lucide-react";
+import { ChevronRight, ChevronLeft, X, Info } from "lucide-react";
 
 // Import GSAP for scroll animations
 import gsap from "gsap";
@@ -183,6 +183,7 @@ export default function ProductShow({
 }: Props) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showInformationModal, setShowInformationModal] = useState(false);
   const [navHeight, setNavHeight] = useState(0);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -404,7 +405,7 @@ export default function ProductShow({
         height: navHeight,
       }}></div>
 
-      <div className="min-h-screen bg-white"> 
+      <div className="min-h-screen bg-white">
         {/* Breadcrumb - Not fixed, with proper spacing */}
         <div
           className="relative z-10 bg-white border-b font-jost border-gray-100"
@@ -448,9 +449,8 @@ export default function ProductShow({
                     <div
                       key={image.id}
                       ref={(el) => (mobileImagesRef.current[index] = el)}
-                      className={`absolute inset-0 ${
-                        index === selectedImageIndex ? "" : "hidden"
-                      }`}
+                      className={`absolute inset-0 ${index === selectedImageIndex ? "" : "hidden"
+                        }`}
                     >
                       <img
                         src={getImageSrc(image.src)} // Use the function here
@@ -487,11 +487,10 @@ export default function ProductShow({
                         <button
                           key={index}
                           onClick={() => handleBulletClick(index)}
-                          className={`w-2 h-2 rounded-full transition-all ${
-                            selectedImageIndex === index
+                          className={`w-2 h-2 rounded-full transition-all ${selectedImageIndex === index
                               ? "bg-white w-6"
                               : "bg-white/50"
-                          }`}
+                            }`}
                           aria-label={`Go to image ${index + 1}`}
                         />
                       ))}
@@ -544,11 +543,10 @@ export default function ProductShow({
                         <button
                           key={index}
                           onClick={() => handleBulletClick(index)}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                            selectedImageIndex === index
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${selectedImageIndex === index
                               ? "bg-gray-800 h-8"
                               : "bg-gray-300"
-                          }`}
+                            }`}
                           aria-label={`Go to image ${index + 1}`}
                         />
                       ))}
@@ -618,6 +616,15 @@ export default function ProductShow({
                 >
                   ENQUIRE NOW
                 </button>
+
+                {product.title === "Ruby and Diamond Drop Earrings" && 
+                <button
+                  onClick={() => setShowInformationModal(true)}
+                  className="w-full border border-black text-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                >
+                  REQUEST INFORMATION
+                </button>
+                }
 
                 <div className="text-xs text-gray-500 text-center font-lato lg:text-start">
                   *MRP (inclusive of all taxes)
@@ -1009,6 +1016,35 @@ export default function ProductShow({
                   SUBMIT ENQUIRY
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {showInformationModal && (
+          <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-none max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              {/* Header */}
+              <div className="p-6 md:p-8 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg md:text-xl font-normal text-gray-900">
+                    Product Information
+                  </h3>
+                  <button
+                    onClick={() => setShowInformationModal(false)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label="Close modal"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 md:p-8">
+                <div className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start">
+                  <img src="/media/ruby-diamond-drop-earrings.jpeg" alt="" />
+                </div>
+              </div>
+
             </div>
           </div>
         )}
