@@ -612,7 +612,7 @@ export default function ProductShow({
               <div className="space-y-2.5">
                 <button
                   onClick={() => setShowContactModal(true)}
-                  className="w-full border border-black text-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                  className="w-full border border-black text-white bg-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                 >
                   ENQUIRE NOW
                 </button>
@@ -620,7 +620,7 @@ export default function ProductShow({
                 {product.title === "Ruby and Diamond Drop Earrings" && 
                 <button
                   onClick={() => setShowInformationModal(true)}
-                  className="w-full border border-black text-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
+                  className="w-full border border-black text-white bg-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                 >
                   REQUEST INFORMATION
                 </button>
@@ -1022,7 +1022,7 @@ export default function ProductShow({
 
         {showInformationModal && (
           <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-none max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-none max-w-4xl max-h-[100vh] overflow-y-auto">
               {/* Header */}
               <div className="p-6 md:p-8 border-b border-gray-200">
                 <div className="flex items-center justify-between">
@@ -1041,7 +1041,7 @@ export default function ProductShow({
 
               <div className="p-6 md:p-8">
                 <div className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start">
-                  <img src="/media/ruby-diamond-drop-earrings.jpeg" alt="" />
+                  <img className="h-[600px]" src="/media/ruby-diamond-drop-earrings.jpeg" alt="product information" />
                 </div>
               </div>
 
