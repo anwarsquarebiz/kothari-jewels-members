@@ -7,7 +7,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { ChevronRight, ChevronLeft, X, Info } from "lucide-react";
+import { ChevronRight, ChevronLeft, X, Info, Gem, Scale, Circle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // Import GSAP for scroll animations
 import gsap from "gsap";
@@ -174,6 +175,29 @@ const getImageSrc = (src: string) => {
 
   // For relative paths, ensure they start from the root
   return `/${src}`;
+};
+
+// Map a detail/material title to an icon and colour
+const getDetailIcon = (title: string): { Icon: LucideIcon; className: string } => {
+  const key = title.toLowerCase();
+
+  if (key.includes("emerald")) {
+    return { Icon: Gem, className: "text-emerald-600" };
+  }
+  if (key.includes("diamond")) {
+    return { Icon: Gem, className: "text-sky-400" };
+  }
+  if (key.includes("ruby") || key.includes("rubies")) {
+    return { Icon: Gem, className: "text-red-600" };
+  }
+  if (key.includes("sapphire")) {
+    return { Icon: Gem, className: "text-blue-700" };
+  }
+  if (key.includes("weight")) {
+    return { Icon: Scale, className: "text-gray-700" };
+  }
+
+  return { Icon: Circle, className: "text-gray-500" };
 };
 
 export default function ProductShow({
@@ -584,6 +608,8 @@ export default function ProductShow({
                 </div>
               </div>
 
+              
+
               {/* Price */}
               {product?.price && (
                 <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
@@ -605,6 +631,36 @@ export default function ProductShow({
                       />
                     </svg>
                   </button>
+                </div>
+              )}
+
+              {/* Symbols and Details */}
+              {product.active_details.length > 0 && (
+                <div>
+                  <h2 className="text-sm font-jost font-semibold uppercase text-gray-900 mb-3 text-center lg:text-start">
+                    Symbols &amp; Details
+                  </h2>
+                  <div className="divide-y divide-gray-200 border-t border-gray-200">
+                    {product.active_details.map((detail) => {
+                      const { Icon, className } = getDetailIcon(detail.title);
+                      return (
+                        <div
+                          key={detail.id}
+                          className="flex items-center justify-between gap-4 py-3"
+                        >
+                          <span className="flex items-center gap-2 text-xs font-jost font-semibold uppercase text-gray-900">
+                            <Icon className={`w-4 h-4 shrink-0 ${className}`} />
+                            {detail.title}
+                          </span>
+                          {detail.subtitle && (
+                            <span className="text-xs font-lato text-gray-600 text-right">
+                              {detail.subtitle}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -636,9 +692,9 @@ export default function ProductShow({
           {/* Product Details Section */}
           {product.active_details.length > 0 && (
             <div className="mt-16 px-4 sm:px-6 lg:px-0">
-              <h2 className="text-[22px] font-jost font-semibold text-center text-gray-900 uppercase mb-8">
+              {/* <h2 className="text-[22px] font-jost font-semibold text-center text-gray-900 uppercase mb-8">
                 Details of the piece
-              </h2>
+              </h2> */}
 
               <div className="text-center mb-8">
                 <button className="text-black text-sm font-jost underline font-semibold">
@@ -646,7 +702,7 @@ export default function ProductShow({
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {product.active_details.map((detail) => (
                   <div key={detail.id} className="">
                     {detail.image && (
@@ -666,10 +722,10 @@ export default function ProductShow({
                     )}
                   </div>
                 ))}
-              </div>
+              </div> */}
 
               {/* Product Information */}
-              <div className="mt-12 bg-gray-50 rounded-lg pl-8">
+              <div className="mt-6 bg-gray-50 rounded-lg pl-8 py-4">
                 <ul className="space-y-1.5 text-xs text-black">
                   <li className="list-disc">
                     {" "}
