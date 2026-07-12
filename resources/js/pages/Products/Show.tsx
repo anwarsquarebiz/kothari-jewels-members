@@ -638,7 +638,7 @@ export default function ProductShow({
               {product.active_details.length > 0 && (
                 <div>
                   <h2 className="text-sm font-jost font-semibold uppercase text-gray-900 mb-3 text-center lg:text-start">
-                    Symbols &amp; Details
+                    Details
                   </h2>
                   <div className="divide-y divide-gray-200 border-t border-gray-200">
                     {product.active_details.map((detail) => {
