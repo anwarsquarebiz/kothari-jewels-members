@@ -25,9 +25,9 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
 
   const mainNavItems: NavItem[] = [
     { label: "HIGH JEWELLERY", href: "#high-jewellery" },
-    { label: "FINE JEWELLERY", href: "#fine-jewellery" },
-    { label: "WEDDING", href: "#wedding" },
-    { label: "BESPOKE", href: "#bespoke" },
+    // { label: "FINE JEWELLERY", href: "#fine-jewellery" },
+    // { label: "WEDDING", href: "#wedding" },
+    // { label: "BESPOKE", href: "#bespoke" },
   ];
 
   const sidebarItems: NavItem[] = [
@@ -71,12 +71,12 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
       {/* Desktop Navbar */}
       <nav
         ref={navRef}
-        className=" border-b border-gray-200 w-full z-50 bg-white p-4 fixed top-0 left-0"
+        className="border-b border-gray-200 w-full mx-auto px-4 z-50 bg-white p-4 fixed top-0 left-0"
       >
-        <div className="container mx-auto">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16">
           <div className="flex items-center justify-between h-fit">
             {/* Left Navigation - Hidden on mobile/tablet */}
-            <div className="hidden lg:flex items-center space-x-8">
+            {/* <div className="hidden lg:flex items-center space-x-8">
               {mainNavItems.map((item) => (
                 <a
                   key={item.label}
@@ -86,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
                   {item.label}
                 </a>
               ))}
-            </div>
+            </div> */}
 
             {/* Mobile Search Icon */}
             <button className="lg:hidden p-2 text-gray-800">
@@ -110,15 +110,24 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
               >
                 THE HOUSE OF KOTHARIS
               </a>
-              <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
+              {mainNavItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="text-xs font-medium tracking-wide text-gray-800 hover:text-gray-600 transition-colors"
+                >
+                  {item.label}
+                </a>
+              ))}
+              {/* <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
                 <ConciergeBell size={18} />
-              </button>
-              <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
+              </button> */}
+              {/* <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
                 <Search size={18} />
-              </button>
-              <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
+              </button> */}
+              {/* <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
                 <MapPin size={18} />
-              </button>
+              </button> */}
               <button className="p-2 text-gray-800 hover:text-gray-600 transition-colors">
                 <ShoppingBag size={18} />
               </button>

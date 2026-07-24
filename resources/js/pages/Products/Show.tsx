@@ -614,7 +614,7 @@ export default function ProductShow({
               {product?.price && (
                 <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
                   <div className="text-sm font-semibold text-gray-900">
-                    {product?.currency} - {product?.price}
+                    {product?.currency} - {(product?.price / 100000).toFixed(2) + 'L'} 
                   </div>
                   <button className="text-gray-400 hover:text-red-500 transition-colors">
                     <svg
@@ -666,12 +666,12 @@ export default function ProductShow({
 
               {/* Contact Button */}
               <div className="space-y-2.5">
-                <button
+                {/* <button
                   onClick={() => setShowContactModal(true)}
                   className="w-full border border-black text-white bg-black font-jost font-semibold py-4 px-6 rounded hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer text-xs"
                 >
                   ENQUIRE NOW
-                </button>
+                </button> */}
 
                 {product.title === "Ruby and Diamond Drop Earrings" && 
                 <button
