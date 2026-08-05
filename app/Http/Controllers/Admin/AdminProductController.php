@@ -270,28 +270,31 @@ class AdminProductController extends Controller
     public function storeImage(Request $request, Product $product)
     {
         $request->validate([
-            'src' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
             'is_primary' => 'boolean',
-            'position' => 'integer|min:0',
+            'position' => 'nullable|integer|min:0',
         ]);
 
         try {
             $isPrimary = $request->boolean('is_primary', false);
 
-            // If this is set as primary, unset other primary images
             if ($isPrimary) {
                 $product->images()->update(['is_primary' => false]);
             }
 
+            $src = $this->storeUploadedImage(
+                $request->file('image'),
+                "media/uploads/products/{$product->id}"
+            );
+
             ProductImage::create([
                 'product_id' => $product->id,
-                'src' => $request->src,
+                'src' => $src,
                 'is_primary' => $isPrimary,
                 'position' => $request->position ?: $product->images()->max('position') + 1,
             ]);
 
             return back()->with('success', 'Image added successfully.');
-
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to add image: ' . $e->getMessage());
         }
@@ -302,11 +305,15 @@ class AdminProductController extends Controller
      */
     public function deleteImage(Product $product, ProductImage $image)
     {
+        if ($image->product_id !== $product->id) {
+            abort(404);
+        }
+
         try {
+            $this->deleteUploadedImage($image->src);
             $image->delete();
 
             return back()->with('success', 'Image deleted successfully.');
-
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete image: ' . $e->getMessage());
         }
@@ -317,15 +324,15 @@ class AdminProductController extends Controller
      */
     public function setPrimaryImage(Product $product, ProductImage $image)
     {
-        try {
-            // Unset other primary images
-            $product->images()->update(['is_primary' => false]);
+        if ($image->product_id !== $product->id) {
+            abort(404);
+        }
 
-            // Set this image as primary
+        try {
+            $product->images()->update(['is_primary' => false]);
             $image->update(['is_primary' => true]);
 
             return back()->with('success', 'Primary image updated successfully.');
-
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to update primary image: ' . $e->getMessage());
         }
@@ -351,17 +358,25 @@ class AdminProductController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
             'position' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
         try {
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $this->storeUploadedImage(
+                    $request->file('image'),
+                    "media/uploads/details/{$product->id}"
+                );
+            }
+
             ProductDetail::create([
                 'product_id' => $product->id,
                 'title' => $request->title,
                 'subtitle' => $request->subtitle,
-                'image' => $request->image,
+                'image' => $imagePath,
                 'position' => $request->position ?: ($product->details()->max('position') + 1),
                 'is_active' => $request->boolean('is_active', true),
             ]);
@@ -384,16 +399,30 @@ class AdminProductController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'remove_image' => 'boolean',
             'position' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
         try {
+            $imagePath = $detail->image;
+
+            if ($request->boolean('remove_image')) {
+                $this->deleteUploadedImage($detail->image);
+                $imagePath = null;
+            } elseif ($request->hasFile('image')) {
+                $this->deleteUploadedImage($detail->image);
+                $imagePath = $this->storeUploadedImage(
+                    $request->file('image'),
+                    "media/uploads/details/{$product->id}"
+                );
+            }
+
             $detail->update([
                 'title' => $request->title,
                 'subtitle' => $request->subtitle,
-                'image' => $request->image,
+                'image' => $imagePath,
                 'position' => $request->position ?? $detail->position,
                 'is_active' => $request->boolean('is_active', $detail->is_active),
             ]);
@@ -414,11 +443,51 @@ class AdminProductController extends Controller
         }
 
         try {
+            $this->deleteUploadedImage($detail->image);
             $detail->delete();
 
             return back()->with('success', 'Detail deleted successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete detail: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Store an uploaded image under public/ and return its public path.
+     */
+    private function storeUploadedImage(\Illuminate\Http\UploadedFile $file, string $directory): string
+    {
+        $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+        $absoluteDir = public_path($directory);
+
+        if (!is_dir($absoluteDir)) {
+            mkdir($absoluteDir, 0755, true);
+        }
+
+        $file->move($absoluteDir, $filename);
+
+        return '/' . trim($directory, '/') . '/' . $filename;
+    }
+
+    /**
+     * Delete an uploaded image file if it lives under media/uploads.
+     */
+    private function deleteUploadedImage(?string $path): void
+    {
+        if (!$path) {
+            return;
+        }
+
+        $normalized = '/' . ltrim($path, '/');
+
+        if (!str_starts_with($normalized, '/media/uploads/')) {
+            return;
+        }
+
+        $fullPath = public_path(ltrim($normalized, '/'));
+
+        if (is_file($fullPath)) {
+            unlink($fullPath);
         }
     }
 }

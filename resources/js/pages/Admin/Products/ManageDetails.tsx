@@ -42,6 +42,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+function resolveImageSrc(src: string) {
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+        return src;
+    }
+    return `/${src}`;
+}
+
 function DetailEditForm({
     productId,
     detail,
@@ -51,17 +58,28 @@ function DetailEditForm({
     detail: ProductDetail;
     onCancel: () => void;
 }) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm<{
+        title: string;
+        subtitle: string;
+        image: File | null;
+        remove_image: boolean;
+        position: number;
+        is_active: boolean;
+        _method: string;
+    }>({
         title: detail.title,
         subtitle: detail.subtitle || '',
-        image: detail.image || '',
+        image: null,
+        remove_image: false,
         position: detail.position,
         is_active: detail.is_active,
+        _method: 'put',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/products/${productId}/details/${detail.id}`, {
+        post(`/admin/products/${productId}/details/${detail.id}`, {
+            forceFormData: true,
             onSuccess: () => onCancel(),
         });
     };
@@ -110,14 +128,47 @@ function DetailEditForm({
                     )}
                 </div>
                 <div className="md:col-span-2">
-                    <Label htmlFor={`edit-image-${detail.id}`}>Image path (optional)</Label>
+                    <Label htmlFor={`edit-image-${detail.id}`}>Image (optional)</Label>
+                    {detail.image && !data.remove_image && (
+                        <div className="mb-2 flex items-center gap-3">
+                            <img
+                                src={resolveImageSrc(detail.image)}
+                                alt={detail.title}
+                                className="h-16 w-16 rounded object-cover border"
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    setData('remove_image', true);
+                                    setData('image', null);
+                                }}
+                            >
+                                Remove current image
+                            </Button>
+                        </div>
+                    )}
+                    {data.remove_image && (
+                        <p className="text-sm text-amber-700 mb-2">
+                            Current image will be removed on save.
+                        </p>
+                    )}
                     <Input
                         id={`edit-image-${detail.id}`}
-                        value={data.image}
-                        onChange={(e) => setData('image', e.target.value)}
-                        placeholder="media/materials/5.jpg"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        onChange={(e) => {
+                            setData('image', e.target.files?.[0] ?? null);
+                            if (e.target.files?.[0]) {
+                                setData('remove_image', false);
+                            }
+                        }}
                         className={errors.image ? 'border-red-500' : ''}
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Leave empty to keep the current image. JPG, PNG, WebP, GIF — max 5MB.
+                    </p>
                     {errors.image && (
                         <p className="text-sm text-red-600 mt-1">{errors.image}</p>
                     )}
@@ -150,10 +201,16 @@ function DetailEditForm({
 export default function ManageDetails({ product }: Props) {
     const [editingId, setEditingId] = useState<number | null>(null);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm<{
+        title: string;
+        subtitle: string;
+        image: File | null;
+        position: number;
+        is_active: boolean;
+    }>({
         title: '',
         subtitle: '',
-        image: '',
+        image: null,
         position: (product.details?.length || 0) + 1,
         is_active: true,
     });
@@ -161,10 +218,12 @@ export default function ManageDetails({ product }: Props) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/admin/products/${product.id}/details`, {
+            forceFormData: true,
             onSuccess: () => {
                 reset();
                 setData('position', (product.details?.length || 0) + 2);
                 setData('is_active', true);
+                setData('image', null);
             },
         });
     };
@@ -175,8 +234,7 @@ export default function ManageDetails({ product }: Props) {
         }
     };
 
-    const sortedDetails =
-        [...(product.details || [])].sort((a, b) => a.position - b.position);
+    const sortedDetails = [...(product.details || [])].sort((a, b) => a.position - b.position);
 
     return (
         <AppSidebarLayout breadcrumbs={breadcrumbs}>
@@ -245,14 +303,24 @@ export default function ManageDetails({ product }: Props) {
                                 )}
                             </div>
                             <div className="md:col-span-2">
-                                <Label htmlFor="image">Image path (optional)</Label>
+                                <Label htmlFor="image">Image (optional)</Label>
                                 <Input
                                     id="image"
-                                    value={data.image}
-                                    onChange={(e) => setData('image', e.target.value)}
-                                    placeholder="media/materials/5.jpg"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    onChange={(e) =>
+                                        setData('image', e.target.files?.[0] ?? null)
+                                    }
                                     className={errors.image ? 'border-red-500' : ''}
                                 />
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Optional. JPG, PNG, WebP, GIF — max 5MB.
+                                </p>
+                                {data.image && (
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        Selected: {data.image.name}
+                                    </p>
+                                )}
                                 {errors.image && (
                                     <p className="text-sm text-red-600 mt-1">{errors.image}</p>
                                 )}
@@ -299,34 +367,40 @@ export default function ManageDetails({ product }: Props) {
                                         />
                                     ) : (
                                         <div className="flex items-start justify-between gap-4 border rounded-lg p-4">
-                                            <div className="min-w-0 flex-1">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <h3 className="font-medium text-gray-900">
-                                                        {detail.title}
-                                                    </h3>
-                                                    <span className="text-xs text-gray-500">
-                                                        Position: {detail.position}
-                                                    </span>
-                                                    <span
-                                                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                            detail.is_active
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-gray-100 text-gray-600'
-                                                        }`}
-                                                    >
-                                                        {detail.is_active ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </div>
-                                                {detail.subtitle && (
-                                                    <p className="text-sm text-gray-600 mt-1">
-                                                        {detail.subtitle}
-                                                    </p>
-                                                )}
+                                            <div className="flex gap-3 min-w-0 flex-1">
                                                 {detail.image && (
-                                                    <p className="text-xs text-gray-500 mt-1 font-mono truncate">
-                                                        {detail.image}
-                                                    </p>
+                                                    <img
+                                                        src={resolveImageSrc(detail.image)}
+                                                        alt={detail.title}
+                                                        className="h-14 w-14 rounded object-cover border shrink-0"
+                                                    />
                                                 )}
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h3 className="font-medium text-gray-900">
+                                                            {detail.title}
+                                                        </h3>
+                                                        <span className="text-xs text-gray-500">
+                                                            Position: {detail.position}
+                                                        </span>
+                                                        <span
+                                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                                detail.is_active
+                                                                    ? 'bg-green-100 text-green-800'
+                                                                    : 'bg-gray-100 text-gray-600'
+                                                            }`}
+                                                        >
+                                                            {detail.is_active
+                                                                ? 'Active'
+                                                                : 'Inactive'}
+                                                        </span>
+                                                    </div>
+                                                    {detail.subtitle && (
+                                                        <p className="text-sm text-gray-600 mt-1">
+                                                            {detail.subtitle}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex gap-2 shrink-0">
                                                 <Button
@@ -362,6 +436,7 @@ export default function ManageDetails({ product }: Props) {
                             &quot;Diamond&quot; or &quot;Emerald&quot; map to matching icons)
                         </li>
                         <li>• Subtitle appears as the value on the right of each row</li>
+                        <li>• Image is optional — upload only if you need a custom detail image</li>
                         <li>• Position controls display order on the product page</li>
                         <li>• Only active details are shown on the storefront</li>
                     </ul>
