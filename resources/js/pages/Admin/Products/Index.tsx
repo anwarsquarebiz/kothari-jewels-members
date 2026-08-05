@@ -181,8 +181,10 @@ export default function Index({ products, categories, filters }: Props) {
                             {products.data.map((product) => (
                                 <TableRow key={product.id}>
                                     <TableCell>
-                                        <div>
-                                            <div className="font-medium">{product.title}</div>
+                                        <div>                                            
+                                            <Link href={`/admin/products/${product.id}`}>
+                                                <div className="font-medium underline">{product.title}</div>
+                                            </Link>
                                             <div className="text-sm text-muted-foreground">
                                                 {product.short_description}
                                             </div>

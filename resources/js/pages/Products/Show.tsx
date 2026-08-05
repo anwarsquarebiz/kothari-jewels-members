@@ -7,8 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { ChevronRight, ChevronLeft, X, Info, Gem, Scale, Circle } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ChevronRight, ChevronLeft, X, Info } from "lucide-react";
 
 // Import GSAP for scroll animations
 import gsap from "gsap";
@@ -178,26 +177,23 @@ const getImageSrc = (src: string) => {
 };
 
 // Map a detail/material title to an icon and colour
-const getDetailIcon = (title: string): { Icon: LucideIcon; className: string } => {
+const getDetailImage = (title: string): string => {
   const key = title.toLowerCase();
 
   if (key.includes("emerald")) {
-    return { Icon: Gem, className: "text-emerald-600" };
+    return "/media/emerald.jpg";
   }
   if (key.includes("diamond")) {
-    return { Icon: Gem, className: "text-sky-400" };
+    return "/media/diamond.jpg";
   }
   if (key.includes("ruby") || key.includes("rubies")) {
-    return { Icon: Gem, className: "text-red-600" };
+    return "/media/ruby.jpg";
   }
   if (key.includes("sapphire")) {
-    return { Icon: Gem, className: "text-blue-700" };
-  }
-  if (key.includes("weight")) {
-    return { Icon: Scale, className: "text-gray-700" };
+    return "/media/sapphire.jpg";
   }
 
-  return { Icon: Circle, className: "text-gray-500" };
+  return "/media/material.png";
 };
 
 export default function ProductShow({
@@ -592,15 +588,17 @@ export default function ProductShow({
                 </div>
 
                 {product.short_description && (
-                  <div className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start">
-                    <p>{product.short_description}</p>
-                  </div>
+                  <div
+                    className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start"
+                    dangerouslySetInnerHTML={{ __html: product.short_description }}
+                  />
                 )}
 
                 {product.long_description && (
-                  <div className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start">
-                    <p>{product.long_description}</p>
-                  </div>
+                  <div
+                    className="text-gray-600 font-lato mb-4 text-xs text-center lg:text-start"
+                    dangerouslySetInnerHTML={{ __html: product.long_description }}
+                  />
                 )}
 
                 <div className="text-sm text-gray-500 font-lato mb-4 text-xs text-center lg:text-start">
@@ -642,14 +640,18 @@ export default function ProductShow({
                   </h2>
                   <div className="divide-y divide-gray-200 border-t border-gray-200">
                     {product.active_details.map((detail) => {
-                      const { Icon, className } = getDetailIcon(detail.title);
+                      const imageSrc = getDetailImage(detail.title);
                       return (
                         <div
                           key={detail.id}
                           className="flex items-center justify-between gap-4 py-3"
                         >
                           <span className="flex items-center gap-2 text-xs font-jost font-semibold uppercase text-gray-900">
-                            <Icon className={`w-4 h-4 shrink-0 ${className}`} />
+                            <img
+                              src={imageSrc}
+                              alt=""
+                              className="w-5 h-5 shrink-0 rounded-full object-cover"
+                            />
                             {detail.title}
                           </span>
                           {detail.subtitle && (

@@ -24,6 +24,11 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::post('products/{product}/images', [App\Http\Controllers\Admin\AdminProductController::class, 'storeImage'])->name('admin.products.images.store');
     Route::delete('products/{product}/images/{image}', [App\Http\Controllers\Admin\AdminProductController::class, 'deleteImage'])->name('admin.products.images.delete');
     Route::patch('products/{product}/images/{image}/primary', [App\Http\Controllers\Admin\AdminProductController::class, 'setPrimaryImage'])->name('admin.products.images.primary');
+
+    Route::get('products/{product}/details', [App\Http\Controllers\Admin\AdminProductController::class, 'manageDetails'])->name('admin.products.details');
+    Route::post('products/{product}/details', [App\Http\Controllers\Admin\AdminProductController::class, 'storeDetail'])->name('admin.products.details.store');
+    Route::put('products/{product}/details/{detail}', [App\Http\Controllers\Admin\AdminProductController::class, 'updateDetail'])->name('admin.products.details.update');
+    Route::delete('products/{product}/details/{detail}', [App\Http\Controllers\Admin\AdminProductController::class, 'deleteDetail'])->name('admin.products.details.delete');
 });
 
 // E-commerce routes for all authenticated users

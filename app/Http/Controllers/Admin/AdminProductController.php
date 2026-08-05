@@ -330,4 +330,95 @@ class AdminProductController extends Controller
             return back()->with('error', 'Failed to update primary image: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Manage product details (materials / specs shown on the storefront).
+     */
+    public function manageDetails(Product $product)
+    {
+        $product->load('details');
+
+        return Inertia::render('Admin/Products/ManageDetails', [
+            'product' => $product,
+        ]);
+    }
+
+    /**
+     * Store a product detail.
+     */
+    public function storeDetail(Request $request, Product $product)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable|string|max:255',
+            'position' => 'nullable|integer|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        try {
+            ProductDetail::create([
+                'product_id' => $product->id,
+                'title' => $request->title,
+                'subtitle' => $request->subtitle,
+                'image' => $request->image,
+                'position' => $request->position ?: ($product->details()->max('position') + 1),
+                'is_active' => $request->boolean('is_active', true),
+            ]);
+
+            return back()->with('success', 'Detail added successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to add detail: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update a product detail.
+     */
+    public function updateDetail(Request $request, Product $product, ProductDetail $detail)
+    {
+        if ($detail->product_id !== $product->id) {
+            abort(404);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable|string|max:255',
+            'position' => 'nullable|integer|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        try {
+            $detail->update([
+                'title' => $request->title,
+                'subtitle' => $request->subtitle,
+                'image' => $request->image,
+                'position' => $request->position ?? $detail->position,
+                'is_active' => $request->boolean('is_active', $detail->is_active),
+            ]);
+
+            return back()->with('success', 'Detail updated successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update detail: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete a product detail.
+     */
+    public function deleteDetail(Product $product, ProductDetail $detail)
+    {
+        if ($detail->product_id !== $product->id) {
+            abort(404);
+        }
+
+        try {
+            $detail->delete();
+
+            return back()->with('success', 'Detail deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to delete detail: ' . $e->getMessage());
+        }
+    }
 }

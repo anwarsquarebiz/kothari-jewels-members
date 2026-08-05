@@ -1,13 +1,18 @@
-import { $generateHtmlFromNodes } from '@lexical/html';
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useEffect } from 'react';
+import {
+    $createParagraphNode,
+    $createTextNode,
+    $getRoot,
+    $insertNodes,
+} from 'lexical';
+import { useEffect, useId, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface RichTextEditorProps {
@@ -32,13 +37,36 @@ function MyOnChangePlugin({ onChange }: { onChange: (value: string) => void }) {
     return null;
 }
 
-function MyCustomAutoFocusPlugin() {
+function InitialContentPlugin({ html }: { html: string }) {
     const [editor] = useLexicalComposerContext();
+    const initialized = useRef(false);
 
     useEffect(() => {
-        // Focus the editor when the component mounts
-        editor.focus();
-    }, [editor]);
+        if (initialized.current || !html.trim()) {
+            return;
+        }
+
+        initialized.current = true;
+
+        editor.update(() => {
+            const root = $getRoot();
+            root.clear();
+
+            // Plain text (no HTML tags) — wrap in a paragraph
+            if (!/<[a-z][\s\S]*>/i.test(html)) {
+                const paragraph = $createParagraphNode();
+                paragraph.append($createTextNode(html));
+                root.append(paragraph);
+                return;
+            }
+
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(html, 'text/html');
+            const nodes = $generateNodesFromDOM(editor, dom);
+            root.select();
+            $insertNodes(nodes);
+        });
+    }, [editor, html]);
 
     return null;
 }
@@ -120,8 +148,9 @@ export function RichTextEditor({
     disabled = false,
     className = '',
 }: RichTextEditorProps) {
+    const editorId = useId();
     const initialConfig = {
-        namespace: 'MyEditor',
+        namespace: `RichTextEditor-${editorId}`,
         theme,
         onError,
         nodes: [
@@ -154,9 +183,8 @@ export function RichTextEditor({
                         ErrorBoundary={LexicalErrorBoundary}
                     />
                     <HistoryPlugin />
-                    <AutoFocusPlugin />
+                    <InitialContentPlugin html={value} />
                     <MyOnChangePlugin onChange={onChange} />
-                    {!disabled && <MyCustomAutoFocusPlugin />}
                 </div>
             </LexicalComposer>
         </div>

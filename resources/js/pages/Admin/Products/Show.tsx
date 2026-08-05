@@ -10,7 +10,7 @@ import {
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, Trash2, Image, User } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Image, List, User } from 'lucide-react';
 
 interface Category {
     id: number;
@@ -113,6 +113,12 @@ export default function Show({ product }: Props) {
                                 Manage Images
                             </Button>
                         </Link>
+                        <Link href={`/admin/products/${product.id}/details`}>
+                            <Button variant="outline">
+                                <List className="h-4 w-4 mr-2" />
+                                Manage Details
+                            </Button>
+                        </Link>
                         <Link href={`/admin/products/${product.id}/edit`}>
                             <Button variant="outline">
                                 <Edit className="h-4 w-4 mr-2" />
@@ -154,7 +160,13 @@ export default function Show({ product }: Props) {
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="text-sm font-medium text-gray-600">Short Description</label>
-                                    <p className="text-gray-900">{product.short_description || 'No short description'}</p>
+                                    <div className="text-gray-900 prose max-w-none">
+                                        {product.short_description ? (
+                                            <div dangerouslySetInnerHTML={{ __html: product.short_description }} />
+                                        ) : (
+                                            'No short description'
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="text-sm font-medium text-gray-600">Long Description</label>
@@ -188,22 +200,41 @@ export default function Show({ product }: Props) {
                         )}
 
                         {/* Product Details */}
-                        {product.details && product.details.length > 0 && (
-                            <div className="bg-white rounded-lg shadow-sm p-6">
-                                <h2 className="text-lg font-semibold mb-4">Product Details</h2>
+                        <div className="bg-white rounded-lg shadow-sm p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-lg font-semibold">Product Details</h2>
+                                <Link href={`/admin/products/${product.id}/details`}>
+                                    <Button variant="outline" size="sm">
+                                        <List className="h-4 w-4 mr-2" />
+                                        Manage Details
+                                    </Button>
+                                </Link>
+                            </div>
+                            {product.details && product.details.length > 0 ? (
                                 <div className="space-y-4">
                                     {product.details
-                                        .filter(detail => detail.is_active)
+                                        .slice()
                                         .sort((a, b) => a.position - b.position)
                                         .map((detail) => (
                                             <div key={detail.id} className="border rounded-lg p-4">
-                                                <h3 className="font-medium text-gray-900">{detail.title}</h3>
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <h3 className="font-medium text-gray-900">{detail.title}</h3>
+                                                    <span
+                                                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                            detail.is_active
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : 'bg-gray-100 text-gray-600'
+                                                        }`}
+                                                    >
+                                                        {detail.is_active ? 'Active' : 'Inactive'}
+                                                    </span>
+                                                </div>
                                                 {detail.subtitle && (
                                                     <p className="text-sm text-gray-600 mt-1">{detail.subtitle}</p>
                                                 )}
                                                 {detail.image && (
                                                     <img
-                                                        src={detail.image}
+                                                        src={detail.image.startsWith('/') ? detail.image : `/${detail.image}`}
                                                         alt={detail.title}
                                                         className="mt-2 rounded-lg max-w-xs"
                                                     />
@@ -211,8 +242,18 @@ export default function Show({ product }: Props) {
                                             </div>
                                         ))}
                                 </div>
-                            </div>
-                        )}
+                            ) : (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-600 mb-4">No product details yet.</p>
+                                    <Link href={`/admin/products/${product.id}/details`}>
+                                        <Button>
+                                            <List className="h-4 w-4 mr-2" />
+                                            Add Details
+                                        </Button>
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="space-y-6">
@@ -311,21 +352,6 @@ export default function Show({ product }: Props) {
                             <Button>
                                 <Image className="h-4 w-4 mr-2" />
                                 Manage Images
-                            </Button>
-                        </Link>
-                    </div>
-                )}
-
-                {/* No Details Message */}
-                {(!product.details || product.details.length === 0) && (
-                    <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                        <div className="text-gray-400 text-6xl mb-4">📋</div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No product details</h3>
-                        <p className="text-gray-600 mb-4">Add detailed information about this product.</p>
-                        <Link href={`/admin/products/${product.id}/edit`}>
-                            <Button>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit Product
                             </Button>
                         </Link>
                     </div>
