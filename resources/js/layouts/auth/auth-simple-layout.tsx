@@ -25,7 +25,7 @@ export default function AuthSimpleLayout({
                         >
                             <div className="mb-1 flex items-center justify-center ">
                                 {/* <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" /> */}
-                                <img src="/media/logo.webp" className="w-[150px] h-auto"/>
+                                <img src="/media/kothari-1937-logo.svg" className="w-[150px] h-auto"/>
                             </div>
                             <span className="sr-only">{title}</span>
                         </Link>

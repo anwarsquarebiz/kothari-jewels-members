@@ -97,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
             <Link href="/products" className="flex items-center">
               <img
                 className="w-[150px] h-auto"
-                src="/media/logo.webp"
+                src="/media/kothari-1937-logo.svg"
                 alt="Kothari Fine Jewels"
               />
             </Link>
