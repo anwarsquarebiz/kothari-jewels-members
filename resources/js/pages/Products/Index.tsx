@@ -201,7 +201,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
          <div className='flex w-full justify-between items-center opacity-0 group-hover:opacity-100 my-3'>
            <p className="text-base font-normal text-gray-900">{product?.sku ? product.sku : ''}</p>
-           <p className="text-base font-normal text-gray-900">{product?.price ? product.price : ' '}</p>
+           <p className="text-base font-normal text-gray-900">{product?.price ? (product?.price / 100000).toFixed(2) + 'L'  : ' '}</p>
          </div>
         </div>
 

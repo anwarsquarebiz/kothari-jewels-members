@@ -608,7 +608,7 @@ export default function ProductShow({
               {product?.price && (
                 <div className="flex items-center justify-start py-4 border-t border-b border-gray-200">
                   <div className="text-sm font-semibold text-gray-900">
-                    {product?.currency} - {(product?.price / 100000).toFixed(2) + 'L'} 
+                    {(product?.price / 100000).toFixed(2) + 'L'} 
                   </div>
                   {/* <button className="text-gray-400 hover:text-red-500 transition-colors">
                     <svg
