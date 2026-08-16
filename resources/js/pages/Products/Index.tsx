@@ -18,6 +18,7 @@ interface Product {
   id: number
   title: string
   slug: string
+  sku?: string
   short_description: string
   price: string
   currency: string
@@ -123,14 +124,14 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
 
         {/* NEW Badge */}
-        {product.id % 3 === 0 && (
+        {/* {product.id % 3 === 0 && (
           <div className="absolute top-4 left-4 bg-white px-3 py-1.5 text-xs font-medium tracking-wider">
             NEW
           </div>
-        )}
+        )} */}
 
         {/* Favorite Button */}
-        <button
+        {/* <button
           onClick={handleFavoriteClick}
           className={`
             absolute cursor-pointer top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md
@@ -143,7 +144,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             size={18}
             className={`${isFavorite ? 'fill-red-500 stroke-red-500' : 'stroke-gray-900'}`}
           />
-        </button>
+        </button> */}
 
         {/* Navigation Arrows */}
         {images.length > 1 && (
@@ -185,20 +186,23 @@ const ProductCard = ({ product }: { product: Product }) => {
       </div>
 
       {/* Content Section */}
-      <div className="py-6 pb-3 px-3 text-center flex flex-col justify-between flex-1">
+      <div className="py-6 pb-3 px-3  flex flex-col justify-between flex-1">
        
         <div>
-          <h3 className="text-sm font-normal tracking-wide text-gray-900 mb-1 uppercase">
+          <h3 className="text-sm font-normal mx-auto w-fit max-w-full truncate tracking-wide text-gray-900 mb-1 uppercase">
             {product.title}
           </h3>
 
-          {product.categories[0] && (
+          {/* {product.categories[0] && (
             <div className=" text-black px-3 py-2 text-xs font-medium tracking-wider">
               {product.categories[0].name.toUpperCase()}
             </div>
-          )}
+          )} */}
 
-          <p className="text-base font-normal text-gray-900 mb-4">{product.formatted_price}</p>
+         <div className='flex w-full justify-between items-center opacity-0 group-hover:opacity-100 my-3'>
+           <p className="text-base font-normal text-gray-900">{product?.sku ? product.sku : ''}</p>
+           <p className="text-base font-normal text-gray-900">{product?.price ? product.price : ' '}</p>
+         </div>
         </div>
 
         {/* Select Size Button */}
@@ -535,7 +539,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
       <Head title="Products" />
 
       <div className="min-h-screen bg-white font-jost">
-        <div style={{ paddingTop: `${navHeight}px` }} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-8">
+        <div style={{ paddingTop: navHeight ? `${navHeight}px` : "100px" }} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm font-jost text-gray-600">
               <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">

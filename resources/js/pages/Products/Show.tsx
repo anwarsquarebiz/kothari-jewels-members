@@ -114,7 +114,7 @@ const useScrollGallery = (
 
         // Snap container translation
         gsap.to(imageContainerRef.current, {
-          y: `-${index * window.innerHeight}px`,
+          y: `-${index * 100}%`,
           duration: 0.3,
           ease: "power2.out",
         });
@@ -147,9 +147,8 @@ const useScrollGallery = (
     if (!enabled || !imageContainerRef.current) return;
 
     // Translate the entire container to the target image
-    const translateY = -index * window.innerHeight;
     gsap.to(imageContainerRef.current, {
-      y: translateY,
+      y: `-${index * 100}%`,
       duration: 0.5,
       ease: "power2.out"
     });
@@ -421,8 +420,7 @@ export default function ProductShow({
       <Head title={product.title} />
 
       <div style={{
-        minHeight: "114px",
-        height: navHeight,
+        height: navHeight ? `${navHeight}px` : "100px",
       }}></div>
 
       <div className="min-h-screen bg-white">
@@ -529,9 +527,8 @@ export default function ProductShow({
                   }} className="relative w-full bg-gray-100 overflow-hidden">
                     <div
                       ref={imageContainerRef}
-                      className="relative w-full"
+                      className="relative w-full h-full"
                       style={{
-                        height: `${product.images.length * 100}%`,
                         transition: 'transform 0.5s ease-out'
                       }}
                     >
@@ -539,16 +536,15 @@ export default function ProductShow({
                         return (
                           <div
                             key={index}
-                            className="absolute inset-0 w-full"
+                            className="absolute inset-0 flex items-center justify-center w-full h-full"
                             style={{
-                              height: '100vh',
-                              top: `${index * 100}vh`
+                              top: `${index * 100}%`
                             }}
                           >
                             <img
                               src={getImageSrc(image.src)}
                               alt={`${product.title} - ${index}`}
-                              className="w-full h-full object-cover"
+                              className="w-full aspect-square object-cover"
                             />
                           </div>
                         );
@@ -610,11 +606,11 @@ export default function ProductShow({
 
               {/* Price */}
               {product?.price && (
-                <div className="flex items-center justify-between py-4 border-t border-b border-gray-200">
+                <div className="flex items-center justify-start py-4 border-t border-b border-gray-200">
                   <div className="text-sm font-semibold text-gray-900">
                     {product?.currency} - {(product?.price / 100000).toFixed(2) + 'L'} 
                   </div>
-                  <button className="text-gray-400 hover:text-red-500 transition-colors">
+                  {/* <button className="text-gray-400 hover:text-red-500 transition-colors">
                     <svg
                       className="w-6 h-6"
                       fill="none"
@@ -628,7 +624,7 @@ export default function ProductShow({
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                       />
                     </svg>
-                  </button>
+                  </button> */}
                 </div>
               )}
 
@@ -647,11 +643,11 @@ export default function ProductShow({
                           className="flex items-center justify-between gap-4 py-3"
                         >
                           <span className="flex items-center gap-2 text-xs font-jost font-semibold uppercase text-gray-900">
-                            <img
+                            {/* <img
                               src={imageSrc}
                               alt=""
                               className="w-5 h-5 shrink-0 rounded-full object-cover"
-                            />
+                            /> */}
                             {detail.title}
                           </span>
                           {detail.subtitle && (
@@ -748,7 +744,7 @@ export default function ProductShow({
             </div>
           )}
 
-          <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
+          {/* <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
             <div className="text-center w-full lg:w-1/4 mb-8 px-4 sm:px-6 lg:px-0">
               <h2 className="text-2xl font-bold text-black mb-4">
                 More For You
@@ -760,7 +756,7 @@ export default function ProductShow({
             </div>
 
             <div className="relative block sm:hidden px-2 sm:px-4 md:px-6">
-              {/* Swiper */}
+              
               <Swiper
                 modules={[Navigation]}
                 spaceBetween={8}
@@ -794,7 +790,7 @@ export default function ProductShow({
                 ))}
               </Swiper>
 
-              {/* Navigation buttons */}
+              
               <button
                 ref={prevRefMore}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-fit w-fit flex items-center justify-center text-black"
@@ -821,7 +817,7 @@ export default function ProductShow({
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <div className="mt-16 flex flex-col lg:flex-row gap-6 lg:items-center">
             <div className="text-center w-full lg:w-1/4 mb-8 px-4 sm:px-6 lg:px-0">
