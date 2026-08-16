@@ -429,7 +429,7 @@ export default function ProductShow({
           className="relative z-10 bg-white border-b font-jost border-gray-100"
 
         >
-          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-4">
+          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm text-gray-600">
               <Link
                 href="/"
@@ -450,7 +450,7 @@ export default function ProductShow({
           </div>
         </div>
 
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 pb-16">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-16">
           {/* Grid container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8">
             {/* Product Images - Chanel Style (Wrapper for scroll-triggered pinning) */}
@@ -574,7 +574,7 @@ export default function ProductShow({
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6 h-fit px-4 sm:px-6 lg:px-0 flex flex-col justify-center lg:sticky lg:top-1/2 lg:-translate-y-1/2">
+            <div className="space-y-6 h-fit px-4 sm:px-6 lg:px-0 flex flex-col justify-center lg:sticky lg:top-28 lg:self-start lg:translate-y-0">
               <div>
                 <div className="w-full mb-4">
                   <h1 className="text-[22px] font-jost uppercase font-semibold text-center lg:text-start text-gray-900 mb-2">
