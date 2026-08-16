@@ -126,7 +126,7 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
         ref={navRef}
         className="border-b border-gray-200 w-full mx-auto px-4 z-50 bg-white p-4 fixed top-0 left-0"
       >
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="flex items-center justify-between h-fit">
             {/* Mobile Search Icon */}
             <button className="lg:hidden p-2 text-gray-800" aria-label="Search">

@@ -201,7 +201,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
          <div className='flex w-full justify-between items-center opacity-0 group-hover:opacity-100 my-3'>
            <p className="text-base font-normal text-gray-900">{product?.sku ? product.sku : ''}</p>
-           <p className="text-base font-normal text-gray-900">{product?.price ? product.price : ' '}</p>
+           <p className="text-base font-normal text-gray-900">{product?.price ? (product?.price / 100000).toFixed(2) + 'L'  : ' '}</p>
          </div>
         </div>
 
@@ -539,7 +539,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
       <Head title="Products" />
 
       <div className="min-h-screen bg-white font-jost">
-        <div style={{ paddingTop: navHeight ? `${navHeight}px` : "100px" }} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-16 py-6">
+        <div style={{ paddingTop: navHeight ? `${navHeight}px` : "100px" }} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav className="flex items-center flex-wrap gap-1.5 md:gap-2 text-sm font-jost text-gray-600">
               <Link href="/" className="text-gray-900 hover:text-red-400 transition-colors">
@@ -575,9 +575,9 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
             </button>
           </div>
 
-          <div className="flex flex-col mt-4 lg:flex-row gap-8">
+          <div className="flex flex-col mt-4 lg:flex-row gap-6 xl:gap-8">
             {/* Desktop Filters Sidebar - Cartier Style with Separate Dropdowns */}
-            <div className="hidden lg:block lg:w-1/4">
+            <div className="hidden lg:block lg:w-60 xl:w-64 shrink-0">
               <div className="sticky top-24">
                 {/* Filters Section */}
                 <div className=" p-2.5 border-b border-gray-300">
@@ -761,7 +761,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
             </div>
 
             {/* Products Grid */}
-            <div className="lg:w-3/4">
+            <div className="flex-1 min-w-0">
               {/* Results Count and Desktop Sort */}
               <div className="flex justify-end items-center mb-6">
                 <p className="text-gray-600 text-sm font-jost">
@@ -776,7 +776,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                   <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
                   {products.data.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
