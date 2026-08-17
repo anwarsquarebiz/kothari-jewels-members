@@ -22,8 +22,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title=""
+            description=""
         >
             <Head title="Log in" />
 
@@ -115,12 +115,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             </Button>
                         </div>
 
-                        <div className="text-center text-gray-600 text-xs text-muted-foreground">
+                        {/* <div className="text-center text-gray-600 text-xs text-muted-foreground">
                             Don't have an account?{' '}
                             <TextLink className="text-gray-500 hover:text-red-400 ml-1.5" href={register()} tabIndex={5}>
                                 Sign up
                             </TextLink>
-                        </div>
+                        </div> */}
                     </>
                 )}
             </Form>

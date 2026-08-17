@@ -439,6 +439,13 @@ export default function ProductShow({
               </Link>
               <span className="text-lg">›</span>
               <Link
+                href={`/products?category=${category.slug}`}
+                className="text-gray-900 hover:text-red-400 transition-colors"
+              >
+                {category.name}
+              </Link>
+              <span className="text-lg">›</span>
+              <Link
                 href="/products"
                 className="text-gray-900 hover:text-red-400 transition-colors"
               >
@@ -544,7 +551,7 @@ export default function ProductShow({
                             <img
                               src={getImageSrc(image.src)}
                               alt={`${product.title} - ${index}`}
-                              className="w-full aspect-square object-cover"
+                              className="w-full object-cover"
                             />
                           </div>
                         );
@@ -574,7 +581,7 @@ export default function ProductShow({
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6 h-fit px-4 sm:px-6 lg:px-0 flex flex-col justify-center lg:sticky lg:top-28 lg:self-start lg:translate-y-0">
+            <div className="space-y-6 h-fit px-4 sm:px-6 lg:px-0 flex flex-col justify-center lg:sticky lg:top-36 lg:self-start lg:translate-y-0">
               <div>
                 <div className="w-full mb-4">
                   <h1 className="text-[22px] font-jost uppercase font-semibold text-center lg:text-start text-gray-900 mb-2">
