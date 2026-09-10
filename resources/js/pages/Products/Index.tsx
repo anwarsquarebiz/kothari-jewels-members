@@ -199,20 +199,20 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           )} */}
 
-         <div className='flex w-full justify-between items-center opacity-0 group-hover:opacity-100 my-3'>
+         <div className='flex w-full justify-between items-center my-3'>
            <p className="text-base font-normal text-gray-900">{product?.sku ? product.sku : ''}</p>
            <p className="text-base font-normal text-gray-900">{product?.price ? (product?.price / 100000).toFixed(2) + 'L'  : ' '}</p>
          </div>
         </div>
 
         {/* Select Size Button */}
-        <button
+        {/* <button
           className={`w-full bg-black text-white cursor-pointer py-3 text-xs font-medium tracking-wider transition-all duration-300
             opacity-100 sm:opacity-100 lg:${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
           `}
         >
           View More
-        </button>
+        </button> */}
       </div>
     </Link>
   );
