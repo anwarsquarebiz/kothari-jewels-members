@@ -614,7 +614,7 @@ export default function ProductShow({
               {/* Price */}
               {product?.price && (
                 <div className="flex items-center justify-start py-4 border-t border-b border-gray-200">
-                  <div className="text-sm font-semibold text-gray-900">
+                  <div className="font-semibold text-gray-900 italic">
                     {(product?.price / 100000).toFixed(2) + 'L'} 
                   </div>
                   {/* <button className="text-gray-400 hover:text-red-500 transition-colors">
