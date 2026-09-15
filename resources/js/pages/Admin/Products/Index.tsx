@@ -19,7 +19,7 @@ import {
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type PaginatedData, type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Plus, Search, Edit, Trash2, Eye, Image } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Image, Upload, Download, FileSpreadsheet } from 'lucide-react';
 import { useState } from 'react';
 
 interface Category {
@@ -98,12 +98,32 @@ export default function Index({ products, categories, filters }: Props) {
                             Manage your products
                         </p>
                     </div>
-                    <Link href='/admin/products/create'>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Product
-                        </Button>
-                    </Link>
+                    <div className="flex flex-wrap gap-2">
+                        <a href="/admin/products/import/template">
+                            <Button variant="outline" type="button">
+                                <Download className="h-4 w-4 mr-2" />
+                                Template
+                            </Button>
+                        </a>
+                        <a href="/admin/products/export">
+                            <Button variant="outline" type="button">
+                                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                                Export
+                            </Button>
+                        </a>
+                        <Link href="/admin/products/import">
+                            <Button variant="outline">
+                                <Upload className="h-4 w-4 mr-2" />
+                                Import
+                            </Button>
+                        </Link>
+                        <Link href="/admin/products/create">
+                            <Button>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Product
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Filters */}

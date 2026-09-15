@@ -20,6 +20,12 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::resource('categories', App\Http\Controllers\Admin\AdminCategoryController::class);
     Route::patch('categories/{category}/toggle-status', [App\Http\Controllers\Admin\AdminCategoryController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
 
+    // Products bulk import/export (before resource so "import" is not a product id)
+    Route::get('products/import', [App\Http\Controllers\Admin\AdminProductImportController::class, 'create'])->name('admin.products.import');
+    Route::post('products/import', [App\Http\Controllers\Admin\AdminProductImportController::class, 'store'])->name('admin.products.import.store');
+    Route::get('products/import/template', [App\Http\Controllers\Admin\AdminProductImportController::class, 'template'])->name('admin.products.import.template');
+    Route::get('products/export', [App\Http\Controllers\Admin\AdminProductImportController::class, 'export'])->name('admin.products.export');
+
     // Products CRUD
     Route::resource('products', App\Http\Controllers\Admin\AdminProductController::class);
     Route::get('products/{product}/images', [App\Http\Controllers\Admin\AdminProductController::class, 'manageImages'])->name('admin.products.images');
