@@ -35,17 +35,21 @@ interface Category {
   slug: string
 }
 
+interface PaginationLink {
+  url: string | null
+  label: string
+  active: boolean
+}
+
 interface PaginatedProducts {
   data: Product[]
-  links: any[]
-  meta: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-    from: number
-    to: number
-  }
+  links: PaginationLink[]
+  current_page: number
+  last_page: number
+  per_page: number
+  total: number
+  from: number | null
+  to: number | null
 }
 
 interface Props {
@@ -765,7 +769,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
               {/* Results Count and Desktop Sort */}
               <div className="flex justify-end items-center mb-6">
                 <p className="text-gray-600 text-sm font-jost">
-                  Showing {products.data.length} of {products.meta?.total ?? products.data.length} products
+                  Showing {products.data.length} of {products.total ?? products.data.length} products
                 </p>
               </div>
 
@@ -784,8 +788,18 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
               )}
 
               {/* Pagination */}
-              {products.data.length > 0 && products.meta && products.links && (
-                <Pagination links={products.links} meta={products.meta} />
+              {products.data.length > 0 && Array.isArray(products.links) && products.links.length > 0 && (
+                <Pagination
+                  links={products.links}
+                  meta={{
+                    current_page: products.current_page,
+                    last_page: products.last_page,
+                    per_page: products.per_page,
+                    total: products.total,
+                    from: products.from ?? 0,
+                    to: products.to ?? 0,
+                  }}
+                />
               )}
             </div>
           </div>

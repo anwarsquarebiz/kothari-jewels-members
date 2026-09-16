@@ -228,19 +228,21 @@ class AdminProductController extends Controller
         try {
             DB::beginTransaction();
 
-            // Check if product has images
-            if ($product->images()->count() > 0) {
-                return back()->with('error', 'Cannot delete product with images. Please remove images first.');
-            }
+            $product->load(['images', 'details']);
 
-            // Check if product has details
-            if ($product->details()->count() > 0) {
-                return back()->with('error', 'Cannot delete product with details. Please remove details first.');
-            }
+            $uploadedPaths = $product->images
+                ->pluck('src')
+                ->concat($product->details->pluck('image'))
+                ->filter()
+                ->values();
 
             $product->delete();
 
             DB::commit();
+
+            foreach ($uploadedPaths as $path) {
+                $this->deleteUploadedImage($path);
+            }
 
             return redirect()->route('admin.products.index')
                 ->with('success', 'Product deleted successfully.');

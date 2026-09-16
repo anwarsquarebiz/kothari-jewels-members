@@ -27,7 +27,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::get('products/export', [App\Http\Controllers\Admin\AdminProductImportController::class, 'export'])->name('admin.products.export');
 
     // Products CRUD
-    Route::resource('products', App\Http\Controllers\Admin\AdminProductController::class);
+    Route::resource('products', App\Http\Controllers\Admin\AdminProductController::class)->names('admin.products');
     Route::get('products/{product}/images', [App\Http\Controllers\Admin\AdminProductController::class, 'manageImages'])->name('admin.products.images');
     Route::post('products/{product}/images', [App\Http\Controllers\Admin\AdminProductController::class, 'storeImage'])->name('admin.products.images.store');
     Route::delete('products/{product}/images/{image}', [App\Http\Controllers\Admin\AdminProductController::class, 'deleteImage'])->name('admin.products.images.delete');
