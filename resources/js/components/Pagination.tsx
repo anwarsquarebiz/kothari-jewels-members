@@ -20,57 +20,65 @@ interface Props {
   meta: PaginationMeta
 }
 
+const arrowClass =
+  'relative inline-flex items-center px-2 py-2 font-jost text-gray-900 transition-colors duration-200 hover:bg-black hover:text-white focus:z-20 focus:outline-none'
+const arrowDisabledClass =
+  'relative inline-flex items-center px-2 py-2 font-jost text-gray-300 cursor-not-allowed'
+const mobileLinkClass =
+  'relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium font-jost text-gray-900 transition-colors duration-200 hover:bg-black hover:text-white'
+const mobileDisabledClass =
+  'relative inline-flex items-center border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium font-jost text-gray-400 cursor-not-allowed'
+
 export default function Pagination({ links, meta }: Props) {
-  // Safety check for meta object
-  if (!meta || !links) {
+  if (!meta || !Array.isArray(links) || links.length === 0) {
     return null;
   }
 
   return (
-    <nav className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+    <nav className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 font-jost sm:px-6">
       <div className="flex flex-1 justify-between sm:hidden">
         {links[0].url ? (
           <Link
             href={links[0].url}
-            className="relative inline-flex items-center  border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className={mobileLinkClass}
           >
             Previous
           </Link>
         ) : (
-          <span className="relative inline-flex items-center  border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+          <span className={mobileDisabledClass}>
             Previous
           </span>
         )}
         {links[links.length - 1].url ? (
           <Link
             href={links[links.length - 1].url}
-            className="relative ml-3 inline-flex items-center  border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className={`${mobileLinkClass} ml-3`}
           >
             Next
           </Link>
         ) : (
-          <span className="relative ml-3 inline-flex items-center  border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+          <span className={`${mobileDisabledClass} ml-3`}>
             Next
           </span>
         )}
       </div>
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm text-gray-700">
-            Showing <span className="font-medium">{meta.from}</span> to{' '}
-            <span className="font-medium">{meta.to}</span> of{' '}
-            <span className="font-medium">{meta.total}</span> results
+          <p className="text-sm text-gray-600">
+            Showing <span className="font-medium text-gray-900">{meta.from}</span> to{' '}
+            <span className="font-medium text-gray-900">{meta.to}</span> of{' '}
+            <span className="font-medium text-gray-900">{meta.total}</span> results
           </p>
         </div>
         <div>
-          <nav className="isolate inline-flex -space-x-px  shadow-sm" aria-label="Pagination">
+          <nav className="isolate inline-flex -space-x-px border border-gray-300" aria-label="Pagination">
             {links.map((link, index) => {
               if (index === 0) {
                 return link.url ? (
                   <Link
                     key={index}
                     href={link.url}
-                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    className={arrowClass}
                   >
                     <span className="sr-only">Previous</span>
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -84,7 +92,7 @@ export default function Pagination({ links, meta }: Props) {
                 ) : (
                   <span
                     key={index}
-                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed"
+                    className={arrowDisabledClass}
                   >
                     <span className="sr-only">Previous</span>
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -103,7 +111,7 @@ export default function Pagination({ links, meta }: Props) {
                   <Link
                     key={index}
                     href={link.url}
-                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    className={arrowClass}
                   >
                     <span className="sr-only">Next</span>
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -117,7 +125,7 @@ export default function Pagination({ links, meta }: Props) {
                 ) : (
                   <span
                     key={index}
-                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed"
+                    className={arrowDisabledClass}
                   >
                     <span className="sr-only">Next</span>
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -135,7 +143,7 @@ export default function Pagination({ links, meta }: Props) {
                 return (
                   <span
                     key={index}
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-medium font-jost text-gray-400"
                   >
                     {link.label}
                   </span>
@@ -146,10 +154,10 @@ export default function Pagination({ links, meta }: Props) {
                 <Link
                   key={index}
                   href={link.url}
-                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
+                  className={`relative inline-flex items-center px-4 py-2 text-sm font-medium font-jost transition-colors duration-200 focus:z-20 focus:outline-none ${
                     link.active
-                      ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
-                      : 'text-gray-900'
+                      ? 'z-10 bg-black text-white hover:bg-gray-800 hover:text-white'
+                      : 'text-gray-900 hover:bg-black hover:text-white'
                   }`}
                 >
                   {link.label}
