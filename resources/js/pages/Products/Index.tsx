@@ -151,7 +151,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         </button> */}
 
         {/* Navigation Arrows */}
-        {images.length > 1 && (
+        {/* {images.length > 1 && (
           <>
             <button
               onClick={handlePrevImage}
@@ -173,10 +173,10 @@ const ProductCard = ({ product }: { product: Product }) => {
               <ChevronRight size={20} className="text-gray-900" />
             </button>
           </>
-        )}
+        )} */}
 
         {/* Progress Indicator */}
-        {images.length > 1 && (
+        {/* {images.length > 1 && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
             <div
               className="h-full bg-gray-900 transition-all duration-300 ease-out"
@@ -186,7 +186,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               }}
             />
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Content Section */}
