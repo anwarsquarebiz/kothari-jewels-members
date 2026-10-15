@@ -37,6 +37,11 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::post('products/{product}/details', [App\Http\Controllers\Admin\AdminProductController::class, 'storeDetail'])->name('admin.products.details.store');
     Route::put('products/{product}/details/{detail}', [App\Http\Controllers\Admin\AdminProductController::class, 'updateDetail'])->name('admin.products.details.update');
     Route::delete('products/{product}/details/{detail}', [App\Http\Controllers\Admin\AdminProductController::class, 'deleteDetail'])->name('admin.products.details.delete');
+
+    // Client visit summaries (in-store leads)
+    Route::get('client-visits/product-search', [App\Http\Controllers\Admin\AdminClientVisitController::class, 'productSearch'])->name('client-visits.product-search');
+    Route::get('client-visits/{client_visit}/pdf', [App\Http\Controllers\Admin\AdminClientVisitController::class, 'pdf'])->name('client-visits.pdf');
+    Route::resource('client-visits', App\Http\Controllers\Admin\AdminClientVisitController::class);
 });
 
 // E-commerce routes for all authenticated users

@@ -9,12 +9,17 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
+import { followUpBadgeClass, followUpStatus, formatDisplayDate, intentBadgeClass } from '@/lib/client-visits';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
+    BellRing,
+    ClipboardList,
     FolderTree,
+    Plus,
     Gem,
     ImageOff,
     Link2,
@@ -74,6 +79,19 @@ interface Stats {
     staff_admin_or_manager: number;
     product_access_assignments: number;
     products_without_images: number;
+    client_visits_this_month: number;
+    follow_ups_due: number;
+}
+
+interface VisitSummary {
+    id: number;
+    client_name: string;
+    visit_date: string;
+    attended_by: string;
+    buying_intent: string;
+    buying_intent_label: string;
+    follow_up_date: string | null;
+    follow_up_by: string | null;
 }
 
 interface Props {
@@ -82,6 +100,8 @@ interface Props {
     top_categories: TopCategory[];
     recent_members: RecentMember[];
     products_needing_images: ProductNeedingImages[];
+    recent_visits: VisitSummary[];
+    follow_ups_due: VisitSummary[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -110,6 +130,8 @@ export default function AdminDashboard({
     top_categories,
     recent_members,
     products_needing_images,
+    recent_visits,
+    follow_ups_due,
 }: Props) {
     const statCards = [
         {
@@ -181,6 +203,94 @@ export default function AdminDashboard({
                             <div key={label}>{inner}</div>
                         );
                     })}
+                </div>
+
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <ClipboardList className="size-5" aria-hidden />
+                                    Recent client visits
+                                </CardTitle>
+                                <CardDescription>{stats.client_visits_this_month} recorded this month</CardDescription>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button variant="outline" size="sm" asChild>
+                                    <Link href="/admin/client-visits">View all</Link>
+                                </Button>
+                                <Button size="sm" asChild>
+                                    <Link href="/admin/client-visits/create">
+                                        <Plus className="size-4" />
+                                        New
+                                    </Link>
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {recent_visits.length === 0 ? (
+                                <p className="text-muted-foreground text-sm">No client visits recorded yet.</p>
+                            ) : (
+                                recent_visits.map((v) => (
+                                    <div
+                                        key={v.id}
+                                        className="flex items-center justify-between gap-2 rounded-lg border border-transparent px-2 py-2 text-sm transition-colors hover:border-border hover:bg-muted/40"
+                                    >
+                                        <div className="min-w-0">
+                                            <Link href={`/admin/client-visits/${v.id}`} className="font-medium hover:underline">
+                                                {v.client_name}
+                                            </Link>
+                                            <p className="text-muted-foreground text-xs">
+                                                {formatDisplayDate(v.visit_date)} · {v.attended_by}
+                                            </p>
+                                        </div>
+                                        <span className={cn('shrink-0 rounded px-2 py-1 text-xs', intentBadgeClass[v.buying_intent])}>
+                                            {v.buying_intent_label.split(' / ')[0]}
+                                        </span>
+                                    </div>
+                                ))
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card className={stats.follow_ups_due > 0 ? 'border-red-500/40' : undefined}>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <BellRing className="size-5" aria-hidden />
+                                    Follow-ups due
+                                </CardTitle>
+                                <CardDescription>
+                                    {stats.follow_ups_due} client{stats.follow_ups_due === 1 ? '' : 's'} due today or overdue
+                                </CardDescription>
+                            </div>
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/admin/client-visits?follow_up=due">View all</Link>
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {follow_ups_due.length === 0 ? (
+                                <p className="text-muted-foreground text-sm">No follow-ups due. All caught up.</p>
+                            ) : (
+                                follow_ups_due.map((v) => (
+                                    <div
+                                        key={v.id}
+                                        className="flex items-center justify-between gap-2 rounded-lg border border-transparent px-2 py-2 text-sm transition-colors hover:border-border hover:bg-muted/40"
+                                    >
+                                        <div className="min-w-0">
+                                            <Link href={`/admin/client-visits/${v.id}`} className="font-medium hover:underline">
+                                                {v.client_name}
+                                            </Link>
+                                            <p className="text-muted-foreground text-xs">{v.follow_up_by ? `Assigned to ${v.follow_up_by}` : 'Unassigned'}</p>
+                                        </div>
+                                        <span className={cn('shrink-0 rounded px-2 py-1 text-xs', followUpBadgeClass[followUpStatus(v.follow_up_date)])}>
+                                            {formatDisplayDate(v.follow_up_date)}
+                                        </span>
+                                    </div>
+                                ))
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
 
                 {stats.products_without_images > 0 && (
