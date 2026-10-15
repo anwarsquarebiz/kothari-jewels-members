@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\ClientVisit;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -88,6 +89,20 @@ class AdminDashboardController extends Controller
                 'sku' => $product->sku,
             ]);
 
+        $recentVisits = ClientVisit::query()
+            ->orderByDesc('visit_date')
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get()
+            ->map(fn (ClientVisit $visit) => $this->visitSummary($visit));
+
+        $followUpsDue = ClientVisit::query()
+            ->followUpDue()
+            ->orderBy('follow_up_date')
+            ->limit(5)
+            ->get()
+            ->map(fn (ClientVisit $visit) => $this->visitSummary($visit));
+
         $staffCount = User::query()
             ->whereHas('roles', fn ($q) => $q->whereIn('slug', ['admin', 'manager']))
             ->count();
@@ -103,11 +118,34 @@ class AdminDashboardController extends Controller
                 'staff_admin_or_manager' => $staffCount,
                 'product_access_assignments' => $productAccessAssignments,
                 'products_without_images' => $productsWithoutImages,
+                'client_visits_this_month' => ClientVisit::query()
+                    ->whereDate('visit_date', '>=', now()->startOfMonth()->toDateString())
+                    ->count(),
+                'follow_ups_due' => ClientVisit::query()->followUpDue()->count(),
             ],
             'recent_products' => $recentProducts,
             'top_categories' => $topCategories,
             'recent_members' => $recentMembers,
             'products_needing_images' => $productsNeedingImages,
+            'recent_visits' => $recentVisits,
+            'follow_ups_due' => $followUpsDue,
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function visitSummary(ClientVisit $visit): array
+    {
+        return [
+            'id' => $visit->id,
+            'client_name' => $visit->client_name,
+            'visit_date' => $visit->visit_date?->toDateString(),
+            'attended_by' => $visit->attended_by,
+            'buying_intent' => $visit->buying_intent?->value,
+            'buying_intent_label' => $visit->buying_intent?->label(),
+            'follow_up_date' => $visit->follow_up_date?->toDateString(),
+            'follow_up_by' => $visit->follow_up_by,
+        ];
     }
 }

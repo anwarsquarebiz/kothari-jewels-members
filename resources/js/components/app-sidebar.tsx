@@ -13,7 +13,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, ShoppingBag, Package, Tag, Users } from 'lucide-react';
+import { BookOpen, ClipboardList, Folder, LayoutGrid, ShoppingBag, Package, Tag, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -21,6 +21,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Client Visits',
+        href: '/admin/client-visits',
+        icon: ClipboardList,
     },
     {
         title: 'Admin users',
