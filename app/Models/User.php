@@ -152,6 +152,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Path to send this account after a successful login.
+     */
+    public function homePath(): string
+    {
+        if ($this->hasAnyRole(['admin', 'manager'])) {
+            return route('dashboard', absolute: false);
+        }
+
+        return route('products.index', absolute: false);
+    }
+
+    /**
      * Get all permissions for the user (from all roles).
      */
     public function getAllPermissions(): array

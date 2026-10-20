@@ -556,8 +556,8 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
             </nav>
           </div>
 
-          {/* Mobile Filter and Sort Buttons */}
-          <div className="lg:hidden flex justify-between items-center mb-6">
+          {/* Filter and Sort buttons — phones, tablets, and small laptops */}
+          <div className="xl:hidden flex justify-between items-center mb-6">
             <button
               onClick={() => setIsFilterModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300  text-sm font-medium text-gray-700 bg-white"
@@ -579,9 +579,9 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
             </button>
           </div>
 
-          <div className="flex flex-col mt-4 lg:flex-row gap-6 xl:gap-8">
-            {/* Desktop Filters Sidebar - Cartier Style with Separate Dropdowns */}
-            <div className="hidden lg:block lg:w-60 xl:w-64 shrink-0">
+          <div className="flex flex-col mt-4 xl:flex-row gap-6 xl:gap-8">
+            {/* Filters sidebar — wide screens only; smaller viewports use the toggle above */}
+            <div className="hidden xl:block xl:w-64 shrink-0">
               <div className="sticky top-24">
                 {/* Filters Section */}
                 <div className=" p-2.5 border-b border-gray-300">
@@ -780,7 +780,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                   <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
                   {products.data.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}

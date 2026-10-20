@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
@@ -11,7 +12,41 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
+    $role = Role::query()->firstOrCreate(
+        ['slug' => 'user'],
+        [
+            'name' => 'User',
+            'description' => null,
+            'permissions' => null,
+            'is_active' => true,
+        ],
+    );
+
     $user = User::factory()->create();
+    $user->roles()->attach($role);
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('products.index', absolute: false));
+});
+
+test('admins and managers are redirected to the dashboard after login', function (string $slug) {
+    $role = Role::query()->firstOrCreate(
+        ['slug' => $slug],
+        [
+            'name' => ucfirst($slug),
+            'description' => null,
+            'permissions' => null,
+            'is_active' => true,
+        ],
+    );
+
+    $user = User::factory()->create();
+    $user->roles()->attach($role);
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -20,7 +55,7 @@ test('users can authenticate using the login screen', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
-});
+})->with(['admin', 'manager']);
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
     if (! Features::canManageTwoFactorAuthentication()) {
