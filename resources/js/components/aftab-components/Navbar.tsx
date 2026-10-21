@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Menu } from "lucide-react";
-import { Link } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { dashboard, login, logout } from "@/routes";
+import { type SharedData } from "@/types";
 
 interface NavbarProps {
   setNavHeight?: (height: number) => void;
 }
 
+const menuItemClass =
+  "block w-full px-4 py-2.5 text-left text-xs font-medium tracking-widest text-gray-800 hover:bg-amber-50 hover:text-amber-800 transition-colors";
+
 const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
+  const { auth } = usePage<SharedData>().props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; right: number }>({
     top: 80,
@@ -151,10 +157,41 @@ const Navbar: React.FC<NavbarProps> = ({ setNavHeight }) => {
           <a
             href="#high-jewellery"
             onClick={() => setIsMenuOpen(false)}
-            className="block px-4 py-2.5 text-xs font-medium tracking-widest text-gray-800 hover:bg-amber-50 hover:text-amber-800 transition-colors"
+            className={menuItemClass}
           >
             HIGH JEWELLERY
           </a>
+          <div className="my-2 border-t border-gray-100" />
+          {auth.canAccessAdmin && (
+            <Link
+              href={dashboard()}
+              onClick={() => setIsMenuOpen(false)}
+              className={menuItemClass}
+            >
+              ADMIN DASHBOARD
+            </Link>
+          )}
+          {auth.user ? (
+            <Link
+              href={logout()}
+              as="button"
+              className={menuItemClass}
+              onClick={() => {
+                setIsMenuOpen(false);
+                router.flushAll();
+              }}
+            >
+              LOG OUT
+            </Link>
+          ) : (
+            <Link
+              href={login()}
+              onClick={() => setIsMenuOpen(false)}
+              className={menuItemClass}
+            >
+              LOG IN
+            </Link>
+          )}
         </div>
       )}
     </>

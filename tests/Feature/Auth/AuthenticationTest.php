@@ -34,6 +34,42 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('products.index', absolute: false));
 });
 
+test('authenticated members visiting home or login are sent to products', function () {
+    $role = Role::query()->firstOrCreate(
+        ['slug' => 'user'],
+        [
+            'name' => 'User',
+            'description' => null,
+            'permissions' => null,
+            'is_active' => true,
+        ],
+    );
+
+    $user = User::factory()->create();
+    $user->roles()->attach($role);
+
+    $this->actingAs($user)->get('/')->assertRedirect(route('products.index'));
+    $this->actingAs($user)->get(route('login'))->assertRedirect(route('products.index'));
+});
+
+test('authenticated admins visiting home or login are sent to the dashboard', function () {
+    $role = Role::query()->firstOrCreate(
+        ['slug' => 'admin'],
+        [
+            'name' => 'Admin',
+            'description' => null,
+            'permissions' => null,
+            'is_active' => true,
+        ],
+    );
+
+    $user = User::factory()->create();
+    $user->roles()->attach($role);
+
+    $this->actingAs($user)->get('/')->assertRedirect(route('dashboard'));
+    $this->actingAs($user)->get(route('login'))->assertRedirect(route('dashboard'));
+});
+
 test('admins and managers are redirected to the dashboard after login', function (string $slug) {
     $role = Role::query()->firstOrCreate(
         ['slug' => $slug],
