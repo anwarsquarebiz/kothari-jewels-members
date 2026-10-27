@@ -98,17 +98,35 @@ export default function ClientVisitForm({ options, initialData, action, method, 
 
     transform((form) => ({
         ...form,
-        items: form.items.map((item) => ({
-            product_id: item.product_id,
-            stock_code: item.product_id ? null : item.stock_code,
-            notes: item.notes,
-        })),
+        items: form.items.map((item) => {
+            const payload: Record<string, unknown> = {
+                product_id: item.product_id,
+                stock_code: item.product_id ? null : item.stock_code,
+                notes: item.notes,
+            };
+
+            if (!item.product_id) {
+                payload.remove_image = item.remove_image ? 1 : 0;
+                if (!item.remove_image && item.image) {
+                    payload.existing_image = item.image;
+                }
+                if (item.image_file instanceof File) {
+                    payload.image = item.image_file;
+                }
+            }
+
+            return payload;
+        }),
     }));
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        const submit = method === 'put' ? put : post;
-        submit(action);
+        const options = { forceFormData: true };
+        if (method === 'put') {
+            put(action, options);
+        } else {
+            post(action, options);
+        }
     };
 
     const hasErrors = Object.keys(errors).length > 0;
@@ -223,7 +241,7 @@ export default function ClientVisitForm({ options, initialData, action, method, 
                 </Field>
             </Section>
 
-            <Section number="03" title="Pieces of Interest" description="Record the pieces the client expressed interest in. Search the catalogue, or add a stock code manually.">
+            <Section number="03" title="Pieces of Interest" description="Record the pieces the client expressed interest in. Search the catalogue, or add a stock code and photo manually.">
                 <ProductPicker items={data.items} onChange={(items) => setData('items', items)} errors={fieldErrors} />
             </Section>
 

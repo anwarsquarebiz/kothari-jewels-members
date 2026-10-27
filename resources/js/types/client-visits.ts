@@ -24,6 +24,10 @@ export interface ClientVisitItem {
     product_id: number | null;
     stock_code: string | null;
     notes: string | null;
+    image?: string | null;
+    image_file?: File | null;
+    image_preview?: string | null;
+    remove_image?: boolean;
     product: CatalogueProduct | null;
 }
 

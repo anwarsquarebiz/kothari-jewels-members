@@ -15,6 +15,7 @@ use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -143,6 +144,12 @@ class AdminClientVisitController extends Controller
 
     public function destroy(ClientVisit $clientVisit)
     {
+        $clientVisit->loadMissing('items');
+
+        foreach ($clientVisit->items as $item) {
+            $this->deleteVisitImage($item->image);
+        }
+
         $clientVisit->delete();
 
         return redirect()->route('client-visits.index')
@@ -179,7 +186,7 @@ class AdminClientVisitController extends Controller
 
         $items = $clientVisit->items->map(function (ClientVisitItem $item) {
             $product = $item->product;
-            $image = $product ? $this->primaryImageSrc($product) : null;
+            $image = $product ? $this->primaryImageSrc($product) : $item->image;
 
             return [
                 'sku' => $product?->sku ?? $item->stock_code,
@@ -213,11 +220,14 @@ class AdminClientVisitController extends Controller
      */
     private function syncItems(ClientVisit $visit, array $items): void
     {
+        $previousImages = $visit->items()->pluck('image')->filter()->values()->all();
         $visit->items()->delete();
 
         $skus = Product::query()
             ->whereIn('id', array_filter(array_column($items, 'product_id')))
             ->pluck('sku', 'id');
+
+        $keptImages = [];
 
         foreach (array_values($items) as $position => $item) {
             $productId = $item['product_id'] ?? null;
@@ -225,12 +235,78 @@ class AdminClientVisitController extends Controller
                 ? $skus[$productId] ?? null
                 : (filled($item['stock_code'] ?? null) ? trim($item['stock_code']) : null);
 
+            $image = $productId ? null : $this->resolveManualImage($item, $previousImages);
+
+            if ($image) {
+                $keptImages[] = $image;
+            }
+
             $visit->items()->create([
                 'product_id' => $productId,
                 'stock_code' => $stockCode,
+                'image' => $image,
                 'notes' => $item['notes'] ?? null,
                 'position' => $position,
             ]);
+        }
+
+        foreach ($previousImages as $path) {
+            if (! in_array($path, $keptImages, true)) {
+                $this->deleteVisitImage($path);
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     * @param  array<int, string>  $previousImages
+     */
+    private function resolveManualImage(array $item, array $previousImages): ?string
+    {
+        $upload = $item['image'] ?? null;
+
+        if ($upload instanceof UploadedFile) {
+            return $this->storeVisitImage($upload);
+        }
+
+        if (filter_var($item['remove_image'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            return null;
+        }
+
+        $existing = $item['existing_image'] ?? null;
+
+        if (! is_string($existing) || ! in_array($existing, $previousImages, true)) {
+            return null;
+        }
+
+        return $existing;
+    }
+
+    private function storeVisitImage(UploadedFile $file): string
+    {
+        $extension = $file->guessExtension() ?: 'jpg';
+        $filename = Str::uuid()->toString().'.'.$extension;
+        $directory = public_path('media/uploads/client-visits');
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $file->move($directory, $filename);
+
+        return '/media/uploads/client-visits/'.$filename;
+    }
+
+    private function deleteVisitImage(?string $path): void
+    {
+        if (! is_string($path) || ! str_starts_with($path, '/media/uploads/client-visits/')) {
+            return;
+        }
+
+        $fullPath = public_path(ltrim($path, '/'));
+
+        if (is_file($fullPath)) {
+            unlink($fullPath);
         }
     }
 
@@ -270,6 +346,7 @@ class AdminClientVisitController extends Controller
                 'id' => $item->id,
                 'product_id' => $item->product_id,
                 'stock_code' => $item->stock_code,
+                'image' => $item->image,
                 'notes' => $item->notes,
                 'product' => $item->product ? $this->serializeProduct($item->product) : null,
             ])->values(),
