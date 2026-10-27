@@ -43,6 +43,9 @@ class ClientVisitRequest extends FormRequest
             'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
             'items.*.stock_code' => ['nullable', 'string', 'max:255'],
             'items.*.notes' => ['nullable', 'string', 'max:255'],
+            'items.*.image' => ['nullable', 'file', 'image', 'mimes:jpeg,jpg,png,webp,gif', 'max:5120'],
+            'items.*.existing_image' => ['nullable', 'string', 'max:255'],
+            'items.*.remove_image' => ['nullable', 'boolean'],
         ];
     }
 

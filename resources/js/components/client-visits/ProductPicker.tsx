@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { type CatalogueProduct, type ClientVisitItem } from '@/types/client-visits';
-import { ArrowDown, ArrowUp, Check, ImageIcon, Loader2, PenLine, Plus, Search, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, ImageIcon, ImagePlus, Loader2, PenLine, Plus, Search, Trash2, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -19,6 +19,67 @@ function ProductThumb({ src, className }: { src: string | null; className?: stri
     ) : (
         <div className={cn('bg-muted flex h-10 w-10 items-center justify-center rounded border', className)}>
             <ImageIcon className="text-muted-foreground h-4 w-4" />
+        </div>
+    );
+}
+
+function manualImageSrc(item: ClientVisitItem): string | null {
+    if (item.remove_image) {
+        return null;
+    }
+
+    return item.image_preview || item.image || null;
+}
+
+function ManualImageField({
+    item,
+    inputId,
+    onSelect,
+    onClear,
+}: {
+    item: ClientVisitItem;
+    inputId: string;
+    onSelect: (file: File) => void;
+    onClear: () => void;
+}) {
+    const src = manualImageSrc(item);
+
+    return (
+        <div className="flex h-9 shrink-0 items-center gap-1">
+            <label
+                htmlFor={inputId}
+                className="border-input bg-background hover:bg-accent flex h-9 cursor-pointer items-center gap-2 border px-2.5 shadow-xs transition-colors"
+            >
+                {src ? (
+                    <img src={src} alt="" className="h-6 w-6 object-cover" />
+                ) : (
+                    <ImagePlus className="text-muted-foreground h-4 w-4" />
+                )}
+                <span className="text-muted-foreground text-sm whitespace-nowrap">{src ? 'Change image' : 'Upload image'}</span>
+                <input
+                    id={inputId}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="sr-only"
+                    onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) {
+                            onSelect(file);
+                        }
+                        event.target.value = '';
+                    }}
+                />
+            </label>
+            {src && (
+                <button
+                    type="button"
+                    onClick={onClear}
+                    className="border-input bg-background hover:bg-accent flex h-9 w-9 items-center justify-center border shadow-xs"
+                    aria-label="Remove image"
+                >
+                    <X className="h-4 w-4" />
+                </button>
+            )}
         </div>
     );
 }
@@ -93,8 +154,34 @@ export default function ProductPicker({ items, onChange, errors = {} }: Props) {
     };
 
     const addManual = () => {
-        onChange([...items, { product_id: null, stock_code: '', notes: null, product: null }]);
+        onChange([...items, { product_id: null, stock_code: '', notes: null, image: null, image_file: null, product: null }]);
         setFocusIndex(items.length);
+    };
+
+    const releasePreview = (item: ClientVisitItem) => {
+        if (item.image_preview?.startsWith('blob:')) {
+            URL.revokeObjectURL(item.image_preview);
+        }
+    };
+
+    const setManualImage = (index: number, file: File) => {
+        const current = items[index];
+        releasePreview(current);
+        updateItem(index, {
+            image_file: file,
+            image_preview: URL.createObjectURL(file),
+            remove_image: false,
+        });
+    };
+
+    const clearManualImage = (index: number) => {
+        const current = items[index];
+        releasePreview(current);
+        updateItem(index, {
+            image_file: null,
+            image_preview: null,
+            remove_image: true,
+        });
     };
 
     const updateItem = (index: number, patch: Partial<ClientVisitItem>) => {
@@ -102,6 +189,7 @@ export default function ProductPicker({ items, onChange, errors = {} }: Props) {
     };
 
     const removeItem = (index: number) => {
+        releasePreview(items[index]);
         onChange(items.filter((_, i) => i !== index));
     };
 
@@ -186,6 +274,7 @@ export default function ProductPicker({ items, onChange, errors = {} }: Props) {
                 <ol className="space-y-2">
                     {items.map((item, index) => {
                         const error = errors[`items.${index}.stock_code`] ?? errors[`items.${index}.product_id`];
+                        const imageError = errors[`items.${index}.image`];
                         return (
                             <li key={item.product_id ? `p-${item.product_id}` : `m-${index}`} className="rounded-lg border p-3">
                                 <div className="flex items-start gap-3">
@@ -218,15 +307,23 @@ export default function ProductPicker({ items, onChange, errors = {} }: Props) {
                                         </>
                                     ) : (
                                         <div className="min-w-0 flex-1 space-y-2">
-                                            <Input
-                                                ref={(el) => {
-                                                    manualInputRefs.current[index] = el;
-                                                }}
-                                                value={item.stock_code ?? ''}
-                                                onChange={(e) => updateItem(index, { stock_code: e.target.value })}
-                                                placeholder="Label / Stock Code"
-                                                className={cn('font-mono', error && 'border-red-500')}
-                                            />
+                                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                                <ManualImageField
+                                                    item={item}
+                                                    inputId={`manual-image-${index}`}
+                                                    onSelect={(file) => setManualImage(index, file)}
+                                                    onClear={() => clearManualImage(index)}
+                                                />
+                                                <Input
+                                                    ref={(el) => {
+                                                        manualInputRefs.current[index] = el;
+                                                    }}
+                                                    value={item.stock_code ?? ''}
+                                                    onChange={(e) => updateItem(index, { stock_code: e.target.value })}
+                                                    placeholder="Label / Stock Code"
+                                                    className={cn('h-9 font-mono sm:min-w-0 sm:flex-1', error && 'border-red-500')}
+                                                />
+                                            </div>
                                             <Input
                                                 value={item.notes ?? ''}
                                                 onChange={(e) => updateItem(index, { notes: e.target.value })}
@@ -234,6 +331,7 @@ export default function ProductPicker({ items, onChange, errors = {} }: Props) {
                                                 className="h-8 text-sm"
                                             />
                                             {error && <p className="text-sm text-red-600">{error}</p>}
+                                            {imageError && <p className="text-sm text-red-600">{imageError}</p>}
                                         </div>
                                     )}
                                     <div className="flex shrink-0 items-center gap-0.5">

@@ -5,6 +5,7 @@ use App\Models\Category;
 use App\Models\ClientVisit;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function (): void {
@@ -178,6 +179,43 @@ test('product search matches sku, title and category', function (): void {
         ->and($search(''))->toBe([]);
 
     expect($search('necklace')[0])->toHaveKeys(['id', 'sku', 'title', 'image', 'categories', 'price']);
+});
+
+test('manual pieces can store, keep, and remove an uploaded image', function (): void {
+    $file = UploadedFile::fake()->image('bangle.jpg', 40, 40);
+
+    $this->actingAs($this->admin)->post(route('client-visits.store'), visitPayload([
+        'items' => [
+            ['product_id' => null, 'stock_code' => 'TAG-IMG', 'notes' => null, 'image' => $file],
+        ],
+    ]))->assertRedirect();
+
+    $visit = ClientVisit::first();
+    $image = $visit->items->first()->image;
+    $path = public_path(ltrim((string) $image, '/'));
+
+    expect($image)->toStartWith('/media/uploads/client-visits/')
+        ->and(is_file($path))->toBeTrue();
+
+    $this->actingAs($this->admin)->put(route('client-visits.update', $visit), visitPayload([
+        'items' => [
+            ['stock_code' => 'TAG-IMG', 'existing_image' => $image, 'remove_image' => 0],
+        ],
+    ]))->assertRedirect();
+
+    $visit->refresh()->load('items');
+    expect($visit->items->first()->image)->toBe($image)
+        ->and(is_file($path))->toBeTrue();
+
+    $this->actingAs($this->admin)->put(route('client-visits.update', $visit), visitPayload([
+        'items' => [
+            ['stock_code' => 'TAG-IMG', 'remove_image' => 1],
+        ],
+    ]))->assertRedirect();
+
+    $visit->refresh()->load('items');
+    expect($visit->items->first()->image)->toBeNull()
+        ->and(is_file($path))->toBeFalse();
 });
 
 test('visit can be exported as pdf', function (): void {

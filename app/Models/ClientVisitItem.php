@@ -14,6 +14,7 @@ class ClientVisitItem extends Model
         'client_visit_id',
         'product_id',
         'stock_code',
+        'image',
         'notes',
         'position',
     ];

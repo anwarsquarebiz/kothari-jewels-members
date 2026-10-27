@@ -64,6 +64,7 @@ export default function Edit({ visit, options }: Props) {
                             product_id: item.product_id,
                             stock_code: item.product_id ? null : (item.stock_code ?? ''),
                             notes: item.notes,
+                            image: item.image ?? null,
                             product: item.product,
                         })),
                     }}

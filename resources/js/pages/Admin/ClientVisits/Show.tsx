@@ -126,11 +126,14 @@ export default function Show({ visit }: Props) {
                         <p className="text-muted-foreground text-sm">No pieces recorded.</p>
                     ) : (
                         <ol className="divide-y">
-                            {visit.items.map((item, index) => (
+                            {visit.items.map((item, index) => {
+                                const image = item.product?.image ?? item.image;
+
+                                return (
                                 <li key={item.id ?? index} className="flex items-center gap-4 py-3">
                                     <span className="text-muted-foreground w-6 text-xs font-semibold tabular-nums">{String(index + 1).padStart(2, '0')}</span>
-                                    {item.product?.image ? (
-                                        <img src={item.product.image} alt="" className="h-14 w-14 rounded border object-cover" />
+                                    {image ? (
+                                        <img src={image} alt="" className="h-14 w-14 rounded border object-cover" />
                                     ) : (
                                         <div className="bg-muted flex h-14 w-14 items-center justify-center rounded border">
                                             <ImageIcon className="text-muted-foreground h-5 w-5" />
@@ -161,7 +164,8 @@ export default function Show({ visit }: Props) {
                                     </div>
                                     {item.product?.price && <div className="text-sm whitespace-nowrap">{item.product.price}</div>}
                                 </li>
-                            ))}
+                                );
+                            })}
                         </ol>
                     )}
                 </Section>
