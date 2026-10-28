@@ -369,7 +369,7 @@ const SortModal = ({
   onClose: () => void
   sortOption: string
   setSortOption: (option: string) => void
-  applySort: () => void
+  applySort: (sort?: string) => void
 }) => {
   if (!isOpen) return null;
 
@@ -428,7 +428,7 @@ const SortModal = ({
               type="button"
               className="w-full inline-flex justify-center  border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black sm:ml-3 sm:w-auto sm:text-sm"
               onClick={() => {
-                applySort();
+                applySort(sortOption);
                 onClose();
               }}
             >
@@ -515,13 +515,13 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
     })
   }
 
-  const applySort = () => {
+  const applySort = (nextSort: string = sortOption) => {
     router.get('/products', {
       search: search || undefined,
       category: selectedCategory || undefined,
       min_price: minPrice || undefined,
       max_price: maxPrice || undefined,
-      sort: sortOption || undefined,
+      sort: nextSort || undefined,
     }, {
       preserveState: true,
       replace: true
@@ -706,7 +706,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                             checked={sortOption === 'newest'}
                             onChange={() => {
                               setSortOption('newest');
-                              applySort();
+                              applySort('newest');
                             }}
                             className="h-4 w-4 text-black focus:ring-black border-gray-300"
                           />
@@ -721,7 +721,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                             checked={sortOption === 'price-low'}
                             onChange={() => {
                               setSortOption('price-low');
-                              applySort();
+                              applySort('price-low');
                             }}
                             className="h-4 w-4 text-black focus:ring-black border-gray-300"
                           />
@@ -736,7 +736,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                             checked={sortOption === 'price-high'}
                             onChange={() => {
                               setSortOption('price-high');
-                              applySort();
+                              applySort('price-high');
                             }}
                             className="h-4 w-4 text-black focus:ring-black border-gray-300"
                           />
@@ -751,7 +751,7 @@ export default function ProductsIndex({ products, categories, filters }: Props) 
                             checked={sortOption === 'name'}
                             onChange={() => {
                               setSortOption('name');
-                              applySort();
+                              applySort('name');
                             }}
                             className="h-4 w-4 text-black focus:ring-black border-gray-300"
                           />
