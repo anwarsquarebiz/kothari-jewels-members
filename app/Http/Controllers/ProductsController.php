@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,12 +15,19 @@ class ProductsController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        
+        $sort = $request->string('sort')->toString();
+
         // Get products the user has access to
         $query = $user->accessibleProducts()
             ->with(['images', 'categories', 'primaryImage'])
-            ->withCount('images')
-            ->orderBy('created_at', 'desc');
+            ->withCount('images');
+
+        match ($sort) {
+            'price-low' => $query->orderBy('products.price')->orderBy('products.id'),
+            'price-high' => $query->orderByDesc('products.price')->orderBy('products.id'),
+            'name' => $query->orderBy('products.title')->orderBy('products.id'),
+            default => $query->orderByDesc('products.created_at')->orderByDesc('products.id'),
+        };
 
         // Filter by category if provided
         if ($request->filled('category')) {
@@ -34,8 +41,8 @@ class ProductsController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
-                  ->orWhere('short_description', 'like', "%{$searchTerm}%")
-                  ->orWhere('long_description', 'like', "%{$searchTerm}%");
+                    ->orWhere('short_description', 'like', "%{$searchTerm}%")
+                    ->orWhere('long_description', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -59,7 +66,6 @@ class ProductsController extends Controller
             ->orderBy('name')
             ->get();
 
-
         return Inertia::render('Products/Index', [
             'products' => $products,
             'categories' => $categories,
@@ -68,6 +74,7 @@ class ProductsController extends Controller
                 'search' => $request->search,
                 'min_price' => $request->min_price,
                 'max_price' => $request->max_price,
+                'sort' => in_array($sort, ['price-low', 'price-high', 'name'], true) ? $sort : 'newest',
             ],
         ]);
     }
@@ -85,7 +92,7 @@ class ProductsController extends Controller
             ->firstOrFail();
 
         // Check if user has access to this product
-        if (!$user->hasProductAccess($product)) {
+        if (! $user->hasProductAccess($product)) {
             abort(403, 'You do not have access to this product.');
         }
 
