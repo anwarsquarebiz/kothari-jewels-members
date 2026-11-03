@@ -8,6 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductImage extends Model
 {
     /**
+     * Allowed image tags. Stored as the key; the label is shown in the admin dropdown.
+     *
+     * @var array<string, string>
+     */
+    public const TAGS = [
+        'price-break-up' => 'Price break up',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -17,6 +26,7 @@ class ProductImage extends Model
         'src',
         'is_primary',
         'position',
+        'tag',
     ];
 
     /**

@@ -34,6 +34,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::post('products/import', [App\Http\Controllers\Admin\AdminProductImportController::class, 'store'])->name('admin.products.import.store');
     Route::get('products/import/template', [App\Http\Controllers\Admin\AdminProductImportController::class, 'template'])->name('admin.products.import.template');
     Route::get('products/export', [App\Http\Controllers\Admin\AdminProductImportController::class, 'export'])->name('admin.products.export');
+    Route::post('products/share-export', App\Http\Controllers\Admin\ProductShareExportController::class)->name('admin.products.share-export');
 
     // Products CRUD
     Route::resource('products', App\Http\Controllers\Admin\AdminProductController::class)->names('admin.products');
@@ -41,6 +42,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::post('products/{product}/images', [App\Http\Controllers\Admin\AdminProductController::class, 'storeImage'])->name('admin.products.images.store');
     Route::delete('products/{product}/images/{image}', [App\Http\Controllers\Admin\AdminProductController::class, 'deleteImage'])->name('admin.products.images.delete');
     Route::patch('products/{product}/images/{image}/primary', [App\Http\Controllers\Admin\AdminProductController::class, 'setPrimaryImage'])->name('admin.products.images.primary');
+    Route::patch('products/{product}/images/{image}/tag', [App\Http\Controllers\Admin\AdminProductController::class, 'updateImageTag'])->name('admin.products.images.tag');
 
     Route::get('products/{product}/details', [App\Http\Controllers\Admin\AdminProductController::class, 'manageDetails'])->name('admin.products.details');
     Route::post('products/{product}/details', [App\Http\Controllers\Admin\AdminProductController::class, 'storeDetail'])->name('admin.products.details.store');

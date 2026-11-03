@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -20,12 +21,19 @@ import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type PaginatedData, type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus, Search, Edit, Trash2, Eye, Image, Upload, Download, FileSpreadsheet } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Category {
     id: number;
     name: string;
     slug: string;
+}
+
+interface ProductImage {
+    id: number;
+    src: string;
+    is_primary: boolean;
+    position: number;
 }
 
 interface Product {
@@ -38,6 +46,7 @@ interface Product {
     formatted_price: string;
     short_description?: string;
     categories?: Category[];
+    images?: ProductImage[];
     images_count: number;
     details_count: number;
     users_with_access_count: number;
@@ -56,6 +65,20 @@ interface Props {
     };
 }
 
+function resolveImageSrc(src: string) {
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+        return src;
+    }
+
+    return `/${src}`;
+}
+
+function primaryImageSrc(product: Product) {
+    const image = product.images?.find((item) => item.is_primary) ?? product.images?.[0];
+
+    return image ? resolveImageSrc(image.src) : null;
+}
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Admin',
@@ -67,11 +90,87 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+function csrfToken() {
+    const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/);
+
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
+function filenameFrom(disposition: string | null, fallback: string) {
+    if (!disposition) {
+        return fallback;
+    }
+
+    const match = /filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i.exec(disposition);
+    const raw = match?.[1] ?? match?.[2];
+
+    return raw ? decodeURIComponent(raw) : fallback;
+}
+
 export default function Index({ products, categories, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [category, setCategory] = useState(filters.category || 'all');
     const [minPrice, setMinPrice] = useState(filters.min_price || '');
     const [maxPrice, setMaxPrice] = useState(filters.max_price || '');
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [exporting, setExporting] = useState<'pdf' | 'image' | null>(null);
+
+    const pageIds = products.data.map((product) => product.id);
+    const pageKey = pageIds.join(',');
+    const allSelected = pageIds.length > 0 && pageIds.every((id) => selectedIds.includes(id));
+    const someSelected = pageIds.some((id) => selectedIds.includes(id));
+
+    useEffect(() => {
+        setSelectedIds([]);
+    }, [pageKey]);
+
+    const downloadShare = async (format: 'pdf' | 'image') => {
+        const ids = products.data
+            .map((product) => product.id)
+            .filter((id) => selectedIds.includes(id));
+
+        if (ids.length === 0) {
+            return;
+        }
+
+        setExporting(format);
+
+        try {
+            const response = await fetch('/admin/products/share-export', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json, application/pdf, image/jpeg',
+                    'X-XSRF-TOKEN': csrfToken(),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ ids, format }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                window.alert(data?.message ?? 'Export failed.');
+                return;
+            }
+
+            const blob = await response.blob();
+            const fallback = format === 'pdf' ? 'products-share.pdf' : 'products-share.jpg';
+            const filename = filenameFrom(response.headers.get('Content-Disposition'), fallback);
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch {
+            window.alert('Export failed.');
+        } finally {
+            setExporting(null);
+        }
+    };
 
     const handleSearch = () => {
         router.get('/admin/products', { 
@@ -182,11 +281,50 @@ export default function Index({ products, categories, filters }: Props) {
                     </div>
                 </div>
 
+                {selectedIds.length > 0 && (
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-white px-4 py-3">
+                        <p className="text-sm font-medium">
+                            {selectedIds.length} selected
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={exporting !== null}
+                                onClick={() => downloadShare('pdf')}
+                            >
+                                <Download className="h-4 w-4 mr-2" />
+                                {exporting === 'pdf' ? 'Exporting...' : 'Export PDF'}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={exporting !== null}
+                                onClick={() => downloadShare('image')}
+                            >
+                                <Image className="h-4 w-4 mr-2" />
+                                {exporting === 'image' ? 'Exporting...' : 'Export image'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Table */}
                 <div className=" border">
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead className="w-10">
+                                    <Checkbox
+                                        checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                                        onCheckedChange={(checked) => {
+                                            setSelectedIds(checked === true ? pageIds : []);
+                                        }}
+                                        aria-label="Select all products on this page"
+                                    />
+                                </TableHead>
                                 <TableHead>Product</TableHead>
                                 <TableHead>SKU</TableHead>
                                 <TableHead>Price</TableHead>
@@ -198,15 +336,44 @@ export default function Index({ products, categories, filters }: Props) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {products.data.map((product) => (
+                            {products.data.map((product) => {
+                                const thumbnail = primaryImageSrc(product);
+
+                                return (
                                 <TableRow key={product.id}>
                                     <TableCell>
-                                        <div>                                            
-                                            <Link href={`/admin/products/${product.id}`}>
-                                                <div className="font-medium underline">{product.title}</div>
-                                            </Link>
-                                            <div className="text-sm text-muted-foreground">
-                                                {product.short_description}
+                                        <Checkbox
+                                            checked={selectedIds.includes(product.id)}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedIds((current) =>
+                                                    checked === true
+                                                        ? [...current, product.id]
+                                                        : current.filter((id) => id !== product.id),
+                                                );
+                                            }}
+                                            aria-label={`Select ${product.title}`}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            {thumbnail ? (
+                                                <img
+                                                    src={thumbnail}
+                                                    alt=""
+                                                    className="h-12 w-12 shrink-0 rounded border object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded border bg-gray-50 text-gray-300">
+                                                    <Image className="h-4 w-4" />
+                                                </div>
+                                            )}
+                                            <div className="min-w-0">
+                                                <Link href={`/admin/products/${product.id}`}>
+                                                    <div className="font-medium underline">{product.title}</div>
+                                                </Link>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {product.short_description}
+                                                </div>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -277,7 +444,8 @@ export default function Index({ products, categories, filters }: Props) {
                                         </div>
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </div>
