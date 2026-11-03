@@ -1,16 +1,29 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Image, Star, Trash2, Upload } from 'lucide-react';
+
+interface ImageTagOption {
+    value: string;
+    label: string;
+}
 
 interface ProductImage {
     id: number;
     src: string;
     is_primary: boolean;
     position: number;
+    tag: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -24,6 +37,7 @@ interface Product {
 
 interface Props {
     product: Product;
+    imageTags: ImageTagOption[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -48,16 +62,23 @@ function resolveImageSrc(src: string) {
     return `/${src}`;
 }
 
-export default function ManageImages({ product }: Props) {
+const NONE_TAG = 'none';
+
+export default function ManageImages({ product, imageTags }: Props) {
     const { data, setData, post, processing, errors, reset } = useForm<{
         image: File | null;
         is_primary: boolean;
         position: number;
+        tag: string;
     }>({
         image: null,
         is_primary: false,
         position: (product.images?.length || 0) + 1,
+        tag: NONE_TAG,
     });
+
+    const tagLabel = (value: string | null) =>
+        imageTags.find((tag) => tag.value === value)?.label ?? null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -68,8 +89,17 @@ export default function ManageImages({ product }: Props) {
                 setData('position', (product.images?.length || 0) + 2);
                 setData('is_primary', false);
                 setData('image', null);
+                setData('tag', NONE_TAG);
             },
         });
+    };
+
+    const handleTagChange = (imageId: number, tag: string) => {
+        router.patch(
+            `/admin/products/${product.id}/images/${imageId}/tag`,
+            { tag: tag === NONE_TAG ? null : tag },
+            { preserveScroll: true },
+        );
     };
 
     const handleSetPrimary = (imageId: number) => {
@@ -107,7 +137,7 @@ export default function ManageImages({ product }: Props) {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <h2 className="text-lg font-semibold mb-4">Upload New Image</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div className="md:col-span-2">
                                 <Label htmlFor="image">Image file *</Label>
                                 <Input
@@ -142,6 +172,28 @@ export default function ManageImages({ product }: Props) {
                                 />
                                 {errors.position && (
                                     <p className="text-sm text-red-600 mt-1">{errors.position}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label htmlFor="tag">Tag</Label>
+                                <Select
+                                    value={data.tag || NONE_TAG}
+                                    onValueChange={(value) => setData('tag', value)}
+                                >
+                                    <SelectTrigger id="tag" className={errors.tag ? 'border-red-500' : ''}>
+                                        <SelectValue placeholder="None" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={NONE_TAG}>None</SelectItem>
+                                        {imageTags.map((tag) => (
+                                            <SelectItem key={tag.value} value={tag.value}>
+                                                {tag.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.tag && (
+                                    <p className="text-sm text-red-600 mt-1">{errors.tag}</p>
                                 )}
                             </div>
                         </div>
@@ -193,12 +245,40 @@ export default function ManageImages({ product }: Props) {
                                             <span className="text-sm text-gray-600">
                                                 Position: {image.position}
                                             </span>
-                                            {image.is_primary && (
-                                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                    <Star className="h-3 w-3 mr-1" />
-                                                    Primary
-                                                </span>
-                                            )}
+                                            <div className="flex flex-wrap justify-end gap-1">
+                                                {image.is_primary && (
+                                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        <Star className="h-3 w-3 mr-1" />
+                                                        Primary
+                                                    </span>
+                                                )}
+                                                {tagLabel(image.tag) && (
+                                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        {tagLabel(image.tag)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="mb-3">
+                                            <Label htmlFor={`tag-${image.id}`} className="text-xs text-gray-600">
+                                                Tag
+                                            </Label>
+                                            <Select
+                                                value={image.tag || NONE_TAG}
+                                                onValueChange={(value) => handleTagChange(image.id, value)}
+                                            >
+                                                <SelectTrigger id={`tag-${image.id}`} className="mt-1">
+                                                    <SelectValue placeholder="None" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value={NONE_TAG}>None</SelectItem>
+                                                    {imageTags.map((tag) => (
+                                                        <SelectItem key={tag.value} value={tag.value}>
+                                                            {tag.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="flex gap-2">
                                             {!image.is_primary && (
@@ -236,6 +316,7 @@ export default function ManageImages({ product }: Props) {
                         <li>• Recommended size: 800x800 pixels or larger</li>
                         <li>• The primary image is used as the main product image</li>
                         <li>• Position numbers determine the display order</li>
+                        <li>• Tag an image as Price break up when it shows the price breakdown</li>
                     </ul>
                 </div>
             </div>

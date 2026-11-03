@@ -5,6 +5,7 @@
 /public/hot
 /public/storage
 /public/media/uploads
+/public/media.zip
 /resources/js/actions
 /resources/js/routes
 /resources/js/wayfinder

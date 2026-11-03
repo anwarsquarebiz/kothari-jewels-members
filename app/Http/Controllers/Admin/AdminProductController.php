@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class AdminProductController extends Controller
@@ -30,10 +31,10 @@ class AdminProductController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
-                  ->orWhere('slug', 'like', "%{$searchTerm}%")
-                  ->orWhere('sku', 'like', "%{$searchTerm}%")
-                  ->orWhere('short_description', 'like', "%{$searchTerm}%")
-                  ->orWhere('long_description', 'like', "%{$searchTerm}%");
+                    ->orWhere('slug', 'like', "%{$searchTerm}%")
+                    ->orWhere('sku', 'like', "%{$searchTerm}%")
+                    ->orWhere('short_description', 'like', "%{$searchTerm}%")
+                    ->orWhere('long_description', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -132,9 +133,9 @@ class AdminProductController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return back()->withInput()
-                ->with('error', 'Failed to create product: ' . $e->getMessage());
+                ->with('error', 'Failed to create product: '.$e->getMessage());
         }
     }
 
@@ -147,7 +148,7 @@ class AdminProductController extends Controller
             'categories',
             'images',
             'details',
-            'usersWithAccess.roles'
+            'usersWithAccess.roles',
         ]);
 
         return Inertia::render('Admin/Products/Show', [
@@ -214,9 +215,9 @@ class AdminProductController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return back()->withInput()
-                ->with('error', 'Failed to update product: ' . $e->getMessage());
+                ->with('error', 'Failed to update product: '.$e->getMessage());
         }
     }
 
@@ -249,8 +250,8 @@ class AdminProductController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to delete product: '.$e->getMessage());
         }
     }
 
@@ -263,6 +264,12 @@ class AdminProductController extends Controller
 
         return Inertia::render('Admin/Products/ManageImages', [
             'product' => $product,
+            'imageTags' => collect(ProductImage::TAGS)
+                ->map(fn (string $label, string $value) => [
+                    'value' => $value,
+                    'label' => $label,
+                ])
+                ->values(),
         ]);
     }
 
@@ -271,17 +278,25 @@ class AdminProductController extends Controller
      */
     public function storeImage(Request $request, Product $product)
     {
+        $this->normalizeImageTag($request);
+
         $request->validate([
             'image' => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
             'is_primary' => 'boolean',
             'position' => 'nullable|integer|min:0',
+            'tag' => ['nullable', 'string', Rule::in(array_keys(ProductImage::TAGS))],
         ]);
 
         try {
             $isPrimary = $request->boolean('is_primary', false);
+            $tag = $request->input('tag');
 
             if ($isPrimary) {
                 $product->images()->update(['is_primary' => false]);
+            }
+
+            if ($tag) {
+                $product->images()->where('tag', $tag)->update(['tag' => null]);
             }
 
             $src = $this->storeUploadedImage(
@@ -294,11 +309,12 @@ class AdminProductController extends Controller
                 'src' => $src,
                 'is_primary' => $isPrimary,
                 'position' => $request->position ?: $product->images()->max('position') + 1,
+                'tag' => $tag,
             ]);
 
             return back()->with('success', 'Image added successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to add image: ' . $e->getMessage());
+            return back()->with('error', 'Failed to add image: '.$e->getMessage());
         }
     }
 
@@ -317,7 +333,40 @@ class AdminProductController extends Controller
 
             return back()->with('success', 'Image deleted successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to delete image: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete image: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Update the tag on an existing product image.
+     */
+    public function updateImageTag(Request $request, Product $product, ProductImage $image)
+    {
+        if ($image->product_id !== $product->id) {
+            abort(404);
+        }
+
+        $this->normalizeImageTag($request);
+
+        $validated = $request->validate([
+            'tag' => ['nullable', 'string', Rule::in(array_keys(ProductImage::TAGS))],
+        ]);
+
+        try {
+            $tag = $validated['tag'] ?? null;
+
+            if ($tag !== null) {
+                $product->images()
+                    ->where('id', '!=', $image->id)
+                    ->where('tag', $tag)
+                    ->update(['tag' => null]);
+            }
+
+            $image->update(['tag' => $tag]);
+
+            return back()->with('success', 'Image tag updated successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update image tag: '.$e->getMessage());
         }
     }
 
@@ -336,7 +385,7 @@ class AdminProductController extends Controller
 
             return back()->with('success', 'Primary image updated successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update primary image: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update primary image: '.$e->getMessage());
         }
     }
 
@@ -385,7 +434,7 @@ class AdminProductController extends Controller
 
             return back()->with('success', 'Detail added successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to add detail: ' . $e->getMessage());
+            return back()->with('error', 'Failed to add detail: '.$e->getMessage());
         }
     }
 
@@ -431,7 +480,7 @@ class AdminProductController extends Controller
 
             return back()->with('success', 'Detail updated successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update detail: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update detail: '.$e->getMessage());
         }
     }
 
@@ -450,7 +499,19 @@ class AdminProductController extends Controller
 
             return back()->with('success', 'Detail deleted successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to delete detail: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete detail: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Treat an empty or "none" tag as no tag.
+     */
+    private function normalizeImageTag(Request $request): void
+    {
+        $tag = $request->input('tag');
+
+        if ($tag === '' || $tag === 'none') {
+            $request->merge(['tag' => null]);
         }
     }
 
@@ -459,16 +520,16 @@ class AdminProductController extends Controller
      */
     private function storeUploadedImage(\Illuminate\Http\UploadedFile $file, string $directory): string
     {
-        $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+        $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
         $absoluteDir = public_path($directory);
 
-        if (!is_dir($absoluteDir)) {
+        if (! is_dir($absoluteDir)) {
             mkdir($absoluteDir, 0755, true);
         }
 
         $file->move($absoluteDir, $filename);
 
-        return '/' . trim($directory, '/') . '/' . $filename;
+        return '/'.trim($directory, '/').'/'.$filename;
     }
 
     /**
@@ -476,13 +537,13 @@ class AdminProductController extends Controller
      */
     private function deleteUploadedImage(?string $path): void
     {
-        if (!$path) {
+        if (! $path) {
             return;
         }
 
-        $normalized = '/' . ltrim($path, '/');
+        $normalized = '/'.ltrim($path, '/');
 
-        if (!str_starts_with($normalized, '/media/uploads/')) {
+        if (! str_starts_with($normalized, '/media/uploads/')) {
             return;
         }
 
