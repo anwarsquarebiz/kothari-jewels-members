@@ -13,9 +13,9 @@ use Illuminate\Validation\ValidationException;
 
 class ProductShare
 {
-    private const WIDTH = 1600;
+    private const PAGE_WIDTH = 1240;
 
-    private const PADDING = 56;
+    private const PAGE_HEIGHT = 1500;
 
     private const PRICE_BREAK_UP = 'price-break-up';
 
@@ -24,7 +24,7 @@ class ProductShare
      * Gallery images tagged as a price break-up are omitted.
      *
      * @param  list<int>  $ids
-     * @return list<array{title: string, images: list<string>, details: list<array{title: string, subtitle: ?string}>}>
+     * @return list<array{title: string, images: list<string>, details: list<array{title: string, subtitle: ?string}>, price: ?string}>
      */
     public function sheets(array $ids): array
     {
@@ -46,12 +46,20 @@ class ProductShare
                 continue;
             }
 
+            $images = $product->images
+                ->reject(fn (ProductImage $image): bool => $image->tag === self::PRICE_BREAK_UP)
+                ->sortBy(fn (ProductImage $image): string => sprintf(
+                    '%d-%05d-%010d',
+                    $image->is_primary ? 0 : 1,
+                    $image->position,
+                    $image->id,
+                ))
+                ->values();
+
             $sheets[] = [
                 'title' => $product->title,
-                'images' => $product->images
-                    ->reject(fn (ProductImage $image): bool => $image->tag === self::PRICE_BREAK_UP)
+                'images' => $images
                     ->map(fn (ProductImage $image): string => $image->src)
-                    ->values()
                     ->all(),
                 'details' => $product->activeDetails
                     ->map(fn (ProductDetail $detail): array => [
@@ -60,6 +68,7 @@ class ProductShare
                     ])
                     ->values()
                     ->all(),
+                'price' => $this->formatPrice($product->price, $product->currency),
             ];
         }
 
@@ -76,22 +85,26 @@ class ProductShare
 
         $products = array_map(function (array $sheet): array {
             $images = array_values(array_filter(array_map(
-                fn (string $src): ?string => $this->dataUri($src, 900),
-                $sheet['images'],
+                fn (string $src): ?string => $this->dataUri($src, 1200),
+                array_slice($sheet['images'], 0, 2),
             )));
 
             return [
                 'title' => $sheet['title'],
-                'fit' => $this->fit(count($images)),
-                'image_rows' => array_chunk($images, 4),
+                'main' => $images[0] ?? null,
+                'secondary' => $images[1] ?? null,
                 'details' => $sheet['details'],
+                'price' => $sheet['price'],
             ];
         }, $sheets);
 
+        $this->ensureFontDirectory();
+
         return Pdf::loadView('pdf.product-share', [
-            'logo' => $this->dataUri('/media/kothari-1937-logo.png', 480),
+            'logo' => $this->pngDataUri('/media/kothari-1937-logo.png', 480),
+            'font' => str_replace('\\', '/', resource_path('fonts/BodoniModa-Regular.ttf')),
             'products' => $products,
-        ])->setPaper('a4', 'landscape');
+        ])->setPaper('a4', 'portrait');
     }
 
     /**
@@ -102,15 +115,15 @@ class ProductShare
         $sheets = $this->sheets($ids);
         $this->ensureSheets($sheets);
 
-        $logo = $this->loadPublicImage('/media/kothari-1937-logo.png', 480);
+        $logo = $this->loadPublicImage('/media/kothari-1937-logo.png', 480, true);
         $galleries = [];
 
         try {
             foreach ($sheets as $index => $sheet) {
                 $galleries[$index] = [];
 
-                foreach ($sheet['images'] as $src) {
-                    $image = $this->loadPublicImage($src, 900);
+                foreach (array_slice($sheet['images'], 0, 2) as $src) {
+                    $image = $this->loadPublicImage($src, 1200);
 
                     if ($image instanceof GdImage) {
                         $galleries[$index][] = $image;
@@ -144,18 +157,32 @@ class ProductShare
         }
     }
 
-    private function fit(int $count): string
+    private function formatPrice(mixed $amount, ?string $currency): ?string
     {
-        if ($count > 4 || $count === 0) {
-            return 'quad';
+        if ($amount === null || $amount === '') {
+            return null;
         }
 
-        return match ($count) {
-            1 => 'single',
-            2 => 'pair',
-            3 => 'triple',
-            default => 'quad',
-        };
+        $grouped = $this->groupIndian((int) round((float) $amount));
+        $currency = strtoupper((string) ($currency ?: 'INR'));
+
+        return $currency === 'INR' ? '₹ '.$grouped : $currency.' '.$grouped;
+    }
+
+    private function groupIndian(int $amount): string
+    {
+        $negative = $amount < 0;
+        $digits = (string) abs($amount);
+
+        if (strlen($digits) <= 3) {
+            return ($negative ? '-' : '').$digits;
+        }
+
+        $head = substr($digits, 0, -3);
+        $tail = substr($digits, -3);
+        $head = preg_replace('/\B(?=(\d{2})+(?!\d))/', ',', $head) ?? $head;
+
+        return ($negative ? '-' : '').$head.','.$tail;
     }
 
     private function dataUri(string $src, int $maxSize): ?string
@@ -178,7 +205,27 @@ class ProductShare
         return 'data:image/jpeg;base64,'.base64_encode($jpeg);
     }
 
-    private function loadPublicImage(string $src, int $maxSize = 1200): ?GdImage
+    private function pngDataUri(string $src, int $maxSize): ?string
+    {
+        $image = $this->loadPublicImage($src, $maxSize, true);
+
+        if (! $image instanceof GdImage) {
+            return null;
+        }
+
+        ob_start();
+        imagepng($image);
+        $png = (string) ob_get_clean();
+        imagedestroy($image);
+
+        if ($png === '') {
+            return null;
+        }
+
+        return 'data:image/png;base64,'.base64_encode($png);
+    }
+
+    private function loadPublicImage(string $src, int $maxSize = 1200, bool $preserveAlpha = false): ?GdImage
     {
         $path = $this->absolutePath($src);
 
@@ -204,8 +251,19 @@ class ProductShare
         $targetWidth = max(1, (int) round($width * $scale));
         $targetHeight = max(1, (int) round($height * $scale));
         $flat = imagecreatetruecolor($targetWidth, $targetHeight);
-        imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
-        imagecopyresampled($flat, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        if ($preserveAlpha) {
+            imagealphablending($flat, false);
+            imagesavealpha($flat, true);
+            imagefilledrectangle($flat, 0, 0, $targetWidth, $targetHeight, imagecolorallocatealpha($flat, 0, 0, 0, 127));
+            imagecopyresampled($flat, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+            imagealphablending($flat, false);
+            imagesavealpha($flat, true);
+        } else {
+            imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
+            imagecopyresampled($flat, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+        }
+
         imagedestroy($source);
 
         return $flat;
@@ -223,69 +281,31 @@ class ProductShare
     }
 
     /**
-     * @param  list<array{title: string, images: list<string>, details: list<array{title: string, subtitle: ?string}>}>  $sheets
+     * @param  list<array{title: string, images: list<string>, details: list<array{title: string, subtitle: ?string}>, price: ?string}>  $sheets
      * @param  list<list<GdImage>>  $galleries
      */
     private function drawJpeg(array $sheets, array $galleries, ?GdImage $logo): string
     {
-        $width = self::WIDTH;
-        $pad = self::PADDING;
-        $content = $width - ($pad * 2);
-        $regular = $this->font(false);
-        $bold = $this->font(true);
-        $logoBox = $logo instanceof GdImage ? $this->logoBox($logo) : null;
-        $cursor = $pad + ($logoBox === null ? 0 : $logoBox['height'] + 36);
-        $layouts = [];
-
-        foreach ($sheets as $index => $sheet) {
-            $layout = $this->layoutProduct(
-                $sheet,
-                $galleries[$index] ?? [],
-                $cursor,
-                $pad,
-                $content,
-                $bold,
-                $regular,
-            );
-            $layouts[] = $layout;
-            $cursor = $layout['bottom'] + ($index < count($sheets) - 1 ? 36 : 0);
-        }
-
-        $canvas = imagecreatetruecolor($width, max($cursor + $pad, 200));
+        $canvas = imagecreatetruecolor(self::PAGE_WIDTH, self::PAGE_HEIGHT * count($sheets));
 
         try {
-            $white = imagecolorallocate($canvas, 255, 255, 255);
-            $ink = imagecolorallocate($canvas, 43, 41, 38);
-            $muted = imagecolorallocate($canvas, 110, 103, 93);
-            $line = imagecolorallocate($canvas, 217, 210, 197);
-            imagefill($canvas, 0, 0, $white);
+            $regular = $this->font(false);
+            $bold = $this->font(true);
 
-            if ($logo instanceof GdImage && $logoBox !== null) {
-                imagecopyresampled(
+            foreach ($sheets as $index => $sheet) {
+                $this->paintPage(
                     $canvas,
+                    $index * self::PAGE_HEIGHT,
+                    $sheet,
+                    $galleries[$index] ?? [],
                     $logo,
-                    (int) (($width - $logoBox['width']) / 2),
-                    $pad,
-                    0,
-                    0,
-                    $logoBox['width'],
-                    $logoBox['height'],
-                    imagesx($logo),
-                    imagesy($logo),
+                    $bold,
+                    $regular,
                 );
             }
 
-            foreach ($layouts as $index => $layout) {
-                $this->paintProduct($canvas, $layout, $bold, $regular, $ink, $muted, $line, $pad, $content);
-
-                if ($index < count($layouts) - 1) {
-                    $y = $layout['bottom'] + 18;
-                    imageline($canvas, $pad, $y, $width - $pad, $y, $line);
-                }
-            }
-
             ob_start();
-            imagejpeg($canvas, null, 88);
+            imagejpeg($canvas, null, 90);
 
             return (string) ob_get_clean();
         } finally {
@@ -294,171 +314,148 @@ class ProductShare
     }
 
     /**
-     * @param  array{title: string, images: list<string>, details: list<array{title: string, subtitle: ?string}>}  $sheet
+     * @param  array{title: string, images: list<string>, details: list<array{title: string, subtitle: ?string}>, price: ?string}  $sheet
      * @param  list<GdImage>  $images
-     * @return array<string, mixed>
      */
-    private function layoutProduct(array $sheet, array $images, int $top, int $pad, int $content, string $bold, string $regular): array
-    {
-        $y = $top;
-        $titleLines = $this->wrap($sheet['title'], $bold, 32, $content);
-        if ($titleLines === []) {
-            $titleLines = [$sheet['title']];
-        }
-        $titleY = $y;
-        $y += count($titleLines) * 44 + 20;
-
-        $rows = [];
-        foreach (array_chunk($images, 4) as $chunk) {
-            $box = $this->imageBox(count($images) > 4 ? 4 : count($chunk), $content);
-            $groupWidth = $box['width'] * count($chunk) + $box['gap'] * max(count($chunk) - 1, 0);
-            $x = $pad + (int) (($content - $groupWidth) / 2);
-            $cells = [];
-
-            foreach ($chunk as $image) {
-                $cells[] = [
-                    'image' => $image,
-                    'x' => $x,
-                    'y' => $y,
-                    'width' => $box['width'],
-                    'height' => $box['height'],
-                ];
-                $x += $box['width'] + $box['gap'];
-            }
-
-            $rows[] = $cells;
-            $y += $box['height'] + 18;
-        }
-
-        if ($rows !== []) {
-            $y += 10;
-        }
-
-        $details = [];
-        $headingY = null;
-
-        if ($sheet['details'] !== []) {
-            $headingY = $y;
-            $y += 36;
-            $labelWidth = (int) floor($content * 0.38);
-            $valueWidth = $content - $labelWidth - 24;
-
-            foreach ($sheet['details'] as $detail) {
-                $labelLines = $this->wrap(mb_strtoupper((string) $detail['title']), $bold, 15, $labelWidth);
-                $valueLines = $this->wrap((string) ($detail['subtitle'] ?? ''), $regular, 15, $valueWidth);
-                if ($labelLines === []) {
-                    $labelLines = [mb_strtoupper((string) $detail['title'])];
-                }
-                $lineCount = max(count($labelLines), count($valueLines), 1);
-                $height = $lineCount * 24 + 16;
-                $details[] = [
-                    'y' => $y,
-                    'label' => $labelLines,
-                    'value' => $valueLines,
-                    'labelWidth' => $labelWidth,
-                    'valueWidth' => $valueWidth,
-                ];
-                $y += $height;
-            }
-
-            $y += 8;
-        }
-
-        return [
-            'bottom' => $y + 12,
-            'title' => $titleLines,
-            'titleY' => $titleY,
-            'rows' => $rows,
-            'headingY' => $headingY,
-            'details' => $details,
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $layout
-     */
-    private function paintProduct(
+    private function paintPage(
         GdImage $canvas,
-        array $layout,
+        int $top,
+        array $sheet,
+        array $images,
+        ?GdImage $logo,
         string $bold,
         string $regular,
-        int $ink,
-        int $muted,
-        int $line,
-        int $pad,
-        int $content,
     ): void {
-        $y = $layout['titleY'];
+        $width = self::PAGE_WIDTH;
+        $height = self::PAGE_HEIGHT;
+        $cream = imagecolorallocate($canvas, 246, 241, 233);
+        $ink = imagecolorallocate($canvas, 48, 44, 40);
+        $muted = imagecolorallocate($canvas, 92, 86, 78);
+        $line = imagecolorallocate($canvas, 196, 186, 172);
+        $border = imagecolorallocate($canvas, 214, 204, 190);
 
-        foreach ($layout['title'] as $titleLine) {
-            $this->drawText($canvas, $titleLine, $bold, 32, $pad, $y + 32, $ink, 'center', $content);
-            $y += 44;
+        imagefilledrectangle($canvas, 0, $top, $width, $top + $height, $cream);
+        imagerectangle($canvas, 34, $top + 34, $width - 34, $top + $height - 34, $border);
+
+        $contentX = 86;
+        $contentW = $width - 172;
+        $y = $top + 72;
+
+        if ($logo instanceof GdImage) {
+            $logoBox = $this->logoBox($logo);
+            imagealphablending($canvas, true);
+            imagecopyresampled(
+                $canvas,
+                $logo,
+                (int) (($width - $logoBox['width']) / 2),
+                $y,
+                0,
+                0,
+                $logoBox['width'],
+                $logoBox['height'],
+                imagesx($logo),
+                imagesy($logo),
+            );
+            $y += $logoBox['height'] + 36;
         }
 
-        foreach ($layout['rows'] as $row) {
-            foreach ($row as $cell) {
-                $this->drawContained(
-                    $canvas,
-                    $cell['image'],
-                    $cell['x'] + 8,
-                    $cell['y'] + 8,
-                    $cell['width'] - 16,
-                    $cell['height'] - 16,
-                );
-                imagerectangle(
-                    $canvas,
-                    $cell['x'],
-                    $cell['y'],
-                    $cell['x'] + $cell['width'],
-                    $cell['y'] + $cell['height'],
-                    $line,
-                );
+        $titleLines = $this->wrap(mb_strtoupper($sheet['title']), $regular, 22, $contentW);
+        if ($titleLines === []) {
+            $titleLines = [mb_strtoupper($sheet['title'])];
+        }
+
+        foreach ($titleLines as $titleLine) {
+            $this->drawTracked($canvas, $titleLine, $regular, 22, (int) ($width / 2), $y + 22, $ink, 3.2);
+            $y += 36;
+        }
+
+        $y += 14;
+        $ruleWidth = 88;
+        imageline($canvas, (int) (($width - $ruleWidth) / 2), $y, (int) (($width + $ruleWidth) / 2), $y, $ink);
+        $y += 42;
+
+        $main = $images[0] ?? null;
+        $side = $images[1] ?? null;
+        $photoTop = $y;
+        $photoHeight = 690;
+
+        if ($main instanceof GdImage && $side instanceof GdImage) {
+            $mainWidth = (int) ($contentW * 0.64);
+            $sideWidth = (int) ($contentW * 0.26);
+            $gap = $contentW - $mainWidth - $sideWidth;
+            $this->drawContained($canvas, $main, $contentX, $photoTop, $mainWidth, $photoHeight);
+            $dividerX = $contentX + $mainWidth + (int) ($gap / 2);
+            imageline($canvas, $dividerX, $photoTop + 70, $dividerX, $photoTop + $photoHeight - 50, $line);
+            $sideHeight = (int) ($photoHeight * 0.68);
+            $sideY = $photoTop + (int) (($photoHeight - $sideHeight) / 2);
+            $this->drawContained($canvas, $side, $contentX + $mainWidth + $gap, $sideY, $sideWidth, $sideHeight);
+        } elseif ($main instanceof GdImage) {
+            $mainWidth = (int) ($contentW * 0.72);
+            $this->drawContained(
+                $canvas,
+                $main,
+                $contentX + (int) (($contentW - $mainWidth) / 2),
+                $photoTop,
+                $mainWidth,
+                $photoHeight,
+            );
+        }
+
+        $y = $photoTop + ($main instanceof GdImage ? $photoHeight + 56 : 24);
+        $detailsWidth = (int) ($contentW * 0.62);
+        $dividerX = $contentX + (int) ($contentW * 0.68);
+        $priceX = $dividerX + 28;
+        $priceWidth = $contentX + $contentW - $priceX;
+
+        $detailRows = [];
+        foreach ($sheet['details'] as $detail) {
+            $labelLines = $this->wrap(mb_strtoupper((string) $detail['title']), $regular, 14, (int) ($detailsWidth * 0.58));
+            $valueLines = $this->wrap((string) ($detail['subtitle'] ?? ''), $regular, 14, (int) ($detailsWidth * 0.38));
+            if ($labelLines === []) {
+                $labelLines = [mb_strtoupper((string) $detail['title'])];
+            }
+            $detailRows[] = [
+                'label' => $labelLines,
+                'value' => $valueLines,
+                'height' => max(count($labelLines), count($valueLines), 1) * 24 + 14,
+            ];
+        }
+
+        $detailsHeight = 28 + array_sum(array_column($detailRows, 'height'));
+        if ($sheet['price']) {
+            imageline($canvas, $dividerX, $y + 8, $dividerX, $y + max($detailsHeight, 90), $line);
+            $priceBlock = 58;
+            $priceTop = $y + (int) ((max($detailsHeight, 90) - $priceBlock) / 2);
+            $this->drawTracked($canvas, 'PRICE', $regular, 14, $priceX + (int) ($priceWidth / 2), $priceTop + 16, $ink, 2.2);
+            $this->drawPriceAmount($canvas, (string) $sheet['price'], $regular, 26, $priceX, $priceTop + 52, $ink, $priceWidth);
+        }
+
+        if ($detailRows !== []) {
+            $headingWidth = $this->trackedWidth('PRODUCT DETAILS', $regular, 13, 1.8);
+            $this->drawTracked($canvas, 'PRODUCT DETAILS', $regular, 13, $contentX + (int) ($headingWidth / 2), $y + 16, $ink, 1.8);
+            $rowY = $y + 36;
+
+            foreach ($detailRows as $index => $row) {
+                if ($index > 0) {
+                    imageline($canvas, $contentX, $rowY, $contentX + $detailsWidth, $rowY, $line);
+                }
+
+                $labelY = $rowY + 8;
+                foreach ($row['label'] as $labelLine) {
+                    $this->drawText($canvas, $labelLine, $regular, 14, $contentX, $labelY + 14, $ink, 'left', (int) ($detailsWidth * 0.58));
+                    $labelY += 24;
+                }
+
+                $valueY = $rowY + 8;
+                $valueX = $contentX + $detailsWidth - (int) ($detailsWidth * 0.4);
+                foreach ($row['value'] as $valueLine) {
+                    $this->drawText($canvas, $valueLine, $regular, 14, $valueX, $valueY + 14, $muted, 'right', (int) ($detailsWidth * 0.4));
+                    $valueY += 24;
+                }
+
+                $rowY += $row['height'];
             }
         }
-
-        if ($layout['headingY'] === null) {
-            return;
-        }
-
-        $this->drawText($canvas, 'PRODUCT DETAILS', $bold, 14, $pad, $layout['headingY'] + 16, $ink, 'left', $content);
-
-        foreach ($layout['details'] as $detail) {
-            imageline($canvas, $pad, $detail['y'], $pad + $content, $detail['y'], $line);
-            $labelY = $detail['y'] + 8;
-
-            foreach ($detail['label'] as $labelLine) {
-                $this->drawText($canvas, $labelLine, $bold, 15, $pad, $labelY + 15, $ink, 'left', $detail['labelWidth']);
-                $labelY += 24;
-            }
-
-            $valueY = $detail['y'] + 8;
-            $valueX = $pad + $content - $detail['valueWidth'];
-
-            foreach ($detail['value'] as $valueLine) {
-                $this->drawText($canvas, $valueLine, $regular, 15, $valueX, $valueY + 15, $muted, 'right', $detail['valueWidth']);
-                $valueY += 24;
-            }
-        }
-    }
-
-    /**
-     * @return array{width: int, height: int, gap: int}
-     */
-    private function imageBox(int $count, int $contentWidth): array
-    {
-        $count = max(1, min(4, $count));
-        $gap = 20;
-        $height = match ($count) {
-            1 => 560,
-            2 => 500,
-            3 => 440,
-            default => 380,
-        };
-        $width = $count === 1
-            ? min(780, $contentWidth)
-            : (int) floor(($contentWidth - $gap * ($count - 1)) / $count);
-
-        return ['width' => $width, 'height' => $height, 'gap' => $gap];
     }
 
     /**
@@ -468,7 +465,7 @@ class ProductShare
     {
         $sourceWidth = max(1, imagesx($logo));
         $sourceHeight = max(1, imagesy($logo));
-        $height = 150;
+        $height = 128;
         $width = (int) round($sourceWidth * ($height / $sourceHeight));
 
         if ($width > 240) {
@@ -492,6 +489,53 @@ class ProductShare
         imagecopyresampled($canvas, $source, $dx, $dy, 0, 0, $width, $height, $sourceWidth, $sourceHeight);
     }
 
+    private function drawTracked(
+        GdImage $canvas,
+        string $text,
+        string $font,
+        float $size,
+        int $centerX,
+        int $baseline,
+        int $color,
+        float $tracking,
+    ): void {
+        $chars = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $widths = [];
+        $total = 0;
+
+        foreach ($chars as $index => $char) {
+            $charWidth = $this->textWidth($char === ' ' ? ' ' : $char, $font, $size);
+            $widths[] = $charWidth;
+            $total += $charWidth;
+
+            if ($index < count($chars) - 1) {
+                $total += $tracking;
+            }
+        }
+
+        $x = $centerX - (int) ($total / 2);
+
+        foreach ($chars as $index => $char) {
+            if ($char !== ' ') {
+                imagettftext($canvas, $size, 0, (int) $x, $baseline, $color, $font, $char);
+            }
+
+            $x += $widths[$index] + $tracking;
+        }
+    }
+
+    private function trackedWidth(string $text, string $font, float $size, float $tracking): float
+    {
+        $chars = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $total = 0;
+
+        foreach ($chars as $char) {
+            $total += $this->textWidth($char, $font, $size);
+        }
+
+        return $total + max(0, count($chars) - 1) * $tracking;
+    }
+
     private function drawText(
         GdImage $canvas,
         string $text,
@@ -511,6 +555,33 @@ class ProductShare
         };
 
         imagettftext($canvas, $size, 0, $drawX, $baseline, $color, $font, $text);
+    }
+
+    private function drawPriceAmount(
+        GdImage $canvas,
+        string $text,
+        string $font,
+        float $size,
+        int $x,
+        int $baseline,
+        int $color,
+        int $boxWidth,
+    ): void {
+        if (! str_starts_with($text, '₹')) {
+            $this->drawText($canvas, $text, $font, $size, $x, $baseline, $color, 'center', $boxWidth);
+
+            return;
+        }
+
+        $amount = ltrim(substr($text, strlen('₹')));
+        $symbolFont = $this->dejavu();
+        $gap = (int) round($size * 0.28);
+        $symbolWidth = $this->textWidth('₹', $symbolFont, $size);
+        $amountWidth = $this->textWidth($amount, $font, $size);
+        $drawX = $x + (int) (($boxWidth - ($symbolWidth + $gap + $amountWidth)) / 2);
+
+        imagettftext($canvas, $size, 0, $drawX, $baseline, $color, $symbolFont, '₹');
+        imagettftext($canvas, $size, 0, $drawX + $symbolWidth + $gap, $baseline, $color, $font, $amount);
     }
 
     /**
@@ -558,10 +629,22 @@ class ProductShare
         return (int) abs($box[2] - $box[0]);
     }
 
+    private function ensureFontDirectory(): void
+    {
+        $directory = storage_path('fonts');
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+    }
+
     private function font(bool $bold): string
     {
-        $file = $bold ? 'DejaVuSans-Bold.ttf' : 'DejaVuSans.ttf';
+        return resource_path('fonts/BodoniModa-Regular.ttf');
+    }
 
-        return base_path('vendor/dompdf/dompdf/lib/fonts/'.$file);
+    private function dejavu(): string
+    {
+        return base_path('vendor/dompdf/dompdf/lib/fonts/DejaVuSans.ttf');
     }
 }

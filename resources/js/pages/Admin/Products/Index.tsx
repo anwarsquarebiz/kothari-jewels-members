@@ -79,6 +79,22 @@ function primaryImageSrc(product: Product) {
     return image ? resolveImageSrc(image.src) : null;
 }
 
+function formatPriceLakhs(price: string) {
+    const amount = Number(price);
+
+    if (!Number.isFinite(amount)) {
+        return '';
+    }
+
+    const lakhs = amount / 100000;
+    const formatted = new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    }).format(lakhs);
+
+    return `${formatted}L`;
+}
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Admin',
@@ -329,9 +345,6 @@ export default function Index({ products, categories, filters }: Props) {
                                 <TableHead>SKU</TableHead>
                                 <TableHead>Price</TableHead>
                                 <TableHead>Categories</TableHead>
-                                <TableHead>Images</TableHead>
-                                <TableHead>Access</TableHead>
-                                <TableHead>Created</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -360,11 +373,11 @@ export default function Index({ products, categories, filters }: Props) {
                                                 <img
                                                     src={thumbnail}
                                                     alt=""
-                                                    className="h-12 w-12 shrink-0 rounded border object-cover"
+                                                    className="h-[3.9rem] w-[3.9rem] shrink-0 rounded border object-cover"
                                                 />
                                             ) : (
-                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded border bg-gray-50 text-gray-300">
-                                                    <Image className="h-4 w-4" />
+                                                <div className="flex h-[3.9rem] w-[3.9rem] shrink-0 items-center justify-center rounded border bg-gray-50 text-gray-300">
+                                                    <Image className="h-5 w-5" />
                                                 </div>
                                             )}
                                             <div className="min-w-0">
@@ -381,7 +394,7 @@ export default function Index({ products, categories, filters }: Props) {
                                         {product.sku}
                                     </TableCell>
                                     <TableCell className="font-medium">
-                                        {product.formatted_price}
+                                        {formatPriceLakhs(product.price)}
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-wrap gap-1">
@@ -399,19 +412,6 @@ export default function Index({ products, categories, filters }: Props) {
                                                 </span>
                                             )}
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="text-sm">
-                                            {product.images_count} images
-                                        </span>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="text-sm">
-                                            {product.users_with_access_count} users
-                                        </span>
-                                    </TableCell>
-                                    <TableCell>
-                                        {new Date(product.created_at).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">

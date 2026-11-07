@@ -81,7 +81,8 @@ test('share sheet omits the price break up image and inactive details', function
         ->and($sheets[1]['images'])->toBe([$front, $side])
         ->and($sheets[1]['details'])->toBe([
             ['title' => 'Diamonds', 'subtitle' => 'Baguette cut'],
-        ]);
+        ])
+        ->and($sheets[1]['price'])->toBe('₹ 1,00,000');
 });
 
 test('selected products export as one pdf and one jpeg', function (): void {
