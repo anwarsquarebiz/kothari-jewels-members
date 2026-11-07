@@ -431,7 +431,8 @@ class ProductShare
         }
 
         if ($detailRows !== []) {
-            $this->drawTracked($canvas, 'PRODUCT DETAILS', $regular, 13, $contentX + 78, $y + 16, $ink, 1.8);
+            $headingWidth = $this->trackedWidth('PRODUCT DETAILS', $regular, 13, 1.8);
+            $this->drawTracked($canvas, 'PRODUCT DETAILS', $regular, 13, $contentX + (int) ($headingWidth / 2), $y + 16, $ink, 1.8);
             $rowY = $y + 36;
 
             foreach ($detailRows as $index => $row) {
@@ -521,6 +522,18 @@ class ProductShare
 
             $x += $widths[$index] + $tracking;
         }
+    }
+
+    private function trackedWidth(string $text, string $font, float $size, float $tracking): float
+    {
+        $chars = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $total = 0;
+
+        foreach ($chars as $char) {
+            $total += $this->textWidth($char, $font, $size);
+        }
+
+        return $total + max(0, count($chars) - 1) * $tracking;
     }
 
     private function drawText(

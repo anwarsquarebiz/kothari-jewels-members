@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Products</title>
     <style>
-        @page { margin: 14mm; }
+        @page { margin: 0; }
 
         * { box-sizing: border-box; }
 
@@ -23,10 +23,19 @@
             font-size: 11px;
         }
 
-        .page {
-            background: #f6f1e9;
+        html { margin: 0; background: #f6f1e9; }
+
+        .frame {
+            position: fixed;
+            top: 8mm;
+            left: 8mm;
+            width: 194mm;
+            height: 281mm;
             border: 0.8px solid #e0d5c6;
-            padding: 6mm 8mm 8mm;
+        }
+
+        .page {
+            padding: 20mm 22mm 14mm;
         }
 
         .logo-wrap { text-align: center; margin-bottom: 6mm; }
@@ -100,6 +109,7 @@
     </style>
 </head>
 <body>
+    <div class="frame"></div>
     @foreach ($products as $product)
         <div class="page" @if (! $loop->last) style="page-break-after: always;" @endif>
             @if ($logo)
