@@ -21,6 +21,8 @@ export function NavUser() {
     const { state } = useSidebar();
     const isMobile = useIsMobile();
 
+    if (!auth?.user) return null;
+
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -28,15 +30,15 @@ export function NavUser() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="group text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent"
+                            className="group rounded-lg text-[#ede7d6] transition-colors hover:bg-[#221e1f] hover:text-[#c9ae7e] data-[state=open]:bg-[#221e1f]"
                             data-test="sidebar-menu-button"
                         >
                             <UserInfo user={auth.user} />
-                            <ChevronsUpDown className="ml-auto size-4" />
+                            <ChevronsUpDown className="ml-auto size-4 text-[#8f877a] transition-colors group-hover:text-[#c9ae7e]" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg border border-[#2a2526] bg-[#1a1718] text-[#ede7d6] shadow-xl"
                         align="end"
                         side={
                             isMobile

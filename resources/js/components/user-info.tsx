@@ -12,21 +12,21 @@ export function UserInfo({
     const getInitials = useInitials();
 
     return (
-        <>
-            <Avatar className="h-8 w-8 overflow-hidden rounded-full">
+        <div className="flex items-center gap-2.5 min-w-0">
+            <Avatar className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#c9ae7e]/40 shadow-xs">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                <AvatarFallback className="rounded-full bg-[#221e1f] text-[#c9ae7e] text-xs font-serif font-medium">
                     {getInitials(user.name)}
                 </AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+            <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
+                <span className="truncate font-medium text-[#ede7d6] text-[13px]">{user.name}</span>
                 {showEmail && (
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate text-[11px] text-[#a39a8c]">
                         {user.email}
                     </span>
                 )}
             </div>
-        </>
+        </div>
     );
 }

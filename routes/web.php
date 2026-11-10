@@ -3,20 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-// Route::get('/about', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
-// Route::get('/contact', [App\Http\Controllers\ContactController::class, 'index'])->name('contact');
-// Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
-
-Route::get('/', function () {
-    $user = auth()->user();
-
-    if ($user instanceof User) {
-        return redirect($user->homePath());
-    }
-
-    return redirect()->route('login');
-})->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->group(function () {
     Route::get('dashboard', App\Http\Controllers\Admin\AdminDashboardController::class)->name('dashboard');

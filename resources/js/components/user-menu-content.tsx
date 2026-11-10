@@ -25,40 +25,39 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
     };
 
     return (
-        <>
+        <div className="p-1 bg-[#1a1718] text-[#ede7d6] rounded-lg">
             <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <div className="flex items-center gap-2 px-2 py-2 text-left text-sm border-b border-[#2a2526]">
                     <UserInfo user={user} showEmail={true} />
                 </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
+            <DropdownMenuGroup className="py-1">
+                <DropdownMenuItem asChild className="focus:bg-[#221e1f] focus:text-[#c9ae7e] cursor-pointer rounded-md">
                     <Link
-                        className="block w-full"
+                        className="flex w-full items-center gap-2 px-2 py-1.5 text-sm"
                         href={edit()}
                         as="button"
                         prefetch
                         onClick={cleanup}
                     >
-                        <Settings className="mr-2" />
-                        Settings
+                        <Settings className="size-4 text-[#c9ae7e]" />
+                        <span>Settings</span>
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+            <DropdownMenuSeparator className="bg-[#2a2526] my-1" />
+            <DropdownMenuItem asChild className="focus:bg-[#221e1f] focus:text-red-400 cursor-pointer rounded-md">
                 <Link
-                    className="block w-full"
+                    className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-red-400 hover:text-red-300"
                     href={logout()}
                     as="button"
                     onClick={handleLogout}
                     data-test="logout-button"
                 >
-                    <LogOut className="mr-2" />
-                    Log out
+                    <LogOut className="size-4" />
+                    <span>Log out</span>
                 </Link>
             </DropdownMenuItem>
-        </>
+        </div>
     );
 }
