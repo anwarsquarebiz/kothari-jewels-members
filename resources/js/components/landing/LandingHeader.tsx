@@ -62,7 +62,7 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ activeView, onNavi
           <span className="im i-wordmark-white" role="img" aria-label="Kothari 1937" />
         </a>
 
-        {/* Desktop Visit & Member Nav */}
+        {/* Desktop Visit Nav */}
         <nav className="nav nav-r caps" aria-label="Visit">
           <a href="#visit" onClick={(e) => handleLinkClick(e, '#visit')}>
             Altamount Road
@@ -70,22 +70,6 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ activeView, onNavi
           <a href="tel:+919820515907" className="appt">
             Appointments
           </a>
-          {user ? (
-            <Link
-              href="/products"
-              className="appt"
-              style={{ borderLeft: '1px solid rgba(237,231,214,0.25)', paddingLeft: '16px' }}
-            >
-              Member Portal
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              style={{ borderLeft: '1px solid rgba(237,231,214,0.25)', paddingLeft: '16px', opacity: 0.85 }}
-            >
-              Sign In
-            </Link>
-          )}
         </nav>
 
         {/* Mobile Hamburger Toggle */}

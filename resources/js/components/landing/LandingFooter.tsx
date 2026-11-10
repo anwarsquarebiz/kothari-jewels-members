@@ -74,6 +74,10 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onNavigate }) => {
             >
               The House
             </a>
+            <br />
+            <a href="/login" style={{ color: 'var(--gold)' }}>
+              Member Access &rarr;
+            </a>
           </p>
           <p>
             Silverene, 32 Altamount Road
