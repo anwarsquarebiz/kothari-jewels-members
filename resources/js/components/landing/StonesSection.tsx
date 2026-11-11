@@ -11,7 +11,7 @@ export const StonesSection: React.FC<StonesSectionProps> = ({ onSelectFilter }) 
 
   return (
     <section
-      className="stones"
+      className="stones reveal"
       id="stones"
       aria-label="The stones"
       style={
@@ -23,7 +23,7 @@ export const StonesSection: React.FC<StonesSectionProps> = ({ onSelectFilter }) 
       }
     >
       <div className="wrap">
-        <div className="stones-top">
+        <div className="stones-top reveal reveal-delay-1">
           <h2>The Stones</h2>
           <div className="tabs caps" role="tablist" aria-label="Choose a stone">
             {Object.keys(STONES).map((k) => (
@@ -40,7 +40,7 @@ export const StonesSection: React.FC<StonesSectionProps> = ({ onSelectFilter }) 
             ))}
           </div>
         </div>
-        <div className="stone-panel" role="tabpanel">
+        <div className="stone-panel" role="tabpanel" key={selectedStoneKey}>
           <div className="stone-copy">
             <p className="stone-name">{currentStone.name}</p>
             <p className="stone-line">{currentStone.text}</p>

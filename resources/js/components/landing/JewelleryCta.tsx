@@ -6,12 +6,12 @@ interface JewelleryCtaProps {
 
 export const JewelleryCta: React.FC<JewelleryCtaProps> = ({ onNavigate }) => {
   return (
-    <section className="j-cta" aria-label="Appointments">
+    <section className="j-cta reveal" aria-label="Appointments">
       <div className="wrap">
         <h2>
           Seen best <em>in the hand.</em>
         </h2>
-        <div style={{ flex: '0 1 380px' }}>
+        <div className="reveal reveal-delay-1" style={{ flex: '0 1 380px' }}>
           <p>Silverene, 32 Altamount Road, Mumbai 400026. Monday to Saturday, 11 AM to 7 PM.</p>
           <div className="btns caps" style={{ margin: 0 }}>
             <a href="tel:+919820515907" className="btn solid">

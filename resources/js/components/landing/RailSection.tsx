@@ -7,8 +7,8 @@ interface RailSectionProps {
 
 export const RailSection: React.FC<RailSectionProps> = ({ onNavigate }) => {
   return (
-    <section className="rail-sec" aria-label="Selected pieces">
-      <div className="rail-head">
+    <section className="rail-sec reveal" aria-label="Selected pieces">
+      <div className="rail-head reveal reveal-delay-1">
         <h2>
           Selected <em>pieces</em>
         </h2>
@@ -23,7 +23,7 @@ export const RailSection: React.FC<RailSectionProps> = ({ onNavigate }) => {
           All jewellery
         </a>
       </div>
-      <div className="rail" tabIndex={0} aria-label="Selected pieces, scrolls sideways">
+      <div className="rail reveal reveal-delay-2" tabIndex={0} aria-label="Selected pieces, scrolls sideways">
         {RAIL_ITEMS.map((item) => (
           <a
             key={item.id}

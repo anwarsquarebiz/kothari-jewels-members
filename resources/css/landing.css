@@ -249,7 +249,25 @@
 .link {
   display: inline-block;
   padding: 12px 0;
-  border-bottom: 1px solid currentColor;
+  position: relative;
+  border-bottom: 0 !important;
+  text-decoration: none;
+}
+.link::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.72);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease;
+}
+.link:hover::after {
+  transform: scaleX(1);
+  background-color: var(--gold);
 }
 .view[hidden] {
   display: none;
@@ -265,6 +283,17 @@ section[id] {
   position: sticky;
   top: 0;
   z-index: 30;
+  animation: siteHeadIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes siteHeadIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .head {
   display: grid;
@@ -281,6 +310,10 @@ section[id] {
 .nav a {
   padding: 12px 0;
   border-bottom: 1px solid transparent;
+  transition: color 0.3s ease;
+}
+.nav a:hover {
+  color: var(--gold);
 }
 .nav a[aria-current="page"] {
   color: var(--gold);
@@ -294,6 +327,10 @@ section[id] {
 }
 .logo .im {
   width: 168px;
+  transition: filter 0.35s ease, transform 0.35s ease;
+}
+.logo:hover .im {
+  filter: drop-shadow(0 0 10px rgba(201, 174, 126, 0.4));
 }
 .appt {
   color: var(--gold);
@@ -407,6 +444,7 @@ section[id] {
 .hero-copy .caps {
   color: var(--gold);
   letter-spacing: 0.32em;
+  animation: heroStaggerIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.08s backwards;
 }
 .hero h1 {
   margin: 0;
@@ -414,6 +452,7 @@ section[id] {
   font-size: clamp(52px, 6.8vw, 112px);
   line-height: 0.98;
   letter-spacing: -0.01em;
+  animation: heroStaggerIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
 }
 .hero p.lede {
   margin: 32px 0 0;
@@ -421,12 +460,14 @@ section[id] {
   font-size: clamp(19px, 1.6vw, 22px);
   line-height: 1.55;
   color: #cfc7b8;
+  animation: heroStaggerIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.32s backwards;
 }
 .hero .ctas {
   display: flex;
   flex-wrap: wrap;
   gap: 28px;
   margin-top: 44px;
+  animation: heroStaggerIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.44s backwards;
 }
 .hero .ctas a + a {
   border-color: rgba(237, 231, 214, 0.35);
@@ -436,7 +477,20 @@ section[id] {
   font-size: 15px;
   font-style: italic;
   color: #8f877a;
+  animation: heroStaggerIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.56s backwards;
 }
+
+@keyframes heroStaggerIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .hero-img {
   flex: 1 1 460px;
   min-width: 0;
@@ -445,11 +499,153 @@ section[id] {
   align-items: flex-start;
   overflow: hidden;
   min-height: 520px;
+  position: relative;
 }
-.hero-img .im {
+
+/* Atmospheric Emerald/Gold Light Aura behind necklace */
+.hero-img::before {
+  content: '';
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 95%);
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(31, 107, 79, 0.24) 0%,
+    rgba(201, 174, 126, 0.08) 38%,
+    transparent 70%
+  );
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+  animation:
+    heroAuraEnter 2.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards,
+    heroAuraPulse 8s ease-in-out 2.3s infinite alternate;
+}
+
+@keyframes heroAuraEnter {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -68%) scale(0.5);
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0.65;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes heroAuraPulse {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  100% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+/* Stage container that glides down gracefully from above on load */
+.hero-necklace-stage {
   width: 100%;
   max-width: 660px;
   margin-top: -24%;
+  position: relative;
+  z-index: 1;
+  animation: necklaceDescendFromAbove 2.2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s backwards;
+  will-change: transform, opacity;
+}
+
+@keyframes necklaceDescendFromAbove {
+  0% {
+    opacity: 0;
+    transform: translateY(-110px) scale(0.94);
+    filter: blur(8px) brightness(1.25);
+  }
+  40% {
+    opacity: 0.7;
+    filter: blur(3px) brightness(1.15);
+  }
+  80% {
+    opacity: 0.98;
+    filter: blur(0.5px) brightness(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px) brightness(1);
+  }
+}
+
+/* Inner necklace image with continuous ambient floating + cursor parallax */
+.hero-necklace-stage .im {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0;
+  animation: heroNecklaceFloat 7s ease-in-out infinite 0.5s;
+  transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px));
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+@keyframes heroNecklaceFloat {
+  0%, 100% {
+    transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px)) translateY(0) scale(1);
+  }
+  50% {
+    transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px)) translateY(-9px) scale(1.006);
+  }
+}
+
+/* Light shimmer sweep that catches brilliance as it arrives into place */
+.necklace-shine-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 42%,
+    rgba(255, 255, 255, 0.32) 48%,
+    rgba(201, 174, 126, 0.4) 52%,
+    transparent 58%,
+    transparent 100%
+  );
+  background-size: 260% 260%;
+  background-position: 100% 0%;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  z-index: 2;
+  animation: shineSweepAcross 2.2s ease-in-out 1.3s forwards;
+}
+
+@keyframes shineSweepAcross {
+  0% {
+    opacity: 0;
+    background-position: 100% 0%;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.75;
+    background-position: 0% 100%;
+  }
+  100% {
+    opacity: 0;
+    background-position: 0% 100%;
+  }
 }
 
 /* Tablet & Mobile Hero Layout (Fixes necklace cut-off) */
@@ -468,11 +664,42 @@ section[id] {
     overflow: visible;
     align-items: center;
   }
-  .hero-img .im {
+  .hero-img::before {
+    top: 50%;
+    width: 280px;
+    filter: blur(35px);
+  }
+  .hero-necklace-stage {
     max-width: min(85vw, 360px);
     margin: 0 auto;
     margin-top: 0;
+    animation: necklaceDescendMobile 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+  }
+  @keyframes necklaceDescendMobile {
+    0% {
+      opacity: 0;
+      transform: translateY(-60px) scale(0.95);
+      filter: blur(6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+  .hero-necklace-stage .im {
+    max-width: 100%;
+    margin: 0 auto;
     aspect-ratio: 929/1100;
+    animation: heroNecklaceFloatMobile 6s ease-in-out infinite 0.5s;
+  }
+  @keyframes heroNecklaceFloatMobile {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
   }
   .hero-copy {
     flex: 0 0 auto;
@@ -517,6 +744,42 @@ section[id] {
   width: auto;
   vertical-align: -0.1em;
   margin: 0 0.1em;
+}
+.statement .i-coil-earrings {
+  animation: jewelFloatA 5.5s ease-in-out infinite;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  cursor: pointer;
+}
+.statement .i-coil-earrings:hover {
+  transform: translateY(-4px) scale(1.15) !important;
+  filter: drop-shadow(0 8px 16px rgba(20, 18, 19, 0.25));
+}
+.statement .i-emerald-ring {
+  animation: jewelFloatB 6.8s ease-in-out infinite 0.6s;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  cursor: pointer;
+}
+.statement .i-emerald-ring:hover {
+  transform: translateY(-4px) scale(1.15) !important;
+  filter: drop-shadow(0 8px 16px rgba(20, 18, 19, 0.25));
+}
+
+@keyframes jewelFloatA {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1.5deg);
+  }
+}
+
+@keyframes jewelFloatB {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1.5deg);
+  }
 }
 .statement-foot {
   display: flex;
@@ -581,10 +844,27 @@ section[id] {
   min-height: 44px;
   white-space: nowrap;
   flex-shrink: 0;
+  position: relative;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+.tabs button::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tabs button[aria-selected="true"] {
   opacity: 1;
   border-bottom-color: currentColor;
+}
+.tabs button[aria-selected="true"]::after {
+  transform: scaleX(1);
 }
 .stone-panel {
   display: flex;
@@ -592,6 +872,18 @@ section[id] {
   align-items: center;
   gap: clamp(32px, 5vw, 80px);
   padding-top: clamp(40px, 6vw, 88px);
+  animation: stoneCrossFade 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stoneCrossFade {
+  from {
+    opacity: 0.25;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .stone-copy {
   flex: 1 1 300px;
@@ -631,12 +923,22 @@ section[id] {
   align-items: center;
   justify-content: center;
   padding: clamp(20px, 3.4vw, 52px);
-  transition: background-color 0.7s ease;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.7s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+}
+.stone-hero:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
 }
 .stone-hero .im {
   width: 100%;
   height: 100%;
   aspect-ratio: auto;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.stone-hero:hover .im {
+  transform: scale(1.04);
 }
 .stone-more {
   flex: 1 1 calc(33.333% - 8px);
@@ -646,12 +948,22 @@ section[id] {
   align-items: center;
   justify-content: center;
   padding: clamp(10px, 2vw, 36px);
-  transition: background-color 0.7s ease;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.7s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+}
+.stone-more:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
 }
 .stone-more .im {
   width: 100%;
   height: 100%;
   aspect-ratio: auto;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.stone-more:hover .im {
+  transform: scale(1.08);
 }
 
 /* rail */
@@ -690,13 +1002,31 @@ section[id] {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .rail .tile {
   aspect-ratio: 3/4;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
 }
-.rail p {
+.rail .tile .im {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.rail a:hover .tile {
+  transform: translateY(-7px);
+  box-shadow: 0 16px 36px rgba(20, 18, 19, 0.09);
+}
+.rail a:hover .tile .im {
+  transform: scale(1.06);
+}
+.rail a p {
   margin: 0;
   font-size: 17px;
+  transition: color 0.3s ease;
+}
+.rail a:hover p {
+  color: var(--gold);
 }
 .tile {
   background: var(--tile);
@@ -743,6 +1073,17 @@ section[id] {
   top: 50%;
   width: 92%;
   transform: translateY(-50%);
+  animation: braceletFloat 8s ease-in-out infinite;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes braceletFloat {
+  0%, 100% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-53%) scale(1.01);
+  }
 }
 .beats {
   display: grid;
@@ -750,12 +1091,25 @@ section[id] {
   gap: 36px clamp(32px, 6vw, 96px);
   margin-top: clamp(48px, 8vw, 112px);
 }
+.beats > div {
+  padding-top: 16px;
+  border-top: 1px solid rgba(237, 231, 214, 0.12);
+  transition: border-top-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.beats > div:hover {
+  border-top-color: var(--gold);
+  transform: translateY(-4px);
+}
 .beats h3 {
   margin: 0;
   font-size: clamp(32px, 4vw, 44px);
   font-weight: 300;
   font-style: italic;
   color: var(--gold);
+  transition: color 0.3s ease;
+}
+.beats > div:hover h3 {
+  color: #e5cb9b;
 }
 .beats p {
   margin: 12px 0 0;
@@ -829,10 +1183,47 @@ section[id] {
   border: 1px solid var(--ink);
   text-align: center;
   display: inline-block;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s ease;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 174, 126, 0.3) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+.btn:hover::before {
+  left: 140%;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
 }
 .btn.solid {
   background: var(--ink);
   color: var(--paper);
+}
+.btn.solid:hover {
+  background: #252021;
+  color: var(--gold);
+  box-shadow: 0 8px 24px rgba(20, 18, 19, 0.25);
 }
 .visit figure {
   flex: 1 1 300px;
@@ -846,11 +1237,22 @@ section[id] {
   background: var(--bone);
   padding: clamp(24px, 4vw, 56px);
   border: 1px solid var(--line);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, border-color 0.4s ease;
+}
+.visit figure:hover div {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(20, 18, 19, 0.08);
+  border-color: rgba(201, 174, 126, 0.5);
 }
 .visit figure .im {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.visit figure:hover .im {
+  transform: scale(1.03);
 }
 .visit figcaption {
   font-size: 15px;
@@ -936,6 +1338,11 @@ section[id] {
   opacity: 1;
   border-bottom-color: var(--ink);
 }
+.filters button[aria-pressed="true"] .dot {
+  box-shadow: 0 0 10px currentColor;
+  transform: scale(1.2);
+  transition: all 0.3s ease;
+}
 .dot {
   display: inline-block;
   width: 10px;
@@ -943,6 +1350,7 @@ section[id] {
   border-radius: 50%;
   margin-right: 8px;
   box-shadow: inset 0 0 0 1px rgba(26, 23, 24, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .count {
   margin: 0;
@@ -964,11 +1372,36 @@ section[id] {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  animation: pieceGridIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--stagger, 0) * 32ms);
+}
+@keyframes pieceGridIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .piece .tile {
   aspect-ratio: 4/5;
   flex: 1 1 auto;
   padding: 14%;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+}
+.piece .tile .im {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.piece:hover .tile {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(20, 18, 19, 0.1);
+}
+.piece:hover .tile .im {
+  transform: scale(1.07);
 }
 .piece.feature {
   grid-column: span 2;
@@ -1024,6 +1457,12 @@ section[id] {
   padding: 8px 0;
   font-size: 10px;
   border-bottom: 1px solid var(--ink);
+  transition: color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.piece:hover .piece-meta a {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  transform: translateX(3px);
 }
 .j-cta {
   background: var(--ink);
@@ -1153,4 +1592,72 @@ form.news label {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* ============================================================
+   LUXURY ANIMATION SYSTEM
+   ============================================================ */
+
+/* Scroll Reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 0.12s;
+}
+
+.reveal-delay-2 {
+  transition-delay: 0.24s;
+}
+
+.reveal-delay-3 {
+  transition-delay: 0.36s;
+}
+
+.reveal-delay-4 {
+  transition-delay: 0.48s;
+}
+
+/* View transitions */
+#view-home,
+#view-jewellery {
+  animation: viewCrossFade 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes viewCrossFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility: Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

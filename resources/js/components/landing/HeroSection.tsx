@@ -1,12 +1,15 @@
 import React from 'react';
+import { useHeroParallax } from './useLandingAnimations';
 
 interface HeroSectionProps {
   onNavigate: (target: string) => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
+  const heroRef = useHeroParallax();
+
   return (
-    <section className="hero" id="top" aria-label="A new expression of Kothari">
+    <section className="hero" id="top" aria-label="A new expression of Kothari" ref={heroRef}>
       <div className="wrap">
         <div className="hero-copy">
           <p className="caps" style={{ margin: 0 }}>
@@ -46,11 +49,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           <p className="est">Est. 1937, Mumbai</p>
         </div>
         <div className="hero-img">
-          <span
-            className="im i-emerald-pendant-necklace"
-            role="img"
-            aria-label="Emerald and diamond pendant necklace"
-          />
+          <div className="hero-necklace-stage">
+            <span
+              className="im i-emerald-pendant-necklace"
+              role="img"
+              aria-label="Emerald and diamond pendant necklace"
+            />
+            <div className="necklace-shine-sweep" aria-hidden="true" />
+          </div>
         </div>
       </div>
     </section>

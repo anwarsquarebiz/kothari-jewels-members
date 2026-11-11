@@ -2,9 +2,9 @@ import React from 'react';
 
 export const VisitSection: React.FC = () => {
   return (
-    <section className="visit" id="visit" aria-label="Visit Altamount Road">
+    <section className="visit reveal" id="visit" aria-label="Visit Altamount Road">
       <div className="wrap">
-        <div className="visit-copy">
+        <div className="visit-copy reveal reveal-delay-1">
           <p className="caps">An invitation to discover</p>
           <h2>
             32 Altamount <em>Road</em>
@@ -56,7 +56,7 @@ export const VisitSection: React.FC = () => {
             </a>
           </div>
         </div>
-        <figure>
+        <figure className="reveal reveal-delay-2">
           <div>
             <span
               className="im i-house"

@@ -10,12 +10,16 @@ export const JewelleryGrid: React.FC<JewelleryGridProps> = ({ pieces, isAllFilte
   return (
     <section className="grid-sec" aria-label="Pieces">
       <div className="grid wrap" id="grid">
-        {pieces.map((p) => {
+        {pieces.map((p, index) => {
           const isFeature = Boolean(p.bg && isAllFilter);
           const stText = getStonesText(p.stones);
 
           return (
-            <article key={p.id} className={`piece${isFeature ? ' feature' : ''}`}>
+            <article
+              key={p.id}
+              className={`piece${isFeature ? ' feature' : ''}`}
+              style={{ '--stagger': Math.min(index, 12) } as React.CSSProperties}
+            >
               <div
                 className="tile"
                 style={isFeature && p.bg ? { background: p.bg } : undefined}

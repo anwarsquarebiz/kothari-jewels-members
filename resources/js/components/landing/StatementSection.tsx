@@ -6,10 +6,10 @@ interface StatementSectionProps {
 
 export const StatementSection: React.FC<StatementSectionProps> = ({ onNavigate }) => {
   return (
-    <section className="statement" aria-label="The jewellery">
+    <section className="statement reveal" aria-label="The jewellery">
       <div className="wrap">
         <p className="caps">The Jewellery</p>
-        <p className="big">
+        <p className="big reveal reveal-delay-1">
           Lighter in spirit,{' '}
           <span className="im i-coil-earrings" aria-hidden="true" style={{ height: '0.78em' }} />{' '}
           broader in <em>imagination,</em> and designed to be{' '}
@@ -20,7 +20,7 @@ export const StatementSection: React.FC<StatementSectionProps> = ({ onNavigate }
           />{' '}
           enjoyed <em>often.</em>
         </p>
-        <div className="statement-foot">
+        <div className="statement-foot reveal reveal-delay-2">
           <p>
             From fresh interpretations of familiar forms to pieces that are unexpected, playful and
             entirely their own.

@@ -13,10 +13,14 @@ import { RailSection } from '@/components/landing/RailSection';
 import { StatementSection } from '@/components/landing/StatementSection';
 import { StonesSection } from '@/components/landing/StonesSection';
 import { VisitSection } from '@/components/landing/VisitSection';
+import { useScrollReveal } from '@/components/landing/useLandingAnimations';
 
 export default function Home() {
   const [activeView, setActiveView] = useState<'home' | 'jewellery'>('home');
   const [activeFilter, setActiveFilter] = useState<string>('all');
+
+  // Trigger scroll reveal animations
+  useScrollReveal([activeView, activeFilter]);
 
   // Handle URL hash changes
   useEffect(() => {
