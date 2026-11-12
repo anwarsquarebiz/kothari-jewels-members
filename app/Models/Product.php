@@ -24,6 +24,13 @@ class Product extends Model
         'currency',
         'price',
         'long_description',
+        'show_in_landing_rail',
+        'rail_position',
+        'show_in_landing_jewellery',
+        'jewellery_position',
+        'landing_stones',
+        'is_landing_feature',
+        'landing_feature_bg',
     ];
 
     /**
@@ -33,6 +40,12 @@ class Product extends Model
      */
     protected $casts = [
         'price' => 'decimal:2',
+        'show_in_landing_rail' => 'boolean',
+        'rail_position' => 'integer',
+        'show_in_landing_jewellery' => 'boolean',
+        'jewellery_position' => 'integer',
+        'landing_stones' => 'array',
+        'is_landing_feature' => 'boolean',
     ];
 
     /**

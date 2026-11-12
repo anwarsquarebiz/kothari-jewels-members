@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import '../../css/landing.css';
-import { PIECES } from '@/components/landing/data';
+import { PIECES, PieceItem, RAIL_ITEMS, RailItem } from '@/components/landing/data';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { HouseSection } from '@/components/landing/HouseSection';
 import { JewelleryCta } from '@/components/landing/JewelleryCta';
@@ -15,7 +15,34 @@ import { StonesSection } from '@/components/landing/StonesSection';
 import { VisitSection } from '@/components/landing/VisitSection';
 import { useScrollReveal } from '@/components/landing/useLandingAnimations';
 
-export default function Home() {
+interface DynamicProduct {
+  id: number;
+  slug: string;
+  title: string;
+  sku: string;
+  price: number;
+  currency: string;
+  formatted_price: string;
+  short_description?: string;
+  image_url: string | null;
+  alt?: string;
+  stones?: string[];
+  is_feature?: boolean;
+  bg?: string | null;
+  category_slug?: string;
+}
+
+interface HomeProps {
+  title?: string;
+  description?: string;
+  railProducts?: DynamicProduct[];
+  jewelleryProducts?: DynamicProduct[];
+}
+
+export default function Home({
+  railProducts = [],
+  jewelleryProducts = [],
+}: HomeProps) {
   const [activeView, setActiveView] = useState<'home' | 'jewellery'>('home');
   const [activeFilter, setActiveFilter] = useState<string>('all');
 
@@ -86,9 +113,46 @@ export default function Home() {
     window.scrollTo(0, 0);
   };
 
-  const filteredPieces = PIECES.filter(
-    (p) => activeFilter === 'all' || p.stones.includes(activeFilter)
-  );
+  // Convert railProducts from database or fallback to static items
+  const formattedRailItems: RailItem[] = useMemo(() => {
+    if (railProducts && railProducts.length > 0) {
+      return railProducts.map((p) => ({
+        id: p.id,
+        label: p.title,
+        alt: p.alt || p.title,
+        image_url: p.image_url,
+        slug: p.slug,
+        price: p.price,
+        formatted_price: p.formatted_price,
+      }));
+    }
+    return RAIL_ITEMS;
+  }, [railProducts]);
+
+  // Convert jewelleryProducts from database or fallback to static items
+  const allJewelleryPieces: PieceItem[] = useMemo(() => {
+    if (jewelleryProducts && jewelleryProducts.length > 0) {
+      return jewelleryProducts.map((p) => ({
+        id: p.id,
+        title: p.title,
+        stones: p.stones && p.stones.length > 0 ? p.stones : ['diamond'],
+        bg: p.is_feature && p.bg ? p.bg : undefined,
+        image_url: p.image_url,
+        price: p.price,
+        formatted_price: p.formatted_price,
+        sku: p.sku,
+        slug: p.slug,
+        category_slug: p.category_slug,
+      }));
+    }
+    return PIECES;
+  }, [jewelleryProducts]);
+
+  const filteredPieces = useMemo(() => {
+    return allJewelleryPieces.filter(
+      (p) => activeFilter === 'all' || p.stones.includes(activeFilter)
+    );
+  }, [allJewelleryPieces, activeFilter]);
 
   return (
     <div className="kothari-landing">
@@ -108,7 +172,7 @@ export default function Home() {
             <HeroSection onNavigate={handleNavigate} />
             <StatementSection onNavigate={handleNavigate} />
             <StonesSection onSelectFilter={handleSelectStoneFromStones} />
-            <RailSection onNavigate={handleNavigate} />
+            <RailSection products={formattedRailItems} onNavigate={handleNavigate} />
             <HouseSection />
             <VisitSection />
           </div>

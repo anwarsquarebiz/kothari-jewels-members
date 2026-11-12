@@ -16,6 +16,14 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin,manager'])->
     Route::resource('categories', App\Http\Controllers\Admin\AdminCategoryController::class);
     Route::patch('categories/{category}/toggle-status', [App\Http\Controllers\Admin\AdminCategoryController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
 
+    // Landing Page Showcase curation (Rail & Jewellery page)
+    Route::get('landing-showcase', [App\Http\Controllers\Admin\AdminLandingShowcaseController::class, 'index'])->name('admin.landing-showcase.index');
+    Route::post('landing-showcase/rail', [App\Http\Controllers\Admin\AdminLandingShowcaseController::class, 'updateRail'])->name('admin.landing-showcase.rail.update');
+    Route::post('landing-showcase/jewellery', [App\Http\Controllers\Admin\AdminLandingShowcaseController::class, 'updateJewellery'])->name('admin.landing-showcase.jewellery.update');
+    Route::post('landing-showcase/products/{product}/toggle-rail', [App\Http\Controllers\Admin\AdminLandingShowcaseController::class, 'toggleRail'])->name('admin.landing-showcase.toggle-rail');
+    Route::post('landing-showcase/products/{product}/toggle-jewellery', [App\Http\Controllers\Admin\AdminLandingShowcaseController::class, 'toggleJewellery'])->name('admin.landing-showcase.toggle-jewellery');
+    Route::patch('landing-showcase/products/{product}', [App\Http\Controllers\Admin\AdminLandingShowcaseController::class, 'updateProductSettings'])->name('admin.landing-showcase.product.update');
+
     // Products bulk import/export (before resource so "import" is not a product id)
     Route::get('products/import', [App\Http\Controllers\Admin\AdminProductImportController::class, 'create'])->name('admin.products.import');
     Route::post('products/import', [App\Http\Controllers\Admin\AdminProductImportController::class, 'store'])->name('admin.products.import.store');
