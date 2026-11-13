@@ -11,10 +11,26 @@ export interface StoneDetail {
 }
 
 export interface PieceItem {
-  id: string;
+  id: string | number;
   title: string;
   stones: string[];
-  bg?: string;
+  bg?: string | null;
+  image_url?: string | null;
+  price?: number;
+  formatted_price?: string;
+  sku?: string;
+  slug?: string;
+  category_slug?: string;
+}
+
+export interface RailItem {
+  id: string | number;
+  label: string;
+  alt: string;
+  image_url?: string | null;
+  slug?: string;
+  price?: number;
+  formatted_price?: string;
 }
 
 export const STONES: Record<string, StoneDetail> = {

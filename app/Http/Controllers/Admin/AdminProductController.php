@@ -110,6 +110,13 @@ class AdminProductController extends Controller
                 'sku' => $request->sku,
                 'currency' => $request->currency ?: 'INR',
                 'price' => $request->price,
+                'show_in_landing_rail' => $request->boolean('show_in_landing_rail'),
+                'rail_position' => $request->input('rail_position', 0),
+                'show_in_landing_jewellery' => $request->boolean('show_in_landing_jewellery'),
+                'jewellery_position' => $request->input('jewellery_position', 0),
+                'landing_stones' => $request->input('landing_stones', []),
+                'is_landing_feature' => $request->boolean('is_landing_feature'),
+                'landing_feature_bg' => $request->input('landing_feature_bg'),
             ]);
 
             // Attach categories
@@ -186,7 +193,7 @@ class AdminProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $product->update([
+            $updateData = [
                 'title' => $request->title,
                 'slug' => $request->slug ?: Str::slug($request->title),
                 'short_description' => $request->short_description,
@@ -194,7 +201,31 @@ class AdminProductController extends Controller
                 'sku' => $request->sku,
                 'currency' => $request->currency,
                 'price' => $request->price,
-            ]);
+            ];
+
+            if ($request->has('show_in_landing_rail')) {
+                $updateData['show_in_landing_rail'] = $request->boolean('show_in_landing_rail');
+            }
+            if ($request->has('rail_position')) {
+                $updateData['rail_position'] = $request->input('rail_position', 0);
+            }
+            if ($request->has('show_in_landing_jewellery')) {
+                $updateData['show_in_landing_jewellery'] = $request->boolean('show_in_landing_jewellery');
+            }
+            if ($request->has('jewellery_position')) {
+                $updateData['jewellery_position'] = $request->input('jewellery_position', 0);
+            }
+            if ($request->has('landing_stones')) {
+                $updateData['landing_stones'] = $request->input('landing_stones');
+            }
+            if ($request->has('is_landing_feature')) {
+                $updateData['is_landing_feature'] = $request->boolean('is_landing_feature');
+            }
+            if ($request->has('landing_feature_bg')) {
+                $updateData['landing_feature_bg'] = $request->input('landing_feature_bg');
+            }
+
+            $product->update($updateData);
 
             // Update categories
             if ($request->filled('categories')) {

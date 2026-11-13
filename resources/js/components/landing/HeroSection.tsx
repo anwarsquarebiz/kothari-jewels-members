@@ -49,14 +49,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           <p className="est">Est. 1937, Mumbai</p>
         </div>
         <div className="hero-img">
-          <div className="hero-necklace-stage">
-            <span
-              className="im i-emerald-pendant-necklace"
-              role="img"
-              aria-label="Emerald and diamond pendant necklace"
-            />
-            <div className="necklace-shine-sweep" aria-hidden="true" />
-          </div>
+          <span
+            className="im i-emerald-pendant-necklace"
+            role="img"
+            aria-label="Emerald and diamond pendant necklace"
+          />
         </div>
       </div>
     </section>
