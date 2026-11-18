@@ -46,7 +46,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
               </a>
             </div>
           </div>
-          <p className="est">Est. 1937, Mumbai</p>
+          <div className="hero-est-row">
+            <span className="im i-mono-gold hero-mono" aria-hidden="true" />
+            <p className="est">Est. 1937, Mumbai</p>
+          </div>
         </div>
         <div className="hero-img">
           <span

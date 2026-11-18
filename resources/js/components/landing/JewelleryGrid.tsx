@@ -52,7 +52,11 @@ export const JewelleryGrid: React.FC<JewelleryGridProps> = ({ pieces, isAllFilte
                 </div>
                 <a
                   className="caps"
-                  href="tel:+919820515907"
+                  href={`https://wa.me/919820515907?text=${encodeURIComponent(
+                    `Hi, I would like to schedule a visit to your store to take a closer look at this piece (${p.title}) and the rest of your collection`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={`Enquire about the ${p.title.toLowerCase()}`}
                 >
                   Enquire

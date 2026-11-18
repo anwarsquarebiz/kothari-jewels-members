@@ -95,12 +95,12 @@ export const STONES: Record<string, StoneDetail> = {
     ],
   },
   onyx: {
-    name: 'Onyx',
+    name: 'Semi Precious Stones',
     bg: '#1A1718',
     fg: '#EDE7D6',
     panel: '#242021',
     line: 'rgba(237,231,214,.2)',
-    text: 'Black onyx in clean geometry, edged with diamonds.',
+    text: 'Black onyx and semi-precious stones in clean geometry, edged with diamonds.',
     count: '2 pieces',
     hero: ['onyx-earrings', 'Onyx and diamond drop earrings'],
     more: [['pearl-onyx-earrings', 'Pearl and onyx earrings']],
@@ -112,7 +112,7 @@ export const DOTS: Record<string, { name: string; color: string }> = {
   ruby: { name: 'Ruby', color: '#540C1F' },
   pearl: { name: 'Pearl', color: '#E4DCC8' },
   diamond: { name: 'Diamond', color: '#FFFFFF' },
-  onyx: { name: 'Onyx', color: '#1A1718' },
+  onyx: { name: 'Semi Precious Stones', color: '#1A1718' },
 };
 
 export const PIECES: PieceItem[] = [

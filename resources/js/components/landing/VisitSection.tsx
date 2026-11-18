@@ -35,15 +35,26 @@ export const VisitSection: React.FC = () => {
             </div>
             <div>
               <p className="caps" style={{ color: 'var(--soft)' }}>
-                Telephone
+                Telephone & WhatsApp
               </p>
               <p>
-                <a href="tel:+919820515907">+91 98205 15907</a>
+                <a
+                  href="https://wa.me/919820515907"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  +91 98205 15907
+                </a>
               </p>
             </div>
           </div>
           <div className="btns">
-            <a href="tel:+919820515907" className="btn solid">
+            <a
+              href="https://wa.me/919820515907?text=Hi%2C%20I%20would%20like%20to%20book%20an%20appointment%20to%20visit%20the%20boutique%20at%20Silverene%2C%20Altamount%20Road."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn solid"
+            >
               Book an appointment
             </a>
             <a

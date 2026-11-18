@@ -11,12 +11,16 @@ export const StatementSection: React.FC<StatementSectionProps> = ({ onNavigate }
         <p className="caps">The Jewellery</p>
         <p className="big reveal reveal-delay-1">
           Lighter in spirit,{' '}
-          <span className="im i-coil-earrings" aria-hidden="true" style={{ height: '0.78em' }} />{' '}
+          <span
+            className="im i-coil-earrings"
+            aria-hidden="true"
+            style={{ height: '1.42em', verticalAlign: '-0.14em' }}
+          />{' '}
           broader in <em>imagination,</em> and designed to be{' '}
           <span
             className="im i-emerald-ring"
             aria-hidden="true"
-            style={{ height: '0.95em', verticalAlign: '-0.16em' }}
+            style={{ height: '1.48em', verticalAlign: '-0.24em' }}
           />{' '}
           enjoyed <em>often.</em>
         </p>
