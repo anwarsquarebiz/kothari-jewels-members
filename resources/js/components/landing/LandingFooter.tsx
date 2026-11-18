@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Instagram } from 'lucide-react';
 
 interface LandingFooterProps {
   onNavigate: (target: string) => void;
@@ -89,17 +90,27 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onNavigate }) => {
             <br />
             11 AM to 7 PM
           </p>
-          <p>
-            <a href="tel:+919820515907">+91 98205 15907</a>
-            <br />
+          <div className="foot-contact-cell">
+            <a
+              href="https://wa.me/919820515907"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="foot-wa-link"
+              title="Chat with Kothari 1937 on WhatsApp"
+            >
+              +91 98205 15907
+            </a>
             <a
               href="https://www.instagram.com/kothari1937official/"
               target="_blank"
               rel="noopener noreferrer"
+              className="foot-insta-cta caps"
+              title="Follow Kothari 1937 on Instagram"
             >
-              Instagram
+              <Instagram className="size-3.5 inline-block" />
+              <span>Instagram</span>
             </a>
-          </p>
+          </div>
         </div>
         <p className="legal caps">© Kothari 1937</p>
       </div>

@@ -22,22 +22,41 @@ export const JewelleryGrid: React.FC<JewelleryGridProps> = ({ pieces, isAllFilte
             >
               <div
                 className="tile"
-                style={isFeature && p.bg ? { background: p.bg } : undefined}
+                style={!p.image_url && isFeature && p.bg ? { background: p.bg } : undefined}
               >
-                <span
-                  className={`im i-${p.id}`}
-                  role="img"
-                  aria-label={`${p.title} in ${stText.toLowerCase()}`}
-                />
+                {p.image_url ? (
+                  <img
+                    src={p.image_url}
+                    alt={`${p.title} in ${stText.toLowerCase()}`}
+                    className="im"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span
+                    className={`im i-${p.id}`}
+                    role="img"
+                    aria-label={`${p.title} in ${stText.toLowerCase()}`}
+                  />
+                )}
               </div>
               <div className="piece-meta">
                 <div>
                   <p>{p.title}</p>
-                  <p>{stText}</p>
+                  <p>{stText || (p.formatted_price ? p.formatted_price : '')}</p>
                 </div>
                 <a
                   className="caps"
-                  href="tel:+919820515907"
+                  href={`https://wa.me/919820515907?text=${encodeURIComponent(
+                    `Hi, I would like to schedule a visit to your store to take a closer look at this piece (${p.title}) and the rest of your collection`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={`Enquire about the ${p.title.toLowerCase()}`}
                 >
                   Enquire
@@ -50,4 +69,3 @@ export const JewelleryGrid: React.FC<JewelleryGridProps> = ({ pieces, isAllFilte
     </section>
   );
 };
-

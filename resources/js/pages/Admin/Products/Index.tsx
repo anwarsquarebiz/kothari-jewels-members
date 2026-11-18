@@ -20,7 +20,7 @@ import {
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type PaginatedData, type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Plus, Search, Edit, Trash2, Eye, Image, Upload, Download, FileSpreadsheet } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Image, Upload, Download, FileSpreadsheet, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface Category {
@@ -214,6 +214,12 @@ export default function Index({ products, categories, filters }: Props) {
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
+                        <Link href="/admin/landing-showcase">
+                            <Button variant="outline" type="button" className="border-[#c9ae7e]/40 text-[#c9ae7e] hover:bg-[#c9ae7e]/10">
+                                <Sparkles className="h-4 w-4 mr-2 text-[#c9ae7e]" />
+                                Landing Showcase
+                            </Button>
+                        </Link>
                         <a href="/admin/products/import/template">
                             <Button variant="outline" type="button">
                                 <Download className="h-4 w-4 mr-2" />

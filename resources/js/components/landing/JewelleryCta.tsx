@@ -14,7 +14,12 @@ export const JewelleryCta: React.FC<JewelleryCtaProps> = ({ onNavigate }) => {
         <div className="reveal reveal-delay-1" style={{ flex: '0 1 380px' }}>
           <p>Silverene, 32 Altamount Road, Mumbai 400026. Monday to Saturday, 11 AM to 7 PM.</p>
           <div className="btns caps" style={{ margin: 0 }}>
-            <a href="tel:+919820515907" className="btn solid">
+            <a
+              href="https://wa.me/919820515907?text=Hi%2C%20I%20would%20like%20to%20book%20an%20appointment%20to%20visit%20the%20boutique%20at%20Silverene%2C%20Altamount%20Road."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn solid"
+            >
               Book an appointment
             </a>
             <a

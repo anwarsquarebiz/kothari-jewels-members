@@ -44,9 +44,6 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ activeView, onNavi
           >
             Jewellery
           </a>
-          <a href="#stones" onClick={(e) => handleLinkClick(e, '#stones')}>
-            The Stones
-          </a>
           <a href="#house" onClick={(e) => handleLinkClick(e, '#house')}>
             The House
           </a>
@@ -67,7 +64,12 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ activeView, onNavi
           <a href="#visit" onClick={(e) => handleLinkClick(e, '#visit')}>
             Altamount Road
           </a>
-          <a href="tel:+919820515907" className="appt">
+          <a
+            href="https://wa.me/919820515907?text=Hi%2C%20I%20would%20like%20to%20book%20an%20appointment%20to%20visit%20the%20boutique%20at%20Silverene%2C%20Altamount%20Road."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="appt"
+          >
             Appointments
           </a>
         </nav>
@@ -98,16 +100,19 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ activeView, onNavi
           >
             Jewellery
           </a>
-          <a href="#stones" onClick={(e) => handleLinkClick(e, '#stones')}>
-            The Stones
-          </a>
           <a href="#house" onClick={(e) => handleLinkClick(e, '#house')}>
             The House
           </a>
           <a href="#visit" onClick={(e) => handleLinkClick(e, '#visit')}>
             Altamount Road
           </a>
-          <a href="tel:+919820515907" className="appt" onClick={() => setMobileMenuOpen(false)}>
+          <a
+            href="https://wa.me/919820515907?text=Hi%2C%20I%20would%20like%20to%20book%20an%20appointment%20to%20visit%20the%20boutique%20at%20Silverene%2C%20Altamount%20Road."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="appt"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             Appointments
           </a>
           {user ? (

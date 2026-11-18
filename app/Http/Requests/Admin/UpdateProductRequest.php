@@ -35,6 +35,14 @@ class UpdateProductRequest extends FormRequest
             'categories.*' => 'exists:categories,id',
             'user_access' => 'nullable|array',
             'user_access.*' => 'exists:users,id',
+            'show_in_landing_rail' => 'nullable|boolean',
+            'rail_position' => 'nullable|integer|min:0',
+            'show_in_landing_jewellery' => 'nullable|boolean',
+            'jewellery_position' => 'nullable|integer|min:0',
+            'landing_stones' => 'nullable|array',
+            'landing_stones.*' => 'string|in:emerald,ruby,pearl,diamond,onyx',
+            'is_landing_feature' => 'nullable|boolean',
+            'landing_feature_bg' => 'nullable|string|max:50',
         ];
     }
 

@@ -13,7 +13,7 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 interface Category {
@@ -41,6 +41,13 @@ interface Product {
     price: string;
     categories?: Category[];
     users_with_access?: User[];
+    show_in_landing_rail?: boolean;
+    rail_position?: number;
+    show_in_landing_jewellery?: boolean;
+    jewellery_position?: number;
+    landing_stones?: string[];
+    is_landing_feature?: boolean;
+    landing_feature_bg?: string | null;
 }
 
 interface Props {
@@ -75,6 +82,13 @@ export default function Edit({ product, categories, users }: Props) {
         price: product.price,
         categories: product.categories?.map(c => c.id) || [],
         user_access: product.users_with_access?.map(u => u.id) || [],
+        show_in_landing_rail: Boolean(product.show_in_landing_rail),
+        rail_position: product.rail_position ?? 0,
+        show_in_landing_jewellery: Boolean(product.show_in_landing_jewellery),
+        jewellery_position: product.jewellery_position ?? 0,
+        landing_stones: product.landing_stones || ['diamond'],
+        is_landing_feature: Boolean(product.is_landing_feature),
+        landing_feature_bg: product.landing_feature_bg || '',
     });
 
     const [autoSlug, setAutoSlug] = useState(false);
@@ -317,6 +331,111 @@ export default function Edit({ product, categories, users }: Props) {
                                 </div>
                                 {errors.user_access && (
                                     <p className="text-sm text-red-600 mt-1">{errors.user_access}</p>
+                                )}
+                            </div>
+
+                            {/* Landing Page Showcase Settings */}
+                            <div className="md:col-span-2 rounded-lg border border-border p-4 space-y-4">
+                                <div className="flex items-center justify-between border-b pb-2">
+                                    <div className="flex items-center gap-2">
+                                        <Sparkles className="size-4 text-[#c9ae7e]" />
+                                        <h3 className="font-semibold text-sm">Boutique Landing Page Showcase</h3>
+                                    </div>
+                                    <Link href="/admin/landing-showcase" className="text-xs text-[#c9ae7e] hover:underline">
+                                        Open Full Showcase Manager &rarr;
+                                    </Link>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* Rail */}
+                                    <div className="flex items-start space-x-3 p-3 rounded border">
+                                        <input
+                                            type="checkbox"
+                                            id="show_in_landing_rail"
+                                            checked={data.show_in_landing_rail}
+                                            onChange={(e) => setData('show_in_landing_rail', e.target.checked)}
+                                            className="mt-1 rounded"
+                                        />
+                                        <Label htmlFor="show_in_landing_rail" className="text-sm cursor-pointer">
+                                            <div className="font-medium">Show in Homepage Rail</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                Displays this item in the "Selected Pieces" horizontal scroll.
+                                            </div>
+                                        </Label>
+                                    </div>
+
+                                    {/* Jewellery Grid */}
+                                    <div className="flex items-start space-x-3 p-3 rounded border">
+                                        <input
+                                            type="checkbox"
+                                            id="show_in_landing_jewellery"
+                                            checked={data.show_in_landing_jewellery}
+                                            onChange={(e) => setData('show_in_landing_jewellery', e.target.checked)}
+                                            className="mt-1 rounded"
+                                        />
+                                        <Label htmlFor="show_in_landing_jewellery" className="text-sm cursor-pointer">
+                                            <div className="font-medium">Show in Jewellery Collection</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                Displays this item in the Jewellery catalog page (#jewellery).
+                                            </div>
+                                        </Label>
+                                    </div>
+                                </div>
+
+                                {data.show_in_landing_jewellery && (
+                                    <div className="space-y-3 pt-2 border-t">
+                                        <div>
+                                            <Label className="text-xs">Filter Stones Tags</Label>
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                {['emerald', 'ruby', 'pearl', 'diamond', 'onyx'].map((stone) => {
+                                                    const checked = data.landing_stones.includes(stone);
+                                                    return (
+                                                        <label key={stone} className="flex items-center gap-1.5 text-xs border rounded-full px-2.5 py-1 cursor-pointer hover:bg-muted/50">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={checked}
+                                                                onChange={(e) => {
+                                                                    if (e.target.checked) {
+                                                                        setData('landing_stones', [...data.landing_stones, stone]);
+                                                                    } else {
+                                                                        const filtered = data.landing_stones.filter((s: string) => s !== stone);
+                                                                        setData('landing_stones', filtered.length > 0 ? filtered : ['diamond']);
+                                                                    }
+                                                                }}
+                                                                className="rounded-full"
+                                                            />
+                                                            <span className="capitalize">{stone}</span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-4 pt-1">
+                                            <label className="flex items-center gap-2 text-xs cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={data.is_landing_feature}
+                                                    onChange={(e) => setData('is_landing_feature', e.target.checked)}
+                                                    className="rounded"
+                                                />
+                                                <span className="font-medium">Spotlight 2x2 Feature Card</span>
+                                            </label>
+
+                                            {data.is_landing_feature && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-muted-foreground">Background Color:</span>
+                                                    <Input
+                                                        type="text"
+                                                        value={data.landing_feature_bg || ''}
+                                                        onChange={(e) => setData('landing_feature_bg', e.target.value)}
+                                                        placeholder="#540C1F"
+                                                        className="h-7 w-28 text-xs font-mono"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </div>

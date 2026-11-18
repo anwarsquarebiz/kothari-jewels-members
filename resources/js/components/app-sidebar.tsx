@@ -18,6 +18,7 @@ import {
     LayoutGrid,
     Package,
     ShoppingBag,
+    Sparkles,
     Tag,
     Users,
 } from 'lucide-react';
@@ -28,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Landing Showcase',
+        href: '/admin/landing-showcase',
+        icon: Sparkles,
     },
     {
         title: 'Client Visits',
